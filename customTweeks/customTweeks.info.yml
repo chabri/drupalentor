@@ -1,0 +1,10 @@
+name: Custom Tweeks
+type: module
+description: 'Custom tweeks to drupal 8-9'
+package: ESIMAGINACION
+version: 8.x
+core_version_requirement: 9.x
+dependencies:
+  - field
+  - block
+  - drupal:layout_builder
