@@ -1,0 +1,22 @@
+.toolbar-tray-open{ 
+    #vvveb-builder #left-panel, #vvveb-builder #right-panel {
+//    top: 79px;
+    }
+} 
+.drupalentor-editor{
+    #toolbar-administration{
+    display: none;
+    }
+}
+
+#vvveb-builder {
+position: fixed;
+z-index: 9999;
+top: 0;
+left: 0;
+width: 100%;
+background: #fff;
+    label.header{
+    float: left;
+    }
+}

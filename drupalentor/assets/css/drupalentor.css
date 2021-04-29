@@ -1,0 +1,15 @@
+.drupalentor-editor #toolbar-administration {
+  display: none;
+}
+
+#vvveb-builder {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+}
+#vvveb-builder label.header {
+  float: left;
+}

@@ -1,0 +1,15 @@
+drupalentor.admin:
+  title: 'Dupalentor'
+  description: 'Description'
+  parent: system.admin_structure
+  route_name: drupalentor.admin
+drupalentor.settings:
+  title: 'Dupalentor Settings'
+  description: 'Description'
+  parent: drupalentor.admin
+  route_name: drupalentor.settings
+drupalentor.custom_css:
+  title: 'Dupalentor Custom Css'
+  description: 'Description'
+  parent: drupalentor.admin
+  route_name: drupalentor.custom_css

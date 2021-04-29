@@ -1,0 +1,42 @@
+drupalentor.admin:
+  path: '/admin/structure/drupalentor'
+  defaults:
+    _title: 'Drupalentor'
+    _form: '\Drupal\drupalentor\Form\ConfigFormDrupalentor'
+  requirements:
+    _permission: 'administer drupalentor'
+
+drupalentor.settings:
+  path: '/admin/structure/drupalentor/settings'
+  defaults:
+    _title: 'Drupalentor Settings'
+    _form: '\Drupal\drupalentor\Form\SettingsFormDrupalentor'
+  requirements:
+    _permission: 'administer drupalentor'
+    
+drupalentor.custom_css:
+  path: '/admin/structure/drupalentor/custom-css'
+  defaults:
+    _title: 'Custom css'
+    _form: '\Drupal\drupalentor\Form\CustomCssDrupalentor'
+  requirements:
+    _permission: 'administer drupalentor'
+
+drupalentor.editor:
+  path: '/node/{node}/drupalentor'
+  defaults:
+    _title: 'Edit Drupalentor'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::editor'
+  _format: 'html'
+  options:
+    no_cache: 'FALSE'
+  requirements:
+    _permission: 'administer drupalentor'
+    
+drupalentor.save:
+  path: '/admin/structure/drupalentor/save'
+  defaults:
+    _title: 'Save Configuration of Gavias BlockBuilder'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::save'
+  requirements:
+    _permission: 'administer drupalentor'

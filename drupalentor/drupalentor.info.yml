@@ -1,0 +1,12 @@
+name: Drupalentor
+type: module
+description: 'Text'
+package: ESIMAGINACION
+version: 8.x
+core_version_requirement: 9.x
+libraries-override:
+  # Replace an entire library.
+  core/jquery: drupalentor/jquery-custom
+dependencies:
+  - field
+  - block

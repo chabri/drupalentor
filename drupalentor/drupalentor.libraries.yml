@@ -1,0 +1,37 @@
+jquery-custom.assets.admin:
+  js:
+    assets/js/jquery.min.js: { weight: -20 }
+drupalentor.assets.admin:
+  version: 1.x
+  css:
+    theme:
+      assets/css/editor.css: {}
+      assets/libs/codemirror/lib/codemirror.css: {}
+      assets/libs/codemirror/theme/material.css: {}
+      assets/css/drupalentor.css: {}
+  js:
+    assets/js/jquery.hotkeys.js: {scope: footer}
+    assets/js/popper.min.js: {scope: footer}
+    assets/js/bootstrap.min.js: {scope: footer}
+    assets/libs/builder/builder.js: {scope: footer}
+    assets/libs/builder/undo.js: {scope: footer}
+    assets/libs/builder/inputs.js: {scope: footer}
+    assets/libs/builder/components-common.js: {scope: footer}
+    assets/libs/builder/components-bootstrap5.js: {scope: footer}
+    assets/libs/builder/components-widgets.js: {scope: footer}
+    assets/libs/builder/sections-bootstrap4.js: {scope: footer}
+    assets/libs/builder/blocks-bootstrap4.js: {scope: footer}
+    assets/libs/codemirror/lib/codemirror.js: {scope: footer}
+    assets/libs/codemirror/lib/xml.js: {scope: footer}
+    assets/libs/codemirror/lib/formatting.js: {scope: footer}
+    assets/libs/builder/plugin-codemirror.js: {scope: footer}
+    assets/libs/autocomplete/jquery.autocomplete.js: {scope: footer}
+    assets/js/drupalentor.js: {scope: footer}
+  dependencies:
+    - core/jquery
+    - core/jquery.ui
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.ajax
+    - core/drupal.dialog
+    - core/drupal.dialog.ajax

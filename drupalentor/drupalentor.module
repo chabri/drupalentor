@@ -1,0 +1,42 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+define( 'DRUPALENTOR_PATH', drupal_get_path('module', 'drupalentor') );
+
+
+function drupalentor_theme($existing, $type, $theme, $path) {
+  return array(
+    'drupalentor-admin-form' => array(
+        'variables' => array(
+            'page' => '',
+            'content' => '',
+        ),
+        'path' => $path . '/templates/backend',
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme_registry_alter
+ */
+//function drupalentor_theme_registry_alter(&$theme_registry) {
+//    $themes = array_keys(\Drupal::service('theme_handler')->listInfo());
+//    $themes = array_combine($themes, $themes);
+//    $theme = \Drupal::theme()->getActiveTheme()->getName();
+//    if (in_array($theme, $themes)) {
+//        $theme_registry['page']['path'] = drupal_get_path('module', ' drupalentor') . '/templates';
+//    }
+//}
+
+
+function drupalentor_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.drupalentor':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Allow users to request protected downloads.') . '</p>';
+      return $output;
+  }
+}
