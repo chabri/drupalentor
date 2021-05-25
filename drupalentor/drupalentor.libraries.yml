@@ -10,28 +10,48 @@ drupalentor.assets.admin:
       assets/libs/codemirror/theme/material.css: {}
       assets/css/drupalentor.css: {}
   js:
-    assets/js/jquery.hotkeys.js: {scope: footer}
-    assets/js/popper.min.js: {scope: footer}
-    assets/js/bootstrap.min.js: {scope: footer}
-    assets/libs/builder/builder.js: {scope: footer}
-    assets/libs/builder/undo.js: {scope: footer}
-    assets/libs/builder/inputs.js: {scope: footer}
-    assets/libs/builder/components-common.js: {scope: footer}
-    assets/libs/builder/components-bootstrap5.js: {scope: footer}
-    assets/libs/builder/components-widgets.js: {scope: footer}
-    assets/libs/builder/sections-bootstrap4.js: {scope: footer}
-    assets/libs/builder/blocks-bootstrap4.js: {scope: footer}
-    assets/libs/codemirror/lib/codemirror.js: {scope: footer}
-    assets/libs/codemirror/lib/xml.js: {scope: footer}
-    assets/libs/codemirror/lib/formatting.js: {scope: footer}
-    assets/libs/builder/plugin-codemirror.js: {scope: footer}
-    assets/libs/autocomplete/jquery.autocomplete.js: {scope: footer}
+    assets/js/jquery.hotkeys.js: {}
+    assets/js/popper.min.js: {}
+    assets/libs/autocomplete/jquery.autocomplete.js: {}
+    assets/libs/builder/builder.js: {}
+    assets/libs/builder/undo.js: {}
+    assets/libs/builder/inputs.js: {}
+    assets/libs/bootstrap/bootstrap.min.js: {}
+    assets/libs/builder/components-common.js: {}
+    assets/libs/builder/components-drupalentor.js: {}
+    assets/libs/builder/components-widgets.js: {}
+    assets/libs/builder/sections-drupalentor.js: {}
+    assets/libs/codemirror/lib/codemirror.js: {}
+    assets/libs/codemirror/lib/xml.js: {}
+    assets/libs/codemirror/lib/formatting.js: {}
+    assets/libs/builder/plugin-codemirror.js: {}
     assets/js/drupalentor.js: {scope: footer}
   dependencies:
     - core/jquery
     - core/jquery.ui
+    - imce/drupal.imce.input
     - core/drupal
     - core/drupalSettings
     - core/drupal.ajax
     - core/drupal.dialog
     - core/drupal.dialog.ajax
+    
+drupalentor.assets.frontend:
+  version: 1.x
+  css: 
+    theme:
+      assets/css/styles.css: {}
+  js:
+    assets/libs/bootstrap/bootstrap.min.js: {scope: footer}
+    
+drupalentor.assets.settings:
+  version: 1.x
+  css: 
+    theme:
+      vendor/harvesthq/chosen/chosen.min.css: {}
+      vendor/spectrum/dist/spectrum.min.css: {}
+  js:
+    vendor/harvesthq/chosen/chosen.jquery.min.js: {scope: footer}
+    vendor/spectrum/dist/spectrum.min.js: {scope: footer}
+    vendor/init.js: {scope: footer}
+    

@@ -827,7 +827,7 @@ Vvveb.Components.extend("_base", "_base", {
         },
 
 		onChange: function(node, value) {
-			
+
 			$(node).css('background-image', 'url(' + value + ')');
 			
 			return node;

@@ -5,12 +5,12 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     qunit: {
-      all: {
-        options: {
-          urls: ['test/index.html', 'test/loaders.html'],
-
-        },
-
+      all: ['test/index.html', 'test/loaders.html'],
+      options: {
+        puppeteer: {
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox']
+        }
       }
     },
 
@@ -33,17 +33,42 @@ module.exports = function(grunt) {
         }
       },
 
-      all: ['spectrum.js']
+      all: ['src/spectrum.js']
     },
 
+    concat: {
+      js: {
+        src: ['src/spectrum.js', 'src/i18n/*.js'],
+        dest: 'dist/spectrum.js',
+      },
+      css: {
+        src: ['src/spectrum.css'],
+        dest: 'dist/spectrum.css',
+      },
+      scss: { // Provide scss file as well see https://github.com/seballot/spectrum/issues/5 
+        src: ['src/spectrum.css'],
+        dest: 'dist/spectrum.scss',
+      }
+    },
 
     uglify: {
       options: {
       },
       dist: {
         files: {
-          'build/spectrum-min.js': ['spectrum.js']
+          'dist/spectrum.min.js': ['dist/spectrum.js']
         }
+      }
+    },
+
+    cssmin: {
+      target: {
+        files: [{
+          expand: true,
+          src: ['dist/spectrum.css'],
+          dest: '.',
+          ext: '.min.css'
+        }]
       }
     }
 
@@ -53,7 +78,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-concat');
 
   // Testing tasks
   grunt.registerTask('test', ['jshint', 'qunit']);
@@ -65,6 +91,6 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['test']);
 
   //Build Task.
-  grunt.registerTask('build', ['test', 'uglify']);
+  grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'cssmin']);
 
 };

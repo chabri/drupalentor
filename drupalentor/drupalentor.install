@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Create table drupalentor().
+ */
+
+function drupalentor_schema() {
+  if(!\Drupal::database()->schema()->tableExists('drupalentor')){
+    $schema['drupalentor'] = array(
+      'fields' => array(
+        'id' => array(
+          'type' => 'serial',
+          'not null' => TRUE,
+        ),
+        'lang' => array(
+          'type' => 'tinytext',
+          'not null' => TRUE,
+        ),
+        'html' => array(
+          'type' => 'text',
+          'size' => 'big',
+        ),
+      ),
+      'primary key' => array('id')
+    );
+    return $schema;
+  }
+}
+
+

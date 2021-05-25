@@ -2,6 +2,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\views\Views;
 
 define( 'DRUPALENTOR_PATH', drupal_get_path('module', 'drupalentor') );
 
@@ -15,21 +16,25 @@ function drupalentor_theme($existing, $type, $theme, $path) {
         ),
         'path' => $path . '/templates/backend',
     ),
+    'drupalentor-front' => array(
+        'variables' => array(
+            'page' => '',
+            'content' => '',
+        ),
+        'path' => $path . '/templates/frontend',
+    ),
+      
   );
 }
 
-/**
- * Implements hook_theme_registry_alter
- */
-//function drupalentor_theme_registry_alter(&$theme_registry) {
-//    $themes = array_keys(\Drupal::service('theme_handler')->listInfo());
-//    $themes = array_combine($themes, $themes);
-//    $theme = \Drupal::theme()->getActiveTheme()->getName();
-//    if (in_array($theme, $themes)) {
-//        $theme_registry['page']['path'] = drupal_get_path('module', ' drupalentor') . '/templates';
-//    }
-//}
-
+function drupalentor_preprocess_page(&$variables) {
+  $variables['page']['#cache']['contexts'][] = 'route';
+    $activeThemeName = \Drupal::service('theme.manager')->getActiveTheme()->getName(); 
+    $defaultThemeName = \Drupal::config('system.theme')->get('default');    
+    if($activeThemeName === $defaultThemeName){
+        $variables['#attached']['library'][] = 'drupalentor/drupalentor.assets.frontend';
+    }
+}
 
 function drupalentor_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
@@ -39,4 +44,58 @@ function drupalentor_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<p>' . t('Allow users to request protected downloads.') . '</p>';
       return $output;
   }
+}
+
+function drupalentor_frontend( $html ) {
+    return $html;
+}
+function drupalentor_load($id) {
+    $result = \Drupal::database()->select('{drupalentor}', 'd')
+      ->fields('d', array('id', 'html', 'lang'))
+      ->condition('id', $id)
+      ->execute()
+      ->fetchAssoc();
+    $page = new stdClass();
+    if($result){
+        $page->id = $result['id'];  
+        $page->html = $result['html'];  
+    }else{
+        $page->html = array();
+    }
+  return $page;
+}
+//    if (empty($_blocks_array)) {
+//      // Get default theme for user.
+//      $theme_default = \Drupal::config('system.theme')->get('default');
+//      // Get storage handler of block.
+//      $block_storage = \Drupal::entityTypeManager()->getStorage('block');
+//      // Get the enabled block in the default theme.
+//      $entity_ids = $block_storage->getQuery()->condition('theme', $theme_default)->execute();
+//      $entities = $block_storage->loadMultiple($entity_ids);
+//      $_blocks_array = [];
+//      foreach ($entities as $block_id => $block) {
+//        $_blocks_array[$block_id] = $block->label();
+//      }
+//      asort($_blocks_array);
+//    }
+function drupalentor_load_blocks() {
+    $blocks = [];
+    $entyties = Drupal\block\Entity\Block::loadMultiple();
+    foreach ($entyties as $block) {
+      $blocks[] = ['value' => $block->id(), 'text' => $block->label()];
+    }
+    return $blocks;
+}
+function drupalentor_load_views() {
+     $getViews = Views::getViewsAsOptions(TRUE, 'all', NULL, FALSE, TRUE);
+     $views = [];
+     foreach ($getViews as $key => $view_name_master) {
+        $view = Views::getView($key);
+        foreach ($view->storage->get('display') as $name_id => $display_id) {
+           if( $display_id['display_plugin'] == 'block' ){
+              $views[] = ['value' => $key .','.$name_id, 'text' => $view_name_master];
+           }
+        }
+     }
+    return $views;
 }

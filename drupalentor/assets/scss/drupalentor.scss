@@ -17,6 +17,17 @@ left: 0;
 width: 100%;
 background: #fff;
     label.header{
-    float: left;
-    }
+//    float: left;
+    } 
+}
+#right-panel{
+    label.header{ 
+//    float: left;
+    }      
+}
+.drag-elements-sidepane ul > li ol{
+width: 100%;
+}  
+.chosen-container{
+min-width: 150px;
 }

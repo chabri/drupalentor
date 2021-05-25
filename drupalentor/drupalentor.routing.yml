@@ -30,6 +30,9 @@ drupalentor.editor:
   _format: 'html'
   options:
     no_cache: 'FALSE'
+    parameters:
+      node:
+        type: 'entity:node'
   requirements:
     _permission: 'administer drupalentor'
     
@@ -38,5 +41,13 @@ drupalentor.save:
   defaults:
     _title: 'Save Configuration of Gavias BlockBuilder'
     _controller: '\Drupal\drupalentor\Controller\DrupalentorController::save'
+  requirements:
+    _permission: 'administer drupalentor'    
+    
+drupalentor.get_image_style:
+  path: '/admin/structure/drupalentor/get_image_style'
+  defaults:
+    _title: 'Get Image Style'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::getImageStyle'
   requirements:
     _permission: 'administer drupalentor'

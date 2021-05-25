@@ -1,0 +1,6 @@
+drupalentor.editor:
+  title: 'Edit with Drupalentor'
+  description: ''
+  route_name: drupalentor.editor
+  base_route: 'entity.node.canonical'
+  weight: 100

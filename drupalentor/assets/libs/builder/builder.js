@@ -639,9 +639,8 @@ Vvveb.Builder = {
 						//item = $('<li data-section="' + group + '" data-drag-type=component data-type="' + componentType + '" data-search="' + component.name.toLowerCase() + '"><a href="#">' + component.name + "</a></li>");
 
 						if (component.image) {
-
 							item.css({
-								backgroundImage: "url(" + Vvveb.imgBaseUrl + component.image + ")",
+								backgroundImage: "url(/modules/custom/drupalentor/assets/libs/builder/" + component.image + ")",
 								backgroundRepeat: "no-repeat"
 							})
 						}
@@ -854,11 +853,16 @@ Vvveb.Builder = {
 		self.frameHead = $(window.FrameDocument).find("head");
 		
 		//insert editor helpers like non editable areas
-        console.log(Vvveb.baseUrl);
-		self.frameHead.append('<link data-vvveb-helpers href="/modules/custom/drupalentor/assets/css/vvvebjs-editor-helpers.css" rel="stylesheet">');
-
+//        console.log(Vvveb.baseUrl);
+        self.frameHead.append('<link data-vvveb-helpers href="/modules/custom/drupalentor/assets/css/vvvebjs-editor-helpers.css" rel="stylesheet">');
+        self.frameHead.append('<link data-vvveb-helpers href="/modules/custom/drupalentor/assets/css/styles.css" rel="stylesheet">');
 		self._initHighlight();
-		
+        self.frameHead.append('<script src="/modules/custom/drupalentor/assets/js/jquery.min.js"></script>');
+        self.frameHead.append('<script src="/modules/custom/drupalentor/assets/js/popper.min.js"></script>');
+        self.frameHead.append('<script src="/modules/custom/drupalentor/assets/libs/bootstrap/bootstrap.min.js"></script>');
+        self.frameHead.append('<script src="/modules/custom/drupalentor/assets/libs/drupalentor/owl.carousel.js"></script>');
+
+	
 		$(window).triggerHandler("vvveb.iframe.loaded", self.frameDoc);
 		$(".loading-message").removeClass("active");
     },	
@@ -1478,8 +1482,8 @@ Vvveb.Builder = {
 	setHtml: function(html) 
 	{
 		//update only body to avoid breaking iframe css/js relative paths
-		start = html.indexOf("<body");
-        end = html.indexOf("</body");		
+		start = html.indexOf("<div id='main-drupalentor'");
+        end = html.indexOf("</div");		
 
         if (start >= 0 && end >= 0) {
             body = html.slice(html.indexOf(">", start) + 1, end);
@@ -2340,6 +2344,7 @@ Vvveb.FileManager = {
 		$("[data-page='" + name + "']", this.tree).addClass("active");
 
 		this.currentPage = name;
+        console.log( this.pages);
 		var url = this.pages[name]['url'];
 		
 		Vvveb.Builder.loadUrl(url + (disableCache ? (url.indexOf('?') > -1 ? '&r=':'?r=') + Math.random():''), 

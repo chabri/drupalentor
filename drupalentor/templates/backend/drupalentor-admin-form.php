@@ -1,12 +1,13 @@
 <?php
+    use Drupal\image\Entity\ImageStyle;
+    $image_styles = \Drupal::entityQuery('image_style')->execute();
     $module_url = '/'.drupal_get_path('module', 'drupalentor');
     $assets_url = $module_url.'/assets/';
 ?>
 
 <div id="vvveb-builder">
-				
 				<div id="top-panel">
-					<img src="<?php echo $assets_url; ?>img/logo.png" alt="Vvveb" class="float-start" id="logo">
+					<img src="<?php echo $assets_url; ?>img/logo.png" alt="Vvveb" class="float-start" id="logo" width="100">
 					
 					<div class="btn-group float-start" role="group">
 					  <button class="btn btn-light" title="Toggle file manager" id="toggle-file-manager-btn" data-vvveb-action="toggleFileManager" data-bs-toggle="button" aria-pressed="false">
@@ -38,23 +39,19 @@
 						  <i class="la la-hand-rock"></i>
 					  </button>
 
-					  <button class="btn btn-light" title="Preview" id="preview-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-vvveb-action="preview">
+					  <a class="btn btn-light" title="View"  type="button" target="_blank" href="<?php echo $nodeUrl; ?>">
 						  <i class="la la-eye"></i>
-					  </button>
+					  </a>
 
 					  <button class="btn btn-light" title="Fullscreen (F11)" id="fullscreen-btn" data-bs-toggle="button" aria-pressed="false" data-vvveb-action="fullscreen">
 						  <i class="la la-expand-arrows-alt"></i>
-					  </button>
-
-					  <button class="btn btn-light" title="Download" id="download-btn" data-vvveb-action="download" data-v-download="index.html">
-						  <i class="la la-download"></i>
 					  </button>
 
 					</div>
 					
 								
 					<div class="btn-group me-3 float-end" role="group">
-					  <button class="btn btn-primary btn-icon" title="Export (Ctrl + E)" id="save-btn" data-vvveb-action="saveAjax" data-vvveb-url="save.php" data-v-vvveb-shortcut="ctrl+e">
+					  <button class="btn btn-primary btn-icon" title="Export (Ctrl + E)" id="save-btn" data-toggle="modal" data-target="#message-modal">
 						  <i class="la la-save"></i> <span data-v-gettext>Save page</span>
 					  </button>
 					</div>	
@@ -78,29 +75,6 @@
 				
 				<div id="left-panel">
 
-					  <div id="filemanager"> 
-							<div class="header">
-								<a href="#" class="text-secondary">Pages</a>
-
-									<div class="btn-group responsive-btns me-4 float-end" role="group">
-									  <button class="btn btn-link btn-sm" title="New file" id="new-file-btn" data-vvveb-action="newPage" data-vvveb-shortcut="">
-										  <i class="la la-file"></i> <small>New page</small>
-									  </button>
-									  
-									  <!--  &ensp;
-									  <button class="btn btn-link text-dark p-0"  title="Delete file" id="delete-file-btn" data-vvveb-action="deletePage" data-vvveb-shortcut="">
-										  <i class="la la-trash"></i> <small>Delete</small>
-									  </button> -->
-									</div>
-
-								</div>
-
-								<div class="tree">
-									<ol>
-									</ol>
-								</div>
-					  </div>
-					  
 					  
 					 <div class="drag-elements">
 						
@@ -914,18 +888,110 @@
 		
 		<input name="{%=key%}" type="range" min="{%=min%}" max="{%=max%}" step="{%=step%}" class="form-range" data-input-value/>
 		<input name="{%=key%}" type="number" min="{%=min%}" max="{%=max%}" step="{%=step%}" class="form-control" data-input-value/>
+        
 	</div>
 	
 </script>
 
 <script id="vvveb-input-imageinput" type="text/html">
-	
-	<div>
-		<input name="{%=key%}" type="text" class="form-control"/>
-		<input name="file" type="file" class="form-control"/>
-	</div>
-	
+    {% 
+        var suffix = Math.floor(Math.random() * 10000); 
+        var IMCE_WINDOW = null;
+        var imageDefault = '<?php echo $assets_url; ?>img/default.png';
+    %}
+        <div class="drupalentor-imgupload-input">
+            <input name="{%=key%}" type="text" class="form-control" id="drupalentor-upload-{%=suffix%}"/>
+            <img class="drupalentor-image-thumnb-{%=suffix%}" src="{%=imageDefault%}" style="width: 104px;margin-bottom: 5px;margin-top: 5px;">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button class="imce-url-add btn btn-primary btn-sm" id="imce-url-add-{%=suffix%}"<span><?php echo t('Add Image'); ?></span></button>
+                <button class="imce-url-delete btn btn-danger btn-sm" id="imce-url-delete-{%=suffix%}"><span><?php echo t('Remove'); ?></span></button>
+            </div>
+            <div class="image-style" style="margin-top:5px;">
+                <label>Image Style</label>
+                <select class="form-select" name="col-xxl" id="drupalentor-imagestyle-{%=suffix%}"">
+
+                    <option value="">None</option>
+                        <?php foreach($image_styles as $key => $styles){
+                            echo '<option value="'.$key.'">'.$styles.'</option>';
+                        }
+                    ?>
+
+                </select>
+            </div>
+        </div>
+    {% 
+
+        $(document).ready(function(){
+
+            var url = Drupal.url('imce');
+            var inputID = 'drupalentor-upload-' + suffix;
+            var imageUrl = $('#'+inputID).val();
+            if(imageUrl != imageDefault){
+                $('.drupalentor-image-thumnb-'+suffix).attr('src', imageUrl);
+            }
+            
+            $('#imce-url-delete-'+suffix).click(function(){
+                $('#'+inputID).val('');
+                $('#'+inputID).focusout();
+                $('#'+inputID).parent('.drupalentor-imgupload-input').find('img').attr('src', imageDefault);
+
+            });
+            var drupalentorImceInput = (window.drupalentorImceInput = window.drupalentorImceInput || {
+                urlSendto: function (File, win) {
+                    var url = File.getUrl();
+                    var el = $('#' + win.imce.getQuery('inputId'))[0];
+                    win.close();
+                    if (el) {
+                        var base_path = drupalSettings.drupalentor.base_path;
+                        var url_new = '/' + url.replace(base_path, '');
+                        $(el).val(url_new);
+                        $(el).parent('.drupalentor-imgupload-input').find('img').attr('src', url_new);
+                        $(el).focusout();
+                        $('#drupalentor-imagestyle-'+suffix).val('');
+                    }
+                }
+            });
+            $('#imce-url-add-'+suffix).on('click', function(e){
+                e.preventDefault();
+                url += (url.indexOf('?') === -1 ? '?' : '&') + 'sendto=drupalentorImceInput.urlSendto&inputId=' + inputID + '&type=link';
+                if (IMCE_WINDOW == null || IMCE_WINDOW.closed) {
+                    IMCE_WINDOW = window.open(url, '', 'width=' + Math.min(1000, parseInt(screen.availWidth * 0.8, 10)) + ',height=' + Math.min(800, parseInt(screen.availHeight * 0.8, 10)) + ',resizable=1');
+                }
+            });
+             
+            if(typeof imageUrl !== "undefined"){
+                if(imageUrl.toString().indexOf("/sites/default/files/styles") > -1){
+                    $('#drupalentor-imagestyle-'+suffix).val(imageUrl.split("/")[5]);
+                }
+            }
+
+            $('#drupalentor-imagestyle-'+suffix).on('change', function(e){
+            
+                var image_style = $(this).val();
+                var img = $('#'+inputID).val();
+                var data = {
+                    img: img,
+                    image_style: image_style,
+                };
+
+                $.ajax({
+                    url: drupalSettings.getImageStyleURL,
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#'+inputID).val(data.image_path);
+                        $('#'+inputID).focusout();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(textStatus + ":" + jqXHR.responseText);
+                    }
+                });
+            });
+        });
+    %}
 </script>
+
 
 <script id="vvveb-input-colorinput" type="text/html">
 	
@@ -1099,6 +1165,7 @@
 <!--// end templates -->
 
 
+<!-- message modal-->
 <!-- export html modal-->
 <div class="modal fade" id="textarea-modal" tabindex="-1" role="dialog" aria-labelledby="textarea-modal" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -1142,84 +1209,14 @@
   </div>
 </div>
 
-<!-- new page modal-->
-<div class="modal fade" id="new-page-modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    
-    <form action="save.php">
-		
-    <div class="modal-content">
-      <div class="modal-header">
-        <p class="modal-title text-primary"><i class="la la-lg la-file"></i> New page</p>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-          <!-- span aria-hidden="true"><small><i class="la la-times"></i></small></span -->
-        </button>
-      </div>
-
-      <div class="modal-body text">
-		<div class="mb-3 row" data-key="type">      
-			<label class="col-sm-3 control-label">
-				Template 
-				<abbr class="badge badge-pill badge-secondary" title="This template will be used as a start">?</abbr> 
-			</label>      
-			<div class="col-sm-9 input">
-				<div>    
-					<select class="form-select" name="startTemplateUrl">        
-						<option value="new-page-blank-template.html">Blank Template</option>        
-						<option value="demo/narrow-jumbotron/index.html">Narrow jumbotron</option>       
-						<option value="demo/album/index.html">Album</option>       
-					</select>    
-				</div>
-			</div>     
-		</div>
-
-		<div class="mb-3 row" data-key="href">     
-			 <label class="col-sm-3 control-label">Page name</label>      
-			<div class="col-sm-9 input">
-				<div>   
-					<input name="title" type="text" value="My page" class="form-control" placeholder="My page" required>  
-				</div>
-			</div>     
-		</div>
-		
-		<div class="mb-3 row" data-key="href">     
-			 <label class="col-sm-3 control-label">File name</label>      
-			<div class="col-sm-9 input">
-				<div>   
-					<input name="file" type="text" value="my-page.html" class="form-control" placeholder="my-page.html" required>  
-				</div>
-			</div>     
-		</div>
-		
-		<!-- 
-		<div class="mb-3 row" data-key="href">     
-			 <label class="col-sm-3 control-label">Url</label>      
-			<div class="col-sm-9 input">
-				<div>   
-					<input name="url" type="text" value="my-page.html" class="form-control" placeholder="/my-page.html" required>  
-				</div>
-			</div>     
-		</div>
-		-->
-		
-		<div class="mb-3 row" data-key="href">     
-			 <label class="col-sm-3 control-label">Folder</label>      
-			<div class="col-sm-9 input">
-				<div>   
-					<input name="folder" type="text" value="my-pages" class="form-control" placeholder="/" required>  
-				</div>
-			</div>     
-		</div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-primary btn-lg" type="submit"><i class="la la-check"></i> Create page</button>
-        <button class="btn btn-secondary btn-lg" type="reset" data-bs-dismiss="modal"><i class="la la-times"></i> Cancel</button>
-      </div>
-    </div>
-    
-   </form>		
-
-  </div>
 </div>
-</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        Vvveb.Gui.init();
+        Vvveb.FileManager.init();
+        Vvveb.SectionList.init();
+        Vvveb.ComponentsGroup['Widgets'] = ["widgets/googlemaps", "widgets/video", "widgets/drupalblock", "widgets/drupalview"];   
+    });
+</script>

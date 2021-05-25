@@ -1,0 +1,17 @@
+{
+    "name": "drupal/drupalentor",
+    "description": "Drupalentor editor",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "support": {
+        "issues": "https://drupal.org/project/issues/drupalenetor",
+        "source": "https://drupal.org/project/drupalenetor"
+    },
+    "keywords": [
+        "Drupal",
+        "Drupalentor"
+    ],
+    "require": {
+        "harvesthq/chosen": "^1.8",
+    }
+}

@@ -15,8 +15,9 @@ limitations under the License.
 
 https://github.com/givanz/VvvebJs
 */
-
-Vvveb.ComponentsGroup['Widgets'] = ["widgets/googlemaps", "widgets/video", "widgets/chartjs", "widgets/facebookpage", "widgets/paypal", "widgets/instagram", "widgets/twitter"/*, "widgets/facebookcomments"*/];
+(function ( Drupal, drupalSettings) {
+    
+Vvveb.ComponentsGroup['Widgets'] = ["widgets/googlemaps", "widgets/video", "widgets/chartjs", "widgets/facebookpage", "widgets/paypal", "widgets/instagram","widgets/drupalblock", "widgets/drupalview", "widgets/twitter"/*, "widgets/facebookcomments"*/];
 
 Vvveb.Components.extend("_base", "widgets/googlemaps", {
     name: "Google Maps",
@@ -397,7 +398,7 @@ Vvveb.Components.extend("_base", "widgets/facebookpage", {
     },{		
         name: "Adapt container width",
         key: "adapt-container-width",
-        htmlAttr: "data-adapt-container-width",
+        htmlAttr: " ",
         child:".fb-page",
         inputtype: TextInput
     },{		
@@ -571,3 +572,86 @@ Vvveb.Components.extend("_base", "widgets/chartjs", {
 		}
 	 }]
 });
+
+
+Vvveb.Components.extend("_base", "widgets/drupalblock", {
+    name: "Drupal Block",
+    attributes: ["data-component-drupalblock"],
+    image: "icons/drupalblock.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/drupalblock.png">',
+    html: '<div data-component-drupalblock data-title="" data-block="" data-type="">{{"hello"}}</div>',
+    
+    //url parameters
+    title:'no', //zoom
+    block_id:'',//location
+    type: '', //map type q = roadmap, w = satellite
+    
+    init: function (node)
+	{
+		this.node = node;
+        this.block_id = node.getAttribute('data-type');
+		return node;
+	},
+    onChange: function (node, property, value)
+    {
+        var blockTag = jQuery(node);
+		blockTag.text("{{ drupal_entity('block', '"+value+"') }}");
+		blockTag.attr("data-type", value);
+		return node;
+	},
+
+    properties: [
+        {
+        name: "Block",
+        key: "bid",
+        inputtype: SelectInput,
+        htmlAttr: "data-type",
+        data:{
+			options: drupalSettings.drupalentor.load_blocks
+            },
+        }
+    ]
+});
+Vvveb.Components.extend("_base", "widgets/drupalview", {
+    name: "Drupal View",
+    attributes: ["data-component-drupalview"],
+    image: "icons/drupalblock.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/drupalblock.png">',
+    html: '<div data-component-drupalview data-block="" data-type="">{{"hello"}}</div>',
+    
+    //url parameters
+    title:'no', //zoom
+    block_id:'',//location
+    type: '', //map type q = roadmap, w = satellite
+    
+    init: function (node)
+	{
+		this.node = node;
+        this.block_id = node.getAttribute('data-type');
+		return node;
+	},
+    onChange: function (node, property, value)
+    {
+        var blockTag = jQuery(node);
+        blockTag.attr("data-type", value);
+        value = value.split(',');
+		blockTag.text("{{ drupal_view('"+value[0]+"', '"+value[1]+"') }}");
+		return node;
+	},
+
+    properties: [
+        {
+        name: "View",
+        key: "vid",
+        inputtype: SelectInput,
+        htmlAttr: "data-type",
+        data:{
+			options: drupalSettings.drupalentor.load_views
+            },
+        }
+    ]
+});
+
+
+})(Drupal, drupalSettings);
+
