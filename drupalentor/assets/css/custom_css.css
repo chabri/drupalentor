@@ -1,0 +1,37 @@
+.form-item-drupalentor-custom-css .CodeMirror,
+.form-item-drupalentor-custom-css textarea,
+#css-editor-preview-path,
+#css-editor-preview {
+  border: 1px solid #ccc;
+}
+
+.form-item-drupalentor-custom-css .CodeMirror,
+.form-item-drupalentor-custom-css textarea {
+  height: 200px;
+}
+
+.form-item-drupalentor-custom-css .form-textarea-wrapper label {
+  display: inline;
+  font-weight: normal;
+  line-height: 36px;
+  font-size: 12px;
+}
+
+#css-editor-preview {
+  width: 100%;
+  height: 650px;
+}
+
+.form-item-drupalentor-custom-css label + input[type=checkbox] {
+  margin-left: 36px;
+}
+ 
+#css-editor-preview-path-wrapper label {
+  display: inline;
+  font-weight: normal;
+  margin-right: 6px;
+}
+
+#css-editor-preview-path-wrapper {
+  margin-bottom: 6px;
+}

@@ -17,19 +17,28 @@
 
         
     
-        var pallete_color = drupalSettings.drupalentor.pallete_color;
-    var caca = ["blue", "black"];
-    console.log(pallete_color);
-    console.log(caca);
-    $('.form-control-color').spectrum({
-        type: "color",
-        showInput: true,
-        showInitial: true,
-        showAlpha: false,
-        showPalette: true,
-        showSelectionPalette: true,
-        palette: pallete_color,
-        localStorageKey: "spectrum.homepage",
-    });
+    if(drupalSettings.drupalentor){
+        let pallete_color = ( drupalSettings.drupalentor.pallete_color ) ? '' : '';
+
+        $('.form-control-color').spectrum({
+            type: "color",
+            showInput: true,
+            showInitial: true,
+            showAlpha: false,
+            showPalette: true,
+            showSelectionPalette: true,
+            palette: pallete_color,
+            localStorageKey: "spectrum.homepage",
+        });
+    }
+    
+  var $textarea = $('#edit-drupalentor-custom-css--2');
+
+  var createEditor = function() {
+    var editor = CodeMirror.fromTextArea($textarea[0], { lineNumbers : true, extraKeys : { "Ctrl-Space" : "autocomplete" } });
+    return editor;
+  };
+
+  var editor = createEditor();
 
 })(jQuery, Drupal, drupalSettings);

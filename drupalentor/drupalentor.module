@@ -131,31 +131,31 @@ function drupalentor_generate_css($theme){
 
 function drupalentor_css_alter(&$css, AttachedAssetsInterface $assets) {
 
-  $css_suffix = \Drupal::state()->get('drupalentor_suffix') ?: NULL;
-  $active_theme = \Drupal::theme()->getActiveTheme()->getName();
-
-    if ($css_suffix) {
-      $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_' . $css_suffix . '.css';
-    }
-    else {
-      $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_.css';
-    }
-    if (file_exists($cssfile) && $css) {
-      $css_path = ltrim(file_url_transform_relative(file_create_url($cssfile)), '/');
-      if (!empty($css_path)) {
-        $css[$css_path] = [
-          'weight' => CSS_COMPONENT,
-          'group' => CSS_AGGREGATE_DEFAULT,
-          'type' => 'file',
-          'data' => $css_path,
-          "version" => -1,
-          'media' => 'all',
-          'preprocess' => TRUE,
-          'browsers' => [
-            'IE' => TRUE,
-            '!IE' => TRUE,
-          ],
-        ];
-      }
+    $css_suffix = \Drupal::state()->get('drupalentor_suffix') ?: NULL;
+    $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+    $defaultThemeName = \Drupal::config('system.theme')->get('default');    
+    
+    if($active_theme === $defaultThemeName){
+        if ($css_suffix) {
+            $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_' . $css_suffix . '.css';
+        }
+        else {
+            $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_.css';
+        }
+        if (file_exists($cssfile) && $css) {
+            $css_path = ltrim(file_url_transform_relative(file_create_url($cssfile)), '/');
+            if (!empty($css_path)) {
+                $css[$css_path] = [
+                'weight' => 9999,
+                'group' => CSS_AGGREGATE_DEFAULT,
+                'type' => 'file',
+                'data' => $css_path,
+                "version" => -1,
+                'media' => 'all',
+                'preprocess' => TRUE,
+                'browsers' => [],
+                ];
+            }
+        }
     }
 }

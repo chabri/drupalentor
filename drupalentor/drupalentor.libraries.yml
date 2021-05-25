@@ -50,8 +50,13 @@ drupalentor.assets.settings:
     theme:
       vendor/harvesthq/chosen/chosen.min.css: {}
       vendor/spectrum/dist/spectrum.min.css: {}
+      assets/libs/codemirror/lib/codemirror.css: {}
+      assets/css/custom_css.css: {}
   js:
     vendor/harvesthq/chosen/chosen.jquery.min.js: {scope: footer}
     vendor/spectrum/dist/spectrum.min.js: {scope: footer}
+    assets/libs/codemirror/lib/codemirror.js: {}
+    assets/libs/codemirror/css/css.js: {}
     vendor/init.js: {scope: footer}
+    
     

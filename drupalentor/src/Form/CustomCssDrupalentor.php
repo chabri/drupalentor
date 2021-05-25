@@ -29,9 +29,10 @@ class CustomCssDrupalentor extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('drupalentor.custom_css');
-   
+    $form['#attached']['library'][] = 'drupalentor/drupalentor.assets.settings';
     $form['drupalentor_custom_css'] = [
       '#type' => 'textarea',
+      '#rows' => 15,
       '#title' => $this->t('CSS Code'),
       '#default_value' => $config->get('drupalentor_custom_css'),
       '#description' => $this->t('Please enter custom style without <b> @style </b> tag.', ["@style" => '<style>']) ,
@@ -52,7 +53,7 @@ class CustomCssDrupalentor extends ConfigFormBase {
         $this->config('drupalentor.custom_css')
           ->set('drupalentor_custom_css', $form_state->getValue('drupalentor_custom_css'))
           ->save();
-//        drupal_flush_all_caches();
+        drupal_flush_all_caches();
 //      }
         drupalentor_generate_css($theme);
       // Remove the settings from the form state so the values are not saved in the
