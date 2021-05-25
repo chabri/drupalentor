@@ -1,11 +1,15 @@
 <?php
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\views\Views;
+use Drupal\Core\Url;
+
 
 define( 'DRUPALENTOR_PATH', drupal_get_path('module', 'drupalentor') );
-
+define('DRUPALENTOR_CSS_PATH', 'public://css');
 
 function drupalentor_theme($existing, $type, $theme, $path) {
   return array(
@@ -86,6 +90,8 @@ function drupalentor_load_blocks() {
     }
     return $blocks;
 }
+
+
 function drupalentor_load_views() {
      $getViews = Views::getViewsAsOptions(TRUE, 'all', NULL, FALSE, TRUE);
      $views = [];
@@ -98,4 +104,58 @@ function drupalentor_load_views() {
         }
      }
     return $views;
+}
+
+function drupalentor_generate_css($theme){
+    // Save file.
+    $css = \Drupal::config('drupalentor.custom_css')->get('drupalentor_custom_css');
+    $csspath = DRUPALENTOR_CSS_PATH;
+    $suffix = time();
+    // Delete old css file if exists.
+
+      $old_suffix = \Drupal::state()->get('drupalentor_suffix') ?: NULL;
+      if ($old_suffix) {
+        \Drupal::service('file_system')->delete($csspath . '/drupalentor_' . $old_suffix . '.css');
+      }
+      // Save suffix to db.
+      \Drupal::state()->set('drupalentor_suffix', $suffix);
+      // Save the CSS to a file in the files directory.
+      // make directory writable if it is read-only.
+      \Drupal::service('file_system')->prepareDirectory($csspath, FileSystemInterface::MODIFY_PERMISSIONS);
+      \Drupal::service('file_system')->saveData($css, $csspath . '/drupalentor_' . $suffix . '.css', FileSystemInterface::EXISTS_REPLACE);
+
+      // We should flush CSS cache so that aggregated CSS gets rebuilt.
+      \Drupal::service('asset.css.collection_optimizer')->deleteAll();
+      _drupal_flush_css_js();
+}
+
+function drupalentor_css_alter(&$css, AttachedAssetsInterface $assets) {
+
+  $css_suffix = \Drupal::state()->get('drupalentor_suffix') ?: NULL;
+  $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+
+    if ($css_suffix) {
+      $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_' . $css_suffix . '.css';
+    }
+    else {
+      $cssfile = DRUPALENTOR_CSS_PATH . '/drupalentor_.css';
+    }
+    if (file_exists($cssfile) && $css) {
+      $css_path = ltrim(file_url_transform_relative(file_create_url($cssfile)), '/');
+      if (!empty($css_path)) {
+        $css[$css_path] = [
+          'weight' => CSS_COMPONENT,
+          'group' => CSS_AGGREGATE_DEFAULT,
+          'type' => 'file',
+          'data' => $css_path,
+          "version" => -1,
+          'media' => 'all',
+          'preprocess' => TRUE,
+          'browsers' => [
+            'IE' => TRUE,
+            '!IE' => TRUE,
+          ],
+        ];
+      }
+    }
 }

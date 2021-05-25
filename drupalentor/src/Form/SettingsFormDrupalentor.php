@@ -53,12 +53,14 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         ];
 
         /* =========================   Styles  ========================= */
-
+//dump($settings);
         $form['style'] = [
             '#type' => 'details',
             '#title' => t('Style'),
             '#group' => 'tabs',
         ];
+         
+        
         $form['style']['container_width'] = array(
             '#type' => 'number',
             '#title' => 'Content Width',
@@ -72,8 +74,7 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         $form['style']['viewport_lg'] = array(
             '#type' => 'number',
             '#title' => 'Tablet Breakpoint',
-            '#default_value' => $settings->get('viewport_lg'),
-            '#placeholder' => 1025,
+            '#default_value' => $settings->get('viewport_lg') ?? '1025',
             '#field_suffix' => 'px',
             '#description' => t("Sets the breakpoint between desktop and tablet devices. Below this breakpoint tablet layout will appear (Default: 1025)."),
             '#group' => 'style',
@@ -232,24 +233,35 @@ class SettingsFormDrupalentor extends ConfigFormBase {
             '#title' => t('Buttons'),
             '#group' => 'tabs',
         ];
-        $form['buttons']['button_styles'] = [
-            '#type' => 'fieldset',
-            '#title' => t('Button Styles'),
-            '#group' => 'buttons',
+        $form['buttons']['button_style'] = [
+          '#type' => 'drupalentor_button_style',
+          '#default_value' => [
+            'border_top' => $settings->get('button_style')['normal']['border_style']['border_top'] ?? '',
+            'border_right' => $settings->get('button_style')['normal']['border_style']['border_right'] ?? '',
+            'border_bottom' => $settings->get('button_style')['normal']['border_style']['border_bottom'] ?? '',
+            'border_left' => $settings->get('button_style')['normal']['border_style']['border_left'] ?? '',
+            'border_type' => $settings->get('button_style')['normal']['border_style']['border_type'] ?? 'solid',
+            'border_color' => $settings->get('button_style')['normal']['border_style']['border_color'] ?? '',
+            'border_color_hover' => $settings->get('button_style')['hover']['border_color_hover'] ?? '',
+            'button_color' => $settings->get('button_style')['normal']['button_color'] ?? '',
+            'button_color_hover' => $settings->get('button_style')['hover']['button_color_hover'] ?? '',
+            'button_bgcolor' => $settings->get('button_style')['normal']['button_bgcolor'] ?? '',
+            'button_bgcolor_hover' => $settings->get('button_style')['hover']['button_bgcolor_hover'] ?? '',
+            'border_bgcolor' => $settings->get('button_style')['normal']['border_bgcolor'] ?? '',
+            'border_radius_top' => $settings->get('button_style')['general']['border_radius']['border_radius_top'] ?? '',
+            'border_radius_right' => $settings->get('button_style')['general']['border_radius']['border_radius_right'] ?? '',
+            'border_radius_bottom' => $settings->get('button_style')['general']['border_radius']['border_radius_bottom'] ?? '',
+            'border_radius_left' => $settings->get('button_style')['general']['border_radius']['border_radius_left'] ?? '',
+            'border_radius_type' => $settings->get('button_style')['general']['border_radius']['border_radius_type'] ?? 'px',
+            'padding_top' => $settings->get('button_style')['general']['button_padding']['padding_top'] ?? '8',
+            'padding_right' => $settings->get('button_style')['general']['button_padding']['padding_right'] ?? '15',
+            'padding_bottom' => $settings->get('button_style')['general']['button_padding']['padding_bottom'] ?? '8',
+            'padding_left' => $settings->get('button_style')['general']['button_padding']['padding_left'] ?? '15',
+            'padding_type' => $settings->get('button_style')['general']['button_padding']['padding_type'] ?? 'px',
+          ],
+          '#group' => 'buttons',
         ];
-        $form['buttons']['button_styles']['border_radius'] = array(
-            '#type' => 'margin',
-            '#title' => 'Border Radius',
-            '#default_value' => [
-                'selectMarginType' => '',
-                'marginTop' => '',
-                'marginRight' => '',
-                'marginBottom' => '',
-                'marginLeft' => '',
-            ],
-            '#description' => t("border radius"),
-            '#group' => 'button_styles',
-        );
+
         return parent::buildForm($form, $form_state);
     }
     public function get_google_fonts($api) {
@@ -278,13 +290,19 @@ class SettingsFormDrupalentor extends ConfigFormBase {
    */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $config = $this->config('drupalentor.settings');
-        $config->set('google_font_api', $form_state->getValue('google_font_api'));
-        $config->set('heading_font', $form_state->getValue('heading_font'));
-        $config->set('general_font', $form_state->getValue('general_font'));
         $config->set('container_width', $form_state->getValue('container_width'));
         $config->set('viewport_lg', $form_state->getValue('viewport_lg'));
         $config->set('viewport_md', $form_state->getValue('viewport_md'));
+        $config->set('google_font_api', $form_state->getValue('google_font_api'));
+        $config->set('heading_font', $form_state->getValue('heading_font'));
+        $config->set('general_font', $form_state->getValue('general_font'));
+        $config->set('heading_font_weight', $form_state->getValue('heading_font_weight'));
+        $config->set('general_font_weight', $form_state->getValue('general_font_weight'));
+        $config->set('principal_color', $form_state->getValue('principal_color'));
+        $config->set('secondary_color', $form_state->getValue('secondary_color'));
         $config->set('heading_color', $form_state->getValue('heading_color'));
+        $config->set('text_color', $form_state->getValue('text_color'));
+        $config->set('button_style', $form_state->getValue('button_style'));
         $config->save();
         return parent::submitForm($form, $form_state);
     }

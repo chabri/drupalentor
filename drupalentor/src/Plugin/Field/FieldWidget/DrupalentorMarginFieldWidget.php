@@ -30,12 +30,23 @@ public function formElement(
     array &$form,
     FormStateInterface $form_state
   ) {
+    $element['selectMarginType'] = array(
+        '#type' => 'select',
+        '#title' => t('Select Margin Type'),
+        '#options' => [
+            '%' => '%',
+            'px' => t('px'),
+            'em' => t('Em'),
+        ],
+        '#default_value' => isset($items[$delta]->selectMarginType) ? $items[$delta]->selectMarginType : '',
+    );
     $element['marginTop'] = array(
       '#type' => 'number',
       '#title' => t('Margin Top'),
       '#default_value' => isset($items[$delta]->marginTop) ? $items[$delta]->marginTop : '',
       '#size' => 8,
     );
+
     $element['marginRight'] = array(
       '#type' => 'number',
       '#title' => t('Margin Right'),

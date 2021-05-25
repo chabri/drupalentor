@@ -22,13 +22,13 @@ class DrupalentorMarginFieldItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
+    
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
     return array(
       'columns' => array(
         'selectMarginType' => array(
-          'type' => 'select',
-          'size' => 'tiny',
-          'not null' => FALSE,
+          'type' => 'varchar',
+          'length' => 255,
         ),
         'marginTop' => array(
           'type' => 'text',
