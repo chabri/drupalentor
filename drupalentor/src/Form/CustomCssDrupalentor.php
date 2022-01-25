@@ -53,9 +53,10 @@ class CustomCssDrupalentor extends ConfigFormBase {
         $this->config('drupalentor.custom_css')
           ->set('drupalentor_custom_css', $form_state->getValue('drupalentor_custom_css'))
           ->save();
-        drupal_flush_all_caches();
-//      }
-        drupalentor_generate_css($theme);
+        
+        $css = $form_state->getValue('drupalentor_custom_css');
+        drupalentor_generate_css($theme, $css, $name='drupalentor_custom');
+//        drupal_flush_all_caches();
       // Remove the settings from the form state so the values are not saved in the
       // theme settings.
       $form_state->unsetValue('drupalentor_custom_css');

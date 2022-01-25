@@ -1,0 +1,52 @@
+
+
+.testimonial-carousel{
+  background: none;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+    .testimonial-content{
+    padding: 0 15px;
+    }
+  .avatar{
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+
+      .item-image{
+    @include border-radius(50%);
+      overflow: hidden;
+        width: 180px;
+        height: 180px;
+      }
+    img{
+      max-width:200px;
+ 
+    }
+  }
+  .quote{
+    font-size: 16px;
+    line-height: 21px;
+    font-weight: 300;
+    font-family: $font-second;
+  }
+  .title{
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 15px;
+    color: $theme-color;
+    font-family: $font-second;
+  }
+  .job{
+    font-size: 13px;
+    color: $theme-color-second;
+  }
+
+    .swiper-pagination{
+    margin-top: 30px;
+        .swiper-pagination-bullet:not(.swiper-pagination-bullet-active){
+        background: #000;
+        }
+    }
+}

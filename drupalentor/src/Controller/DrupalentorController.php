@@ -20,17 +20,23 @@ class DrupalentorController extends ControllerBase{
 
     public function editor(Request $request) {
         
+      
         $node = \Drupal::routeMatch()->getParameter('node');
         $id = $node->id();
         $nodeUrl = Url::fromRoute('entity.node.canonical', ['node' => $id])->toString();
 
 
-        $html = drupalentor_load($id) ?? NULL;
+        $data = drupalentor_load($id) ?? NULL;
+        $el_fields = drupalentor_get_el_fields();
+        $sections = drupalentor_get_sections($data->html);
+
+
         $getSaveUrl =  Url::fromRoute('drupalentor.save', [],  ['absolute' => TRUE])->toString();
         $getImageStyle =  Url::fromRoute('drupalentor.get_image_style', [],  ['absolute' => TRUE])->toString();
         $page['#attached']['drupalSettings']['saveConfigURL'] = $getSaveUrl;
         $page['#attached']['drupalSettings']['getImageStyleURL'] = $getImageStyle;
-        $page['#attached']['drupalSettings']['html_drupalentor'] = $html->html;
+        $page['#attached']['drupalSettings']['html_drupalentor'] = $data->html;
+        $page['#attached']['drupalSettings']['drupalentor']['element_fields'] = $el_fields;
         $page['#attached']['drupalSettings']['drupalentor']['base_path'] = base_path();
         $page['#attached']['drupalSettings']['drupalentor']['load_blocks'] = drupalentor_load_blocks();
         $page['#attached']['drupalSettings']['drupalentor']['load_views'] = drupalentor_load_views();
@@ -41,14 +47,15 @@ class DrupalentorController extends ControllerBase{
         $page['#attached']['drupalSettings']['nid'] = $id;
 
         ob_start();
-        $page['#attached']['library'][] = 'drupalentor/jquery-custom.assets.admin';
         $page['#attached']['library'][] = 'drupalentor/drupalentor.assets.admin';
+        //include drupal_get_path('module', 'drupalentor') . '/includes/ModalForm.php';
         include drupal_get_path('module', 'drupalentor') . '/templates/backend/drupalentor-admin-form.php';
 
         $content = ob_get_clean();
         $page['drupalentor-admin-form'] = array(
           '#theme' => 'drupalentor-admin-form',
-          '#content' => $content
+          '#content' => $content,
+          '#field' => $el_fields
         );
         return $page;
     }
@@ -61,8 +68,8 @@ class DrupalentorController extends ControllerBase{
         $lang = $node->get('langcode')->value;
         
         $builder = \Drupal::database()->select('{drupalentor}', 'd')
-          ->fields('d', array('id', 'html', 'lang'))
-          ->condition('id', $id)
+          ->fields('d', array('nid', 'html', 'lang'))
+          ->condition('nid', $id)
           ->execute()
           ->fetchAssoc();
         
@@ -71,13 +78,13 @@ class DrupalentorController extends ControllerBase{
             ->fields(array(
                 'html' => $data,
             ))
-            ->condition('id', $id)
+            ->condition('nid', $id)
             ->execute();
         }else{
             $builder = \Drupal::database()->insert("drupalentor")
               ->fields(array(
                   'html' => $data,
-                  'id' => $id,
+                  'nid' => $id,
                   'lang' => $lang,
               ))
             ->execute();
@@ -87,7 +94,7 @@ class DrupalentorController extends ControllerBase{
           'data' => 'update  - saved',
           'html' => $data,
           'lang' => $node->get('langcode')->value,
-          'id' => $id,
+          'nid' => $id,
         );
  
         print json_encode($result);

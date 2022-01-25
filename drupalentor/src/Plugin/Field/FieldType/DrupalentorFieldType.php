@@ -32,7 +32,7 @@ class DrupalentorFieldType extends FieldItemBase {
       'columns' => array(
         'value' => array(
           'type' => 'text',
-          'size' => 'int',
+          'size' => 'tiny',
           'not null' => FALSE
         ),
       ),

@@ -1,3 +1,31 @@
+@import "vars/_theme_variables";
+
+@import "mixins/mixins";
+@import "mixins/template";
+@import "rtl/rtl"; 
+
+@import "widgets/base";
+@import "widgets/fonts";
+@import "widgets/layout";
+@import "widgets/page"; 
+@import "widgets/node";
+@import "widgets/style"; 
+@import "widgets/comments"; 
+@import "widgets/forms";
+@import "widgets/forum"; 
+@import "widgets/blocks";
+@import "widgets/grid";
+@import "widgets/menu";
+@import "widgets/views"; 
+@import "widgets/block-builder"; 
+@import "widgets/responsive";  
+@import "widgets/portfolio";
+@import "widgets/testimonial";
+@import "widgets/slider";
+@import "widgets/commerce";
+
+
+
 .toolbar-tray-open{ 
     #vvveb-builder #left-panel, #vvveb-builder #right-panel {
 //    top: 79px;
@@ -6,12 +34,12 @@
 .drupalentor-editor{
     #toolbar-administration{
     display: none;
-    }
-}
+    } 
+} 
 
 #vvveb-builder {
 position: fixed;
-z-index: 9999;
+z-index: 100;
 top: 0;
 left: 0;
 width: 100%;
@@ -31,3 +59,4 @@ width: 100%;
 .chosen-container{
 min-width: 150px;
 }
+ 

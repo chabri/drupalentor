@@ -29,13 +29,21 @@ drupalentor.editor:
     _controller: '\Drupal\drupalentor\Controller\DrupalentorController::editor'
   _format: 'html'
   options:
-    no_cache: 'FALSE'
+    no_cache: 'TRUE'
     parameters:
       node:
         type: 'entity:node'
   requirements:
     _permission: 'administer drupalentor'
-    
+
+drupalentor.modal:
+  path: '/modal-form/{nid}/{widget}/{section}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\ModalController::modal'
+    _title: 'Modal Form'
+  requirements:
+    _permission: 'open modal form'
+
 drupalentor.save:
   path: '/admin/structure/drupalentor/save'
   defaults:

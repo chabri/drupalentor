@@ -47,13 +47,13 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         foreach ($node_types as $node_type) {
             $node_types_options[$node_type->id()] = $node_type->label();
         }
-
+       
         $form['tabs'] = [
             '#type' => 'horizontal_tabs',
         ];
 
         /* =========================   Styles  ========================= */
-//dump($settings);
+
         $form['style'] = [
             '#type' => 'details',
             '#title' => t('Style'),
@@ -64,7 +64,7 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         $form['style']['container_width'] = array(
             '#type' => 'number',
             '#title' => 'Content Width',
-            '#default_value' => $settings->get('container_width'),
+            '#default_value' => $settings->get('container_width') ?? '1280',
             '#placeholder' => 1140,
             '#field_suffix' => 'px',
             '#description' => t("Sets the default width of the content area (Default: 1140)"),
@@ -133,7 +133,6 @@ class SettingsFormDrupalentor extends ConfigFormBase {
                 "700" => "700",
                 "800" => "800",
                 "900" => "900",
-                "" => "Por defecto",
                 "normal" => "Normal",
                 "bold" => "Bold",
                 ],
@@ -163,7 +162,6 @@ class SettingsFormDrupalentor extends ConfigFormBase {
                 "700" => "700",
                 "800" => "800",
                 "900" => "900",
-                "" => "Por defecto",
                 "normal" => "Normal",
                 "bold" => "Bold",
                 ],
@@ -260,7 +258,26 @@ class SettingsFormDrupalentor extends ConfigFormBase {
             'padding_type' => $settings->get('button_style')['general']['button_padding']['padding_type'] ?? 'px',
           ],
           '#group' => 'buttons',
+        ];                
+        
+        /* =========================   Custom Css  ========================= */
+        
+        $form['custom_css'] = [
+            '#type' => 'fieldset',
+            '#title' => t('Custom Css'),
+            '#attributes' => array('style' => array('margin-top:25px')),
         ];
+        
+        $form['custom_css']['drupalentor_custom_css'] = [
+            '#type' => 'textarea',
+            '#rows' => 15,
+            '#title' => $this->t('CSS Code'),
+            '#default_value' => $settings->get('drupalentor_custom_css'),
+            '#description' => $this->t('Please enter custom style without <b> @style </b> tag.', ["@style" => '<style>']) ,
+            '#attributes' => array('class' => array('codemirror-texarea')),
+//            '#group' => 'custom_css',
+        ];
+
 
         return parent::buildForm($form, $form_state);
     }
@@ -289,6 +306,69 @@ class SettingsFormDrupalentor extends ConfigFormBase {
    * {@inheritdoc}
    */
     public function submitForm(array &$form, FormStateInterface $form_state) {
+        
+        $fontName1 = str_replace(" ", "+", $form_state->getValue('heading_font') ?? 'Playfair Display');
+        $fontName2 = str_replace(" ", "+", $form_state->getValue('general_font') ?? 'Playfair Display');
+        $fontWeight1 = $form_state->getValue('heading_font_weight') ?? 600;
+        $fontWeight2 = $form_state->getValue('general_font_weight') ?? 400;
+        $container = $form_state->getValue('container_width').'px' ?? 'none';
+        if($fontName1 === $fontName2){
+            $styles = "@import url('https://fonts.googleapis.com/css2?family=".$fontName1."&display=swap');";
+        }else{
+            $styles = "@import url('https://fonts.googleapis.com/css2?family=".$fontName1."&family=".$fontName2."&display=swap');";
+        }
+        $styles .= ':root {--drupalentor-principal-color: '.$form_state->getValue('principal_color').';--drupalentor-secondary-color: '.$form_state->getValue('secondary_color').'}';
+        $styles .= 'body{color:'.$form_state->getValue('text_color').';font-family:"'.$form_state->getValue('general_font').'";font-weight:'.$fontWeight2.';}';
+        $styles .= 'container{max-width:'.$container.';}';
+        $styles .= 'h1, h2, h4, h4, h5, h6{';
+        if(!empty($form_state->getValue('heading_color'))){$styles .= 'color:'.$form_state->getValue('heading_color').';';}
+        if(!empty($form_state->getValue('heading_font') || $form_state->getValue('general_font'))){$styles .= 'font-family:"'.$form_state->getValue('heading_font').'";' ?? $form_state->getValue('general_font').'";';}
+        if(!empty($form_state->getValue('heading_color'))){$styles .= 'font-weight:'.$fontWeight1.';';}
+        $styles .= '}';
+       
+        
+        $buttonNormal = $form_state->getValue('button_style')['normal'];
+        $buttonHover = $form_state->getValue('button_style')['hover'];
+        $buttonGeneral = $form_state->getValue('button_style')['general'];
+
+        $bbtop = $buttonNormal['border_style']['border_top'] ?? '0';
+        $bbright = $buttonNormal['border_style']['border_right'] ?? '0';
+        $bbbottom = $buttonNormal['border_style']['border_bottom'] ?? '0';
+        $bbleft = $buttonNormal['border_style']['border_left'] ?? '0';
+        $bbtype = $buttonNormal['border_style']['border_radius_type'] ?? 'px';
+
+        $brtop = $buttonGeneral['border_radius']['border_radius_top'] ?? '0';
+        $brright = $buttonGeneral['border_radius']['border_radius_right'] ?? '0';
+        $brbottom = $buttonGeneral['border_radius']['border_radius_bottom'] ?? '0';
+        $brleft = $buttonGeneral['border_radius']['border_radius_left'] ?? '0';
+
+        $ptop = $buttonGeneral['button_padding']['padding_top'] ?? '0';
+        $pright = $buttonGeneral['button_padding']['padding_right'] ?? '0';
+        $pbottom = $buttonGeneral['button_padding']['padding_bottom'] ?? '0';
+        $pleft = $buttonGeneral['button_padding']['padding_left'] ?? '0';
+        $ptype = $buttonGeneral['button_padding']['padding_type'] ?? 'px';
+
+        $styles .= '.btn, .btn-theme, .button{';
+        $styles .= 'color:'.$buttonNormal['button_color'].';';
+        $styles .= 'background-color:'.$buttonNormal['button_bgcolor'].';';
+        $styles .= 'border-style:'.$buttonNormal['border_style']['border_type'].';' ?? "none" .';';
+        $styles .= 'border-color:'.$buttonNormal['border_style']['border_color'].';' ?? 'transparent'.';';
+        $styles .= 'border-width:'.$bbtop.$bbtype.' ' . $bbright.$bbtype.' ' . $bbbottom.$bbtype.' ' . $bbleft.$bbtype.';';
+        $styles .= 'border-radius:'.$brtop.$ptype.' ' . $brright.$ptype.' ' . $brbottom.$ptype.' ' . $brleft.$ptype.';';
+        $styles .= '}';
+
+        $styles .= '.btn:hover, .btn-theme:hover, .button:hover{';
+        $styles .= 'color:'.$buttonHover['button_color_hover'].';';
+        $styles .= 'background-color:'.$buttonHover['button_bgcolor_hover'].';';
+        $styles .= 'border-color:'.$buttonHover['border_color_hover'].';';
+        $styles .= '}';
+        
+        $styles .= $form_state->getValue('drupalentor_custom_css');
+        
+        
+        $theme = \Drupal::theme()->getActiveTheme()->getName();
+        drupalentor_generate_css($theme, $styles, $name='drupalentor_general');
+        
         $config = $this->config('drupalentor.settings');
         $config->set('container_width', $form_state->getValue('container_width'));
         $config->set('viewport_lg', $form_state->getValue('viewport_lg'));
@@ -303,7 +383,10 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         $config->set('heading_color', $form_state->getValue('heading_color'));
         $config->set('text_color', $form_state->getValue('text_color'));
         $config->set('button_style', $form_state->getValue('button_style'));
+        $config->set('drupalentor_custom_css', $form_state->getValue('drupalentor_custom_css'));
+
         $config->save();
+        drupal_flush_all_caches();
         return parent::submitForm($form, $form_state);
     }
 

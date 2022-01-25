@@ -1,0 +1,24 @@
+.carousel-slide-items, .banner-carousel{
+    .swiper-pagination{
+    margin-top: 30px;
+        .swiper-pagination-bullet:not(.swiper-pagination-bullet-active){
+        background: #000;
+        }
+    }
+}
+.banner-carousel{
+margin-top: 50px;
+    .swiper-slide {
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    .item-image {
+    text-align: center;
+    }
+    img {
+    display: inline-block;
+    max-width: 150px;
+    }
+}

@@ -9,38 +9,16 @@
         drupalentor_url = drupalSettings.module_url;
     $(document).ready(function() {
 
-        var html_drupalentor = drupalSettings.html_drupalentor,
-            default_layout = assets_url+'demo/narrow-jumbotron/index.html';
+        var html_drupalentor = drupalSettings.html_drupalentor;
+        // console.log(JSON.parse(html_drupalentor));
 
-        if(!html_drupalentor != undefined){
-             default_layout = 'about:blank';
-            }
-        if (window.location.hash.indexOf("no-right-panel") != -1)
-        {
-            $("#vvveb-builder").addClass("no-right-panel");
-            $(".component-properties-tab").show();
-            Vvveb.Components.componentPropertiesElement = "#left-panel .component-properties";
-        } else
-        {
-            $(".component-properties-tab").hide();
-}
-
-        Vvveb.Builder.init(assets_url+'demo/index.html', function() {
-            $('body').addClass('drupalentor-editor');
-            if(html_drupalentor != undefined){
-
-                Vvveb.Builder.setHtml(html_drupalentor);
-            }else{
-//                         Vvveb.FileManager.loadPage("narrow-jumbotron",);
-            }
-//                      gavias_save_blockbuilder();
-            $('#save-btn').on('click', function () {
-                drupalentor_save();
-			         return false;
-             });
-
-        });
+        $('#save-btn').on('click', function () {
+            drupalentor_save();
+                 return false;
+         });
     });
+    
+    
     function drupalentor_save() {
         var $iframe = $('#iframe');
         var result = document.getElementById('iframe1').contentWindow.document.body.innerHTML;
@@ -49,6 +27,8 @@
             data: result,
             nid: nid
         };
+        
+
 
         $.ajax({
             url: drupalSettings.saveConfigURL,
@@ -56,7 +36,7 @@
             data: data,
             dataType: 'json',
             success: function (data) {
-
+                $("#message-modal").modal('show');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(textStatus + ":" + jqXHR.responseText);

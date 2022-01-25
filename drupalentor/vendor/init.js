@@ -32,13 +32,13 @@
         });
     }
     
-  var $textarea = $('#edit-drupalentor-custom-css--2');
-
-  var createEditor = function() {
-    var editor = CodeMirror.fromTextArea($textarea[0], { lineNumbers : true, extraKeys : { "Ctrl-Space" : "autocomplete" } });
-    return editor;
-  };
-
-  var editor = createEditor();
+    var $textarea = $('.codemirror-texarea');
+    if($textarea.length){
+        var createEditor = function() {
+            var editor = CodeMirror.fromTextArea($textarea[0], { lineNumbers : true, extraKeys : { "Ctrl-Space" : "autocomplete" } });
+            return editor;
+        };
+    }
+    var editor = createEditor();
 
 })(jQuery, Drupal, drupalSettings);

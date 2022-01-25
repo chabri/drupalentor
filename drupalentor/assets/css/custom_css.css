@@ -7,7 +7,7 @@
 
 .form-item-drupalentor-custom-css .CodeMirror,
 .form-item-drupalentor-custom-css textarea {
-  height: 200px;
+  height: 400px;
 }
 
 .form-item-drupalentor-custom-css .form-textarea-wrapper label {
@@ -17,21 +17,6 @@
   font-size: 12px;
 }
 
-#css-editor-preview {
-  width: 100%;
-  height: 650px;
-}
-
-.form-item-drupalentor-custom-css label + input[type=checkbox] {
-  margin-left: 36px;
-}
- 
-#css-editor-preview-path-wrapper label {
-  display: inline;
-  font-weight: normal;
-  margin-right: 6px;
-}
-
-#css-editor-preview-path-wrapper {
-  margin-bottom: 6px;
+.CodeMirror-gutter{
+width: 30px;
 }

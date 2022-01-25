@@ -1,31 +1,42 @@
 <?php
 
-/**
- * @file
- * Create table drupalentor().
- */
-
 function drupalentor_schema() {
-  if(!\Drupal::database()->schema()->tableExists('drupalentor')){
-    $schema['drupalentor'] = array(
-      'fields' => array(
-        'id' => array(
-          'type' => 'serial',
-          'not null' => TRUE,
-        ),
-        'lang' => array(
-          'type' => 'tinytext',
-          'not null' => TRUE,
-        ),
-        'html' => array(
-          'type' => 'text',
-          'size' => 'big',
-        ),
-      ),
-      'primary key' => array('id')
-    );
-    return $schema;
-  }
+  $schema['drupalentor'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'did' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique drupalentor ID.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator from {node}.nid",
+      ],
+      'lang' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Language',
+      ],
+      'html' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['did'],
+  ];
+
+  return $schema;
 }
-
-

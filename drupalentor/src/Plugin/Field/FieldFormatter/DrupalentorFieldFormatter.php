@@ -31,13 +31,14 @@ class DrupalentorFieldFormatter extends FormatterBase {
             $id = !empty($item->value) ? $item->value : 0;
             if($id){
                 $results = drupalentor_load($id);
+               
                 if(!$results){
                     $content = t('Nothing to show');
                 }else{
                     $content = drupalentor_frontend($results->html);
-
                 }
             }
+    
             $elements[$delta] = array(
                 '#type' => 'markup',
                 '#theme' => 'drupalentor-front',
@@ -49,7 +50,5 @@ class DrupalentorFieldFormatter extends FormatterBase {
         }
       return $elements;
   }
-  
-
 
 }

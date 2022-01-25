@@ -33,16 +33,16 @@ public function formElement(
     $item = $items[$delta];
     $node = \Drupal::routeMatch()->getParameter('node') ?? NULL;
     if(!empty($node)){
-        $id = $node->id();
+        $nid = $node->id();
         $builder = \Drupal::database()->select('{drupalentor}', 'd')
-        ->fields('d', array('id', 'html', 'lang'))
-        ->condition('id', $id)
+        ->fields('d', array('nid', 'html', 'lang'))
+        ->condition('nid', $nid)
         ->execute()
         ->fetchAssoc();
         $element['value'] = array(
         '#title' => 'Drupalentor ID',
         '#type' => 'textfield',
-        '#default_value' => $id,
+        '#default_value' => $nid,
         '#attributes' => array('class' => array('drupalentor-field'), 'readonly'=>'readonly')
         );
     }
