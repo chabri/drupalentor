@@ -6,6 +6,8 @@
 
 namespace Drupal\drupalentor\Controller;
 
+use Drupal\drupalentor\Autoloader;
+use Drupal\drupalentor\Controls_Manager;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
@@ -17,6 +19,15 @@ use Drupal\image\Entity\ImageStyle;
 
 class DrupalentorController extends ControllerBase{
 
+  private function register_autoloader() {
+    require_once DRUPALENTOR_PATH . '/includes/autoloader.php';
+    Autoloader::run();
+  }
+
+  public function __construct() {
+    $this->register_autoloader();
+  }
+
 
     public function editor(Request $request) {
         
@@ -24,10 +35,10 @@ class DrupalentorController extends ControllerBase{
         $node = \Drupal::routeMatch()->getParameter('node');
         $id = $node->id();
         $nodeUrl = Url::fromRoute('entity.node.canonical', ['node' => $id])->toString();
-
+        $widgets = drupalentor_get_widgets();
 
         $data = drupalentor_load($id) ?? NULL;
-        $el_fields = drupalentor_get_el_fields();
+      
         $sections = drupalentor_get_sections($data->html);
 
 
@@ -36,7 +47,7 @@ class DrupalentorController extends ControllerBase{
         $page['#attached']['drupalSettings']['saveConfigURL'] = $getSaveUrl;
         $page['#attached']['drupalSettings']['getImageStyleURL'] = $getImageStyle;
         $page['#attached']['drupalSettings']['html_drupalentor'] = $data->html;
-        $page['#attached']['drupalSettings']['drupalentor']['element_fields'] = $el_fields;
+        // $page['#attached']['drupalSettings']['drupalentor']['element_fields'] = $el_fields;
         $page['#attached']['drupalSettings']['drupalentor']['base_path'] = base_path();
         $page['#attached']['drupalSettings']['drupalentor']['load_blocks'] = drupalentor_load_blocks();
         $page['#attached']['drupalSettings']['drupalentor']['load_views'] = drupalentor_load_views();
@@ -55,7 +66,7 @@ class DrupalentorController extends ControllerBase{
         $page['drupalentor-admin-form'] = array(
           '#theme' => 'drupalentor-admin-form',
           '#content' => $content,
-          '#field' => $el_fields
+          // '#field' => $el_fields
         );
         return $page;
     }

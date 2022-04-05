@@ -69,12 +69,33 @@ function drupalentor_help($route_name, RouteMatchInterface $route_match) {
     }
 
   }
-function drupalentor_get_el_fields($widget = NULL){
+function drupalentor_get_el_fields($widgetId){
+    $el_fields = array();
+
+
+
+        if(file_exists(DRUPALENTOR_PATH . '/widgets/' . $widgetId . '.php')){
+          $_class = 'element_' . $widgetId;
+      
+          if( class_exists($_class) ){
+            $s = new $_class;
+           
+            if(method_exists($s, 'render_form')){
+              
+               $el_fields = $s->render_form();
+            }
+          }
+        }
+
+
+    return $el_fields;
+  }
+  function drupalentor_get_widgets(){
     $el_fields = array();
 
     if(function_exists('drupalentor_set_elements')){
       $elements = drupalentor_set_elements();
-   
+
       foreach( $elements as $el ){
        
         if(file_exists(DRUPALENTOR_PATH . '/widgets/' . $el . '.php')){
@@ -86,27 +107,33 @@ function drupalentor_get_el_fields($widget = NULL){
             if(method_exists($s, 'render_form')){
                 
                $el_fields[$el] = $s->render_form();
-
+            
             }
           }
         }
       }
     }
 
-    return $el_fields[$widget]['fields'];
+    return $el_fields;
   }
-
 function drupalentor_get_sections($html){
     $sections = [];
     $content = json_decode($html, true);
+
     foreach ( $content as $k => $row ) {
+  
         $sections[$k] = $row['settings'];
     }
-    return $sections;
+
+    return $content;
   }
 
+function drupalentor_backend( $params ) {
+
+}
+
 function drupalentor_frontend( $params ) {
-    
+  
 	$output = '';
 	$classes = array(
 		'1' => 'col-lg-1 col-md-1 col-sm-2 col-xs-12',
@@ -126,6 +153,7 @@ function drupalentor_frontend( $params ) {
 	ob_start();
 	if ( ! empty( $content ) ) {
 		foreach ( $content as $k => $row ) {
+            
 			print (drupalentor_render_el( $row ) );
 		}
 	}

@@ -8,11 +8,11 @@ class Control_Text {
 		return 'text';
 	}
 
-	public function content_template($data, $value = NULL) {
+	public function content_template($data, $value = NULL, $type, $key) {
 
 		?>
 		<div class="field field__text">
-			<input type="text" name="<?php echo $data['id'] ?>" id="<?php echo $data['id'] ?>" value="" title="<?php echo $data['title'] ?>" placeholder="<?php echo $data['placeholder'] ?? '' ?>" value="<?php echo $value; ?>"/>
+			<input type="text" name="<?php echo $type; ?>[settings][<?php echo $data['id'] ?>]" id="<?php echo $data['id'] ?>" title="<?php echo $data['title'] ?>" placeholder="<?php echo $data['placeholder'] ?? '' ?>" value="<?php echo $value; ?>"/>
 		</div>
 		<?php
 	}

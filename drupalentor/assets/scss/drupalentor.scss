@@ -4,26 +4,6 @@
 @import "mixins/template";
 @import "rtl/rtl"; 
 
-@import "widgets/base";
-@import "widgets/fonts";
-@import "widgets/layout";
-@import "widgets/page"; 
-@import "widgets/node";
-@import "widgets/style"; 
-@import "widgets/comments"; 
-@import "widgets/forms";
-@import "widgets/forum"; 
-@import "widgets/blocks";
-@import "widgets/grid";
-@import "widgets/menu";
-@import "widgets/views"; 
-@import "widgets/block-builder"; 
-@import "widgets/responsive";  
-@import "widgets/portfolio";
-@import "widgets/testimonial";
-@import "widgets/slider";
-@import "widgets/commerce";
-
 
 
 .toolbar-tray-open{ 
@@ -37,16 +17,23 @@
     } 
 } 
 
-#vvveb-builder {
+#drupalentor-builder {
 position: fixed;
 z-index: 100;
 top: 0;
 left: 0;
 width: 100%;
 background: #fff;
+overflow: auto;
+height: 100%;
     label.header{
 //    float: left;
     } 
+    fieldset{
+        .content{
+
+        }
+    }
 }
 #right-panel{
     label.header{ 
@@ -60,3 +47,20 @@ width: 100%;
 min-width: 150px;
 }
  
+.widgets-modal{
+    position:fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999; 
+    background: #fff;
+    border: 1px solid #dedede ;
+    width: 500px;
+    ul{
+        display: flex;
+        flex-wrap: wrap;
+        li{
+        width: 33%;
+        }
+    }
+}

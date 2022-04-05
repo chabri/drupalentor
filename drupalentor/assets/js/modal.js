@@ -29,14 +29,17 @@
         const nid = drupalSettings.nid;
         const wid = drupalSettings.wid;
         const formData = $('form').serializeObject();
+        const index = html.findIndex(p => p.settings.id === wid)
+
+        
 console.log(formData);
-        const lastData = html.findIndex(
-        (book) => book.settings.id === wid
-        )
-        console.log(html);
-        if (lastData !== -1)
+        // const lastData = html.findIndex(
+        // (book) => book.settings.id === wid
+        // )
+        // console.log(html);
+        // if (lastData !== -1)
   
-        html[lastData] = formData
+        // html[lastData] = formData
 
         var data = {
             data: JSON.stringify(html),

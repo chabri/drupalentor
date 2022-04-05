@@ -53,6 +53,10 @@ class Controls_Manager {
 	const UPLOAD = 'upload';
 
 	/**
+	 * Color control.
+	 */
+	const COLOR = 'color';
+	/**
 	 * Number control.
 	 */
 	const NUMBER = 'number';
@@ -122,10 +126,7 @@ class Controls_Manager {
 	 */
 	const DIVIDER = 'divider';
 
-	/**
-	 * Color control.
-	 */
-	const COLOR = 'color';
+
 
 	/**
 	 * Media control.
@@ -447,12 +448,12 @@ class Controls_Manager {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function render_controls($fields, $values) {
+	public function render_controls($fields, $values, $type, $key) {
 		$control_id = $fields['type'];
 		$control_class_id = str_replace( ' ', '_', ucwords( str_replace( '_', ' ', $control_id ) ) );
 		$class_name = __NAMESPACE__ . '\Control_' . $control_class_id;
 		$fieldId = $fields['id'];
-		// dump($fieldId);
+	
 		// dump($values);
 
 		// $fieldValues = ($fields['id'] == $values[$fieldId]) ? $values[$fieldId] : '';
@@ -462,7 +463,8 @@ class Controls_Manager {
 		}
 
 		$culo = new $class_name();
-		$culo = $culo->content_template($fields, $value);
+		// dump($culo);
+		$culo = $culo->content_template($fields, $value, $type, $key);
 	// 	foreach ( $this->get_controls() as $control ) {
 	// 		$control->content_template();
 	// 	}

@@ -31,7 +31,9 @@ class ModalController extends ControllerBase {
   }
 
   public function searchForId($id, $array) {
+    // dump($id);
     foreach ($array as $key => $val) {
+      // dump($val);
         if ($val['id'] === $id) {
             return $val;
         }
@@ -39,6 +41,10 @@ class ModalController extends ControllerBase {
     return null;
  }
   public function modal() {
+
+
+
+
 
     $nid = \Drupal::routeMatch()->getParameter('nid');
     $widget = \Drupal::routeMatch()->getParameter('widget');
@@ -48,22 +54,29 @@ class ModalController extends ControllerBase {
     $data = drupalentor_load($nid) ?? NULL;
     $fields = drupalentor_get_el_fields($widget);
     $sections = drupalentor_get_sections($data->html);
+    $values = $this->searchForId($sectionId,  $sections);
+
+    $search = $sectionId;
+    $found = array_filter($sections,function($v,$k) use ($search){
+      return $v['uid'] == $search;
+    },ARRAY_FILTER_USE_BOTH); // With latest PHP third parameter is optional.. Available Values:- ARRAY_FILTER_USE_BOTH OR ARRAY_FILTER_USE_KEY  
+    
+    dump(array_values($found));
+    dump(array_keys($found)); 
 
 
-    $form = [];
-    // include DRUPALENTOR_PATH . '/templates/backend/modal-form.php';
 
 
 
-    $html = '<form class="form-widget">';
-    $html .= '<h1>Edit</h1>';
-    $html .= '<input type="hidden" name="id" value="'.$sectionId.'"/>';
-    $html .= ModalForm::render_form($fields, $this->searchForId($sectionId,  $sections));
-    $html .= '<div class="action"><button class="caca" type="submit">Save</button></div>';
-    $html .= '</form>';
+    $output = '<form class="form-widget">';
+    $output .= '<h1>Edit</h1>';
+    $output .= '<input type="hidden" name="id" value="'.$sectionId.'"/>';
+    $output .= ModalForm::render_form($fields, $values);
+    $output .= '<div class="action"><button class="caca" type="submit">Save</button></div>';
+    $output .= '</form>';
     $build = array(
       '#type' => 'container',
-      '#markup' => Markup::create($html),
+      '#markup' => Markup::create($output),
       '#attached' => array(
         'library' => array(
             'drupalentor/drupalentor.assets.admin',

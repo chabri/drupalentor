@@ -92,7 +92,7 @@ class Autoloader {
 
 	private static function init_classes_map() {
 		self::$classes_map = [
-			'ModalForm' => 'includes/modal-form.php',
+			'RenderForm' => 'includes/render-form.php',
 			'Controls_Manager' => 'includes/controls.php',
 		];
 

@@ -2,7 +2,7 @@
 
 	namespace Drupal\drupalentor;
 
-   class ModalForm{
+   class RenderForm{
 
 
 	// public function content_template();

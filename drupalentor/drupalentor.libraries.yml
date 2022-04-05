@@ -6,8 +6,8 @@ drupalentor.assets.admin:
       assets/css/editor.css: {}
       assets/css/drupalentor.css: {}
   js:
+    assets/js/jquery.serializejson.js: {scope: footer}
     assets/js/admin.js: {scope: footer}
-    assets/js/modal.js: {scope: footer}
     assets/js/drupalentor.js: {scope: footer}
   dependencies:
     - core/jquery

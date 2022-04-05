@@ -469,8 +469,10 @@ class element_gva_column{
 
 			$class_col_parallax = '';
 			if( $bg_image){
-                $image_path = $styleMedia->buildUrl(str_replace('/sites/default/files/', 'public://', $bg_image));
-				$array_style[] 	= 'background-image:url(\''. $image_path .'\')';
+				if(file_exists($bg_image)){
+                	$image_path = $styleMedia->buildUrl(str_replace('/sites/default/files/', 'public://', $bg_image));
+					$array_style[] 	= 'background-image:url(\''. $image_path .'\')';
+				}
 				$array_style[] 	= 'background-repeat:' . $bg_repeat;
 				if($bg_attachment == 'fixed'){
               $array_style[]  = 'background-position: 50% 0';
