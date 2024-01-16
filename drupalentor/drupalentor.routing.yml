@@ -36,19 +36,107 @@ drupalentor.editor:
   requirements:
     _permission: 'administer drupalentor'
 
+drupalentor.preview:
+  path: '/preview/{node}/drupalentor'
+  defaults:
+    _title: 'Edit Drupalentor'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::preview'
+  _format: 'html'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      node:
+        type: 'entity:node'
+  requirements:
+    _permission: 'administer drupalentor'
+
+drupalentor.widget:
+  path: '/admin/drupalentor/widget/{widget_id}/{did}/{langcode}'
+  defaults:
+    _title: 'Edit Drupalentor'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::renderWidget'
+  _format: 'html'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer drupalentor'
+
 drupalentor.modal:
-  path: '/modal-form/{nid}/{widget}/{section}'
+  path: '/admin/modal-form/{nid}/{widget}/{widget_id}'
   defaults:
     _controller: '\Drupal\drupalentor\Controller\ModalController::modal'
     _title: 'Modal Form'
   requirements:
     _permission: 'open modal form'
 
-drupalentor.save:
-  path: '/admin/structure/drupalentor/save'
+drupalentor.edit_widget:
+  path: '/admin/edit-widget/{nid}/{widget}/{widget_id}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\EditWidgetController::edit'
+    _title: 'Edit Widget Form'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.save_page_styles:
+  path: '/admin/save-styles/{nid}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\SaveStylesController::save'
+    _title: 'Save Styles Controller'
+  requirements:
+    _permission: 'open modal form'
+drupalentor.widget_clone:
+  path: '/admin/widget-clone/{old_id}/{new_id}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\CloneWidgetController::clone'
+    _title: 'Save Styles Controller'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.remove_widgets:
+  path: '/admin/remove-widgets/{id}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::removeWidget'
+    _title: 'Remove'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.final_widget:
+  path: '/admin/final-widget/{nid}/{widget}/{widget_id}'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\FinalWidgetController::load'
+    _title: 'Edit Widget Form'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.media_modal:
+  path: '/admin/drupalentor/media-modal'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\ModalMediaController::mediaModal'
+    _title: 'Drupalentor Media Modal'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.upload_media_modal:
+  path: '/admin/drupalentor/upload_file'
+  defaults:
+    _controller: '\Drupal\drupalentor\Controller\ModalMediaController::uploadMediaModal'
+    _title: 'Drupalentor Media Modal'
+  requirements:
+    _permission: 'open modal form'
+
+drupalentor.save_widget:
+  path: '/admin/drupalentor/save_widget'
   defaults:
     _title: 'Save Configuration of Gavias BlockBuilder'
-    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::save'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::saveWidget'
+  requirements:
+    _permission: 'administer drupalentor'    
+
+drupalentor.save_page:
+  path: '/drupalentor/save_page'
+  defaults:
+    _title: 'Save Configuration of Gavias BlockBuilder'
+    _controller: '\Drupal\drupalentor\Controller\DrupalentorController::savePage'
   requirements:
     _permission: 'administer drupalentor'    
     

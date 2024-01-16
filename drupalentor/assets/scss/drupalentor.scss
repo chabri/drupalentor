@@ -1,66 +1,26 @@
-@import "vars/_theme_variables";
+@import "compass";                 
+@import "compass/css3";                 
+@import "compass/reset/utilities";
 
-@import "mixins/mixins";
-@import "mixins/template";
-@import "rtl/rtl"; 
+@import "components/_variables";
+@import "components/_mixing-base";
+@import "components/_grid";
+@import "components/_element_form";
+@import "components/_widgets_base";
 
 
 
-.toolbar-tray-open{ 
-    #vvveb-builder #left-panel, #vvveb-builder #right-panel {
-//    top: 79px;
-    }
-} 
-.drupalentor-editor{
-    #toolbar-administration{
-    display: none;
-    } 
-} 
-
-#drupalentor-builder {
+ .drupalentor_loading{
 position: fixed;
-z-index: 100;
 top: 0;
 left: 0;
-width: 100%;
-background: #fff;
-overflow: auto;
 height: 100%;
-    label.header{
-//    float: left;
-    } 
-    fieldset{
-        .content{
-
-        }
-    }
-}
-#right-panel{
-    label.header{ 
-//    float: left;
-    }      
-}
-.drag-elements-sidepane ul > li ol{
 width: 100%;
-}  
-.chosen-container{
-min-width: 150px;
-}
- 
-.widgets-modal{
-    position:fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 999; 
-    background: #fff;
-    border: 1px solid #dedede ;
-    width: 500px;
-    ul{
-        display: flex;
-        flex-wrap: wrap;
-        li{
-        width: 33%;
-        }
-    }
-}
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: rgba(black, .2);
+z-index: 9999;
+ }
+
+

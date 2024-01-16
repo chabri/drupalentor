@@ -7,11 +7,12 @@ class Control_Info{
 	}
 
 	public function content_template($data) {
-		?>
-			<div class="field field__info">
-			<p><?php echo $data['title']; ?></p>	
-			</div>
-		<?php
+
+		$output = '<div class="field field__info">';
+		$output .= '<p>'.$data['item']['title'].'</p>';
+		$output .= '</div>';
+	
+		return $output;
 	}
 	protected function get_default_settings() {
 		return [

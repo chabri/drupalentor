@@ -90,7 +90,45 @@ class SettingsFormDrupalentor extends ConfigFormBase {
             '#group' => 'style',
         );
         
-        
+        /* =========================   Media  ========================= */
+
+        $form['media'] = [
+            '#type' => 'details',
+            '#title' => t('Media'),
+            '#group' => 'tabs',
+        ];
+        $form['media']['use_media_type'] = [
+            '#type' => 'checkbox',
+            '#title' => t('Use media type to manage images?'),
+            '#default_value' => $settings->get('use_media_type') ? $settings->get('use_media_type') : '',
+          ];
+          $media_types = \Drupal::entityTypeManager()->getStorage('media_type')->loadMultiple();
+
+          $options = [];
+          foreach ($media_types as $media_type) {
+            // Filtrar tipos de medios por Media source = Image
+            if ($media_type->getSource()->getConfiguration()['source_field'] == 'field_media_image') {
+              $options[$media_type->id()] = $media_type->label();
+            }
+          }
+        $form['media']['media_type'] = [
+            '#type' => 'select',
+            '#title' => 'Media Type image',
+            '#default_value' => $settings->get('media_type') ? $settings->get('media_type') : '',
+            '#description' => t("Select media type"),
+            '#options' => $options,
+            '#empty_option' => '- Seleccione -',
+            '#group' => 'media',
+            '#states' => [
+                // Definición de estado para mostrar/ocultar este campo
+                'visible' => [
+                  ':input[name="use_media_type"]' => ['checked' => TRUE], // Mostrar si el checkbox está marcado
+                ],
+                'required' => [
+                  ':input[name="use_media_type"]' => ['checked' => TRUE], // Mostrar si el checkbox está marcado
+                ],
+              ],
+            ];       
         /* =========================   Fonts  ========================= */
         
         
@@ -98,6 +136,28 @@ class SettingsFormDrupalentor extends ConfigFormBase {
             '#type' => 'details',
             '#title' => t('Fonts'),
             '#group' => 'tabs',
+        ];
+        $drupalentor_fonts = [
+            'Roboto',
+            'Open Sans',
+            'Lato',
+            'Montserrat',
+            'Roboto Condensed',
+            'Oswald',
+            'Source Sans Pro',
+            'Raleway',
+            'Ubuntu',
+            'PT Sans',
+            'Noto Sans',
+            'Roboto Slab',
+            'Poppins',
+            'Merriweather',
+            'Playfair Display',
+            'Droid Sans',
+            'Lora',
+            'Roboto Mono',
+            'Ubuntu Condensed',
+            'Titillium Web'
         ];
         $form['fonts']['google_font_api'] = array(
             '#type' => 'textfield',
@@ -107,8 +167,8 @@ class SettingsFormDrupalentor extends ConfigFormBase {
             '#group' => 'fonts',
         );
         $google_font_api = $settings->get('google_font_api') ? $settings->get('google_font_api') : '';
-        $fonts = $this->get_google_fonts($google_font_api);
-
+        $google_fonts = $this->get_google_fonts($google_font_api);
+        $fonts = array_merge($drupalentor_fonts, $google_fonts);
         $form['fonts']['heading_font'] = array(
             '#type' => 'select',
             '#title' => 'Headings front',
@@ -383,6 +443,8 @@ class SettingsFormDrupalentor extends ConfigFormBase {
         $config->set('heading_color', $form_state->getValue('heading_color'));
         $config->set('text_color', $form_state->getValue('text_color'));
         $config->set('button_style', $form_state->getValue('button_style'));
+        $config->set('use_media_type', $form_state->getValue('use_media_type'));
+        $config->set('media_type', $form_state->getValue('media_type'));
         $config->set('drupalentor_custom_css', $form_state->getValue('drupalentor_custom_css'));
 
         $config->save();

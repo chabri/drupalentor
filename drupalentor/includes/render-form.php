@@ -6,14 +6,13 @@
 
 	// public function content_template();
 
-	public static function render_form($caca, $values, $type, $key) {
-		
+	public static function render_form($fields, $values = null, $type = null, $key = null) {
 
 		// ob_start();
-		foreach($caca as $pedo){
+		foreach($fields as $field){
 
-			$sorete = new Controls_Manager();
-			$sorete->render_controls($pedo, $values, $type, $key);
+			$form_field = new Controls_Manager();
+			$form_field->render_controls($field, $values, $type, $key);
 		
 		}
 	// return ob_get_clean();

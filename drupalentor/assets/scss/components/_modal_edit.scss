@@ -1,0 +1,245 @@
+.drupalentor-modal{
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background: #00000030;
+    display: flex;
+    top: 0;
+    left: 0;
+    justify-content: flex-start;
+
+    .drupalentor-modal_container{
+        width: 25%;
+        background-color: #fff;
+        height: 100%;
+        overflow: auto;
+
+    }
+    .form-widget{
+        .toolbar-fixed &{
+        padding-top: 100px;
+        }
+        padding: 25px;
+    }
+}
+
+
+
+.drupalentor-element-widget-modal{
+
+    ul{
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    }
+    li{
+
+    }
+    .widget-box_element{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #dedede;
+        padding: 15px;
+        cursor: pointer;
+        i{
+        font-size: 30px;
+        }
+        span{
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        }
+        &:hover{
+        background-color: $yellow;
+        }
+    }
+    // ul{
+    //     display: flex;
+    //     flex-wrap: wrap;
+    //     list-style: none;
+    //     li{
+    //     width: 33%;
+    //     text-align: center;
+    //     &:hover{
+    //         background-color: #dedede;
+    //         cursor: pointer;
+    //     }
+    //     }
+    // }
+}
+.drupalentor-column-modal{
+
+    ul{
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    }
+    li{
+    width: 20%;
+    display: flex;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+        &:before, &:after{
+        content: "";
+        border-radius: 5px 0 0 5px;
+        background-color: $green;
+        height: 50px;
+        display: block;
+        }
+        &:after{
+        width: 90%;
+        background-color: #cc7e08;
+        border-radius: 0 5px 5px 0;
+        }
+       &.wd-10{
+            &:before{
+            width: 10%;
+            }
+            &:after{
+                width: 90%;
+            }
+        }
+       &.wd-20{
+            &:before{
+                width: 20%;
+            }
+            &:after{
+                width: 80%;
+            }
+        }
+       &.wd-30{
+            &:before{
+                width: 30%;
+            }
+            &:after{
+                width: 70%;
+            }
+        }
+       &.wd-40{
+            &:before{
+                width: 40%;
+            }
+            &:after{
+                width: 60%;
+            }
+        }
+       &.wd-50{
+            &:before{
+                width: 50%;
+            }
+            &:after{
+                width: 50%;
+            }
+        }
+       &.wd-60{
+            &:before{
+                width: 60%;
+            }
+            &:after{
+                width: 40%;
+            }
+        }
+       &.wd-70{
+            &:before{
+                width: 70%;
+            }
+            &:after{
+                width: 30%;
+            }
+        }
+       &.wd-80{
+            &:before{
+                width: 80%;
+            }
+            &:after{
+                width: 20%;
+            }
+        }
+       &.wd-90{
+            &:before{
+                width: 90%;
+            }
+            &:after{
+                width: 10%;
+            }
+        }
+       &.wd-100{
+            &:before{
+                width: 100%;
+                border-radius: 5px;
+            }
+            &:after{
+                width: 0%;
+            }
+        }
+    }
+}
+.drupalentor-media-modal{
+    position: fixed;
+    z-index: 102;
+    width: 100%;
+    height: 100%;
+    background: #00000030;
+    display: flex;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    .drupalentor-modal_container{
+        width: 100%;
+        max-width: 860px;
+        background-color: #fff;
+        height: 100%;
+        max-height: 640px;
+        overflow: auto;
+        padding: 25px;
+        .toolbar-fixed &{
+        padding-top: 100px;
+        }
+
+
+    }
+}
+.drupalentor-editor-active{
+    .image-box{
+    
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+        > .btn{
+        display: none; 
+        }
+        span{
+        padding: 10px;
+        background: #f3f3f3;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border:2px solid transparent;
+        }
+        &.selected span{
+        border-color: rgb(28, 71, 202);
+        }
+        &:hover {
+        background-color: #dcdcdc;
+            span{
+            background: #dfdfdf;
+            }
+            > .btn{
+            display: block;
+            }
+        } 
+       
+    }
+    .drupalentor-hover-modal{
+    z-index: 2;
+    }
+}

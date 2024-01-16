@@ -8,12 +8,19 @@ class Control_Upload
 
 
 	
-	public function content_template($data, $value = NULL, $type) {
-		?>
-			<div class="field field__upload">
-			<input type="file" name="<?php echo $type; ?>.settings.<?php echo $data['id'] ?>" id="<?php echo $data['id']; ?>" title="<?php echo $data['title']; ?>" accept="image/png, image/jpeg">
-			</div>
-		<?php
+	public function content_template($data, $value = NULL) {
+
+
+		$config = \Drupal::config('drupalentor.settings');
+		$btn_text = $value ? 'Edit' : 'Add Image';
+		$updaload_type = '<input type="text" name="'.$data['id'].'" id="'.$data['id'].'" title="'.$data['title'].'" value="'.$value.'">';
+		$updaload_type .= '<button data-element-id="'.$data['id'].'" class="media-upload'.$data['id'].'" title="'.$data['title'].'">'.$btn_text.'</button>';
+		
+		$output = '<div class="field field__upload">';
+		$output .= '<label for="' . $data['id'] .'">' . $data['title'] .'</label>';
+		$output .= $updaload_type;
+		$output .= '</div>';
+		return $output;
 	}
 	protected function get_default_settings() {
 		return [

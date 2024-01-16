@@ -3,6 +3,8 @@
 namespace Drupal\drupalentor\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\Response;
+
 use Drupal\Core\Ajax\AjaxResponse; 
 use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Url;
@@ -30,75 +32,55 @@ class ModalController extends ControllerBase {
     $this->register_autoloader();
   }
 
-  public function searchForId($id, $array) {
-    // dump($id);
-    foreach ($array as $key => $val) {
-      // dump($val);
-        if ($val['id'] === $id) {
-            return $val;
-        }
-    }
-    return null;
- }
-  public function modal() {
+
+  public function modal($nid, $widget, $widget_id) {
 
 
-
-
-
-    $nid = \Drupal::routeMatch()->getParameter('nid');
-    $widget = \Drupal::routeMatch()->getParameter('widget');
-    $sectionId = \Drupal::routeMatch()->getParameter('section');
     // require DRUPALENTOR_PATH . '/controls/base.php';
 
     $data = drupalentor_load($nid) ?? NULL;
     $fields = drupalentor_get_el_fields($widget);
     $sections = drupalentor_get_sections($data->html);
-    $values = $this->searchForId($sectionId,  $sections);
 
-    $search = $sectionId;
-    $found = array_filter($sections,function($v,$k) use ($search){
-      return $v['uid'] == $search;
-    },ARRAY_FILTER_USE_BOTH); // With latest PHP third parameter is optional.. Available Values:- ARRAY_FILTER_USE_BOTH OR ARRAY_FILTER_USE_KEY  
+    // $settings = drupalentor_load_widget($widget_id)->settings ? json_decode(drupalentor_load_widget($widget_id)->settings, true) : null;
+    $settings = \Drupal::request()->request->get('settings');
+
+// dump($sections);
+//     $search = $sectionId;
+//     $found = array_filter($sections,function($v,$k) use ($search){
+//       return $v['uid'] == $search;
+//     },ARRAY_FILTER_USE_BOTH); // With latest PHP third parameter is optional.. Available Values:- ARRAY_FILTER_USE_BOTH OR ARRAY_FILTER_USE_KEY  
     
-    dump(array_values($found));
-    dump(array_keys($found)); 
+//     dump(array_values($found));
+//     dump(array_keys($found)); 
 
+    $jsonData = json_encode($settings);
+    $escapedJsonData = htmlspecialchars($jsonData, ENT_QUOTES, 'UTF-8');
 
+    $form = ModalForm::render_form($fields, json_decode($settings, true));
 
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $output = '<form class="form-widget" id="drupalentor_edit_widget_form">';
+    $output .= '<input type="hidden" name="wid" value="'.$widget_id.'"/>';
+    $output .= '<input type="hidden" name="did" value="'.$nid.'"/>';
+    $output .= '<input type="hidden" name="uid" value="'.\Drupal::currentUser()->id().'"/>';
+    $output .= '<input type="hidden" name="type" value="'.$widget.'"/>';
+    $output .= '<input type="hidden" name="langcode" value="'.$langcode.'"/>';
+    foreach($form  as $item){
+      $output .= $item;
+    }
+    $output .= '<div class="btn-group-margin sticky-bottom pt-2 pb-2 bg-white">
+    <button class="btn btn-danger btn-labeled drupalentor-close-modal"><span class="btn-label"><i class="fa-solid fa-xmark"></i></span>'.t('Close').'</button>
+    <button type="submit" class="btn btn-success btn-labeled save-widget"><span class="btn-label"><i class="fa-regular fa-floppy-disk"></i></span>'.t('Save changes').'</button>
 
-
-    $output = '<form class="form-widget">';
-    $output .= '<h1>Edit</h1>';
-    $output .= '<input type="hidden" name="id" value="'.$sectionId.'"/>';
-    $output .= ModalForm::render_form($fields, $values);
-    $output .= '<div class="action"><button class="caca" type="submit">Save</button></div>';
+    </div>';
     $output .= '</form>';
-    $build = array(
-      '#type' => 'container',
-      '#markup' => Markup::create($output),
-      '#attached' => array(
-        'library' => array(
-            'drupalentor/drupalentor.assets.admin',
-        ),
-    ),
-    );
 
-    $getSaveUrl =  Url::fromRoute('drupalentor.save', [],  ['absolute' => TRUE])->toString();
-    $getImageStyle =  Url::fromRoute('drupalentor.get_image_style', [],  ['absolute' => TRUE])->toString();
-    $build['#attached']['drupalSettings']['nid'] = $nid;
-    $build['#attached']['drupalSettings']['wid'] = $sectionId;
-    $build['#attached']['drupalSettings']['html_drupalentor'] =  json_decode($data->html, true);
-    $build['#attached']['drupalSettings']['saveConfigURL'] = $getSaveUrl;
-// dump($build);
-    return $build; 
-    
+    $output .= '<style>' . PHP_EOL . ModalForm::render_styles($fields, json_decode($settings, true)) . '</style>';
 
-    $response = new AjaxResponse();
-    $title = $this->t('Title of Modal');
-    $content['#markup'] = Markup::create($html);
-    $response->addCommand(new OpenModalDialogCommand($title, $content));
-    // return $response;
+
+    return new Response($output); 
+  
 
   }
      public function save(){

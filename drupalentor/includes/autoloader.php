@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\drupalentor;
+use Drupal\drupalentor\Controls_Manager;
 
 
 /**
@@ -66,6 +67,7 @@ class Autoloader {
 	 * @static
 	 */
 	public static function run( $default_path = '', $default_namespace = '' ) {
+
 		if ( '' === $default_path ) {
 			$default_path = DRUPALENTOR_PATH;
 		}
@@ -92,14 +94,17 @@ class Autoloader {
 
 	private static function init_classes_map() {
 		self::$classes_map = [
+			'ModalForm' => 'includes/modal-form.php',
 			'RenderForm' => 'includes/render-form.php',
 			'Controls_Manager' => 'includes/controls.php',
+			'Controls_Base' => 'includes/control-base.php',
+			'Fonts' => 'includes/fonts.php',
 		];
 
 		$controls_names = Controls_Manager::get_controls_names();
+
 		foreach ( $controls_names as $control_name ) {
 			$class_name = 'Control_' . self::normalize_class_name( $control_name, '_' );
-
 			self::$classes_map[ $class_name ] = 'includes/controls/' . str_replace( '_', '-', $control_name ) . '.php';
 		}
 	}
@@ -109,8 +114,10 @@ class Autoloader {
 	}
 	private static function load_class( $relative_class_name ) {
 
+
 		$classes_map = self::get_classes_map();
-		// dump($classes_map);
+
+
 		if ( isset( $classes_map[ $relative_class_name ] ) ) {
 			$filename = self::$default_path . '/' . $classes_map[ $relative_class_name ];
 		} else {
@@ -121,7 +128,7 @@ class Autoloader {
 					$relative_class_name
 				)
 			);
-
+		
 			$filename = self::$default_path . $filename . '.php';
 		}
 
@@ -134,8 +141,9 @@ class Autoloader {
 		// Cut Root-Namespace
 
 		$final_class_name = $Class;
+		
 		$Class = str_replace( __NAMESPACE__.'\\', '', $Class );
-		// dump($final_class_name);
+
 		if ( ! class_exists( $final_class_name ) ) {
 			self::load_class( $Class );
 		}

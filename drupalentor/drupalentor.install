@@ -1,7 +1,7 @@
 <?php
 
 function drupalentor_schema() {
-  $schema['drupalentor'] = [
+  $schema['drupalentor_page'] = [
     'description' => 'Stores example person entries for demonstration purposes.',
     'fields' => [
       'did' => [
@@ -21,6 +21,37 @@ function drupalentor_schema() {
         'default' => 0,
         'description' => "Creator from {node}.nid",
       ],
+      'langcode' => [
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Language',
+      ],
+      'settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['did'],
+  ];
+  $schema['drupalentor_widget'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'did' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
       'lang' => [
         'type' => 'varchar',
         'length' => 255,
@@ -35,7 +66,6 @@ function drupalentor_schema() {
         'description' => 'Save the json-html',
       ],
     ],
-    'primary key' => ['did'],
   ];
 
   return $schema;

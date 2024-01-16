@@ -6,28 +6,103 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\views\Views;
 use Drupal\Core\Url;
+use Drupal\drupalentor\WidgetBase;
+use Drupal\Core\Asset\LibraryDiscoveryInterface;
+use Drupal\drupalentor\Controller\DrupalentorController;
+use Drupal\block\Entity\Block;
 
 
-
-define( 'DRUPALENTOR_PATH', drupal_get_path('module', 'drupalentor') );
+define( 'DRUPALENTOR_PATH',  \Drupal::service('extension.list.module')->getPath('drupalentor') );
 define( 'DRUPALENTOR_CSS_PATH', 'public://css');
 
+function drupalentor_theme_registry_alter(&$theme_registry) {
+
+    // $theme_registry['page']['path'] = \Drupal::service('extension.list.module')->getPath('drupalentor') . '/templates';
+  }
+
+  function drupalentor_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+    $route = \Drupal::routeMatch()->getRouteName();
 
 
+    if($route === 'entity.node.canonical'){
+        $suggestions[] = 'page__drupalentor__front';
+    }
+    
+  }
+function drupalentor_preprocess_html(array &$vars) {
+
+   
+    $route = \Drupal::routeMatch()->getRouteName();
+
+
+    $quote_menu_paths = [
+      'drupalentor.editor',
+    ];
+    
+    
+
+    // If the route matches, add the class to the pages above.
+    // We then use this class for theming.
+    if (in_array($route, $quote_menu_paths)) {
+      $vars['attributes']['class'][] = 'drupalentor-editor-active';
+    }
+  }
+  
 function drupalentor_theme($existing, $type, $theme, $path) {
   return array(
     'drupalentor-admin-form' => array(
         'variables' => array(
             'page' => '',
             'content' => '',
+            'url' => '',
+            'widgets' => [],
         ),
         'path' => $path . '/templates/backend',
     ),
-    'drupalentor-front' => array(
+    'drupalentor-admin-preview' => array(
         'variables' => array(
             'page' => '',
             'content' => '',
         ),
+        'path' => $path . '/templates/backend',
+    ),
+    'html__preview__drupalentor' => array(
+        'template' => 'html--preview--drupalentor',
+        'base hook' => 'html',
+        'path' => $path . '/templates/backend',
+    ),
+    'html__node__drupalentor' => array(
+        'template' => 'html--node--drupalentor',
+        'base hook' => 'html',
+        'path' => $path . '/templates/backend',
+    ),
+    'page__preview__drupalentor' => array(
+        'template' => 'page--preview--drupalentor',
+        'base hook' => 'page',
+        'path' => $path . '/templates/backend',
+    ),
+    'page__node__drupalentor' => array(
+        'template' => 'page--node--drupalentor',
+        'base hook' => 'page',
+        'path' => $path . '/templates/backend',
+    ),
+    'drupalentor-admin-edit-widget' => array(
+        'variables' => array(
+            'page' => '',
+            'content' => '',
+        ),
+        'path' => $path . '/templates/backend',
+    ),
+    'drupalentor-admin-final-widget' => array(
+        'variables' => array(
+            'page' => '',
+            'content' => '',
+        ),
+        'path' => $path . '/templates/frontend',
+    ),
+    'page__drupalentor__front' => array(
+        'template' => 'page--drupalentor--front',
+        'base hook' => 'html',
         'path' => $path . '/templates/frontend',
     ),
       
@@ -35,11 +110,23 @@ function drupalentor_theme($existing, $type, $theme, $path) {
 }
 
 function drupalentor_preprocess_page(&$variables) {
-  $variables['page']['#cache']['contexts'][] = 'route';
-    $activeThemeName = \Drupal::service('theme.manager')->getActiveTheme()->getName(); 
-    $defaultThemeName = \Drupal::config('system.theme')->get('default');    
-    if($activeThemeName === $defaultThemeName){
+
+    $route = \Drupal::routeMatch()->getRouteName();
+    $route_match = \Drupal::routeMatch();
+    $node = $route_match->getParameter('node');
+
+
+    if($route === 'entity.node.canonical'){
+      
+        $node_id = $node->id();
         $variables['#attached']['library'][] = 'drupalentor/drupalentor.assets.frontend';
+        $data = drupalentor_load($node_id) ?? NULL;
+
+        $sections = drupalentor_get_sections($data->html);
+        $classes = \Drupal::classResolver(DrupalentorController::class)->getClasses($data);
+        $variables['#attached']['drupalSettings']['drupalentor']['classes'] = $classes;
+        $variables['custom_variable'] = drupalentor_html_generated($sections);
+
     }
 }
 
@@ -53,211 +140,211 @@ function drupalentor_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
-  
-  if(file_exists(DRUPALENTOR_PATH . '/widgets/_elements.php')){
-    require DRUPALENTOR_PATH . '/widgets/_elements.php';
+if(file_exists(DRUPALENTOR_PATH . '/includes/widgets/_elements.php')){
+
+    require \Drupal::service('extension.list.module')->getPath('drupalentor') . '/includes/widgets/_elements.php';
+
     $elements = [];
-    if(function_exists('drupalentor_set_elements')){
-      $elements = drupalentor_set_elements();
+
+    if(function_exists('drupalentor_widgets')){
+      $elements = drupalentor_widgets();
+
     }
 
-    foreach( $elements as $el ){ //if don't use sub theme
-        if(file_exists(DRUPALENTOR_PATH . '/widgets/' . $el . '.php')){
-        $sc_path = DRUPALENTOR_PATH . '/widgets/' . $el . '.php';
-        require($sc_path);
+    foreach( $elements as $el ){ 
+        if(file_exists(DRUPALENTOR_PATH . '/includes/widgets/' . $el . '.php')){
+        $sc_path = DRUPALENTOR_PATH . '/includes/widgets/' . $el . '.php';
+        require \Drupal::service('extension.list.module')->getPath('drupalentor') . '/includes/widgets/' . $el . '.php';
         }
     }
 
   }
+
 function drupalentor_get_el_fields($widgetId){
     $el_fields = array();
 
+        $_class = 'element_' . $widgetId;
+        // require \Drupal::service('extension.list.module')->getPath('drupalentor') . '/widgets/' . $widgetId . '.php';
+  
+        if( class_exists($_class) ){
 
-
-        if(file_exists(DRUPALENTOR_PATH . '/widgets/' . $widgetId . '.php')){
-          $_class = 'element_' . $widgetId;
-      
-          if( class_exists($_class) ){
             $s = new $_class;
-           
+   
             if(method_exists($s, 'render_form')){
-              
+     
                $el_fields = $s->render_form();
+          
             }
-          }
         }
 
 
     return $el_fields;
   }
+//   function drupalentor_get_el_fields($widgetId){
+//     $el_fields = array();
+//     $theme_load_elements = gavias_content_builder_theme_name();
+//     if(function_exists('gavias_content_builder_set_elements')){
+//       $elements = gavias_content_builder_set_elements();
+//       foreach( $elements as $el ){
+//         if(file_exists(\Drupal::service('extension.list.theme')->getPath($theme_load_elements['theme_name']) . '/drupalentor_content_builder/' . $el . '.php')){
+//           $_class = 'element_' . $el;
+//           if( class_exists($_class) ){
+//             $s = new $_class;
+//             if(method_exists($s, 'render_form')){
+//                $el_fields[$el] = $s->render_form();
+//             }
+//           }
+//         }
+//       }
+//     }
+//     return $el_fields;
+//   }
   function drupalentor_get_widgets(){
-    $el_fields = array();
+    $data = array();
 
-    if(function_exists('drupalentor_set_elements')){
-      $elements = drupalentor_set_elements();
+    if(function_exists('drupalentor_widgets')){
+      $elements = drupalentor_widgets();
 
       foreach( $elements as $el ){
-       
-        if(file_exists(DRUPALENTOR_PATH . '/widgets/' . $el . '.php')){
+      
+        if(file_exists(DRUPALENTOR_PATH . '/includes/widgets/' . $el . '.php')){
           $_class = 'element_' . $el;
          
-          if( class_exists($_class) ){
+          if( class_exists($_class) && $_class != 'element_drupalentor_column'){
             $s = new $_class;
-           
-            if(method_exists($s, 'render_form')){
-                
-               $el_fields[$el] = $s->render_form();
+            if(method_exists($s, 'data')){
+
+               $data[$el] = $s->data();
             
             }
           }
         }
       }
     }
+    // Array para almacenar elementos agrupados por "group"
+    $groupedArray = [];
 
-    return $el_fields;
+    // Iterar sobre el array original y agrupar por la clave "group"
+    foreach ($data as $key => $value) {
+        $group = $value['group'];
+        
+        // Si el grupo aún no existe en el nuevo array, inicializarlo como un array vacío
+        if (!isset($groupedArray[$group])) {
+            $groupedArray[$group] = [];
+        }
+        
+        // Añadir el elemento al grupo correspondiente
+        $groupedArray[$group][$key] = $value;
+    }
+    return $groupedArray;
   }
+
 function drupalentor_get_sections($html){
     $sections = [];
-    $content = json_decode($html, true);
 
-    foreach ( $content as $k => $row ) {
-  
-        $sections[$k] = $row['settings'];
-    }
+    if($html){
+        $content = json_decode($html, true);
 
-    return $content;
-  }
+        foreach ( $content as $k => $row ) {
 
-function drupalentor_backend( $params ) {
+            $row['settings'] = isset($row['settings']) ? $row['settings'] : '{}';
 
-}
+            $sections[$k] = $row['settings'];
 
-function drupalentor_frontend( $params ) {
-  
-	$output = '';
-	$classes = array(
-		'1' => 'col-lg-1 col-md-1 col-sm-2 col-xs-12',
-		'2' => 'col-lg-2 col-md-2 col-sm-4 col-xs-12',
-		'3' => 'col-lg-3 col-md-3 col-sm-6 col-xs-12',
-		'4' => 'col-lg-4 col-md-4 col-sm-12 col-xs-12',
-		'5' => 'col-lg-5 col-md-5 col-sm-12 col-xs-12',
-		'6' => 'col-lg-6 col-md-6 col-sm-12 col-xs-12',
-		'7' => 'col-lg-7 col-md-7 col-sm-12 col-xs-12',
-		'8' => 'col-lg-8 col-md-8 col-sm-12 col-xs-12',
-		'9' => 'col-lg-9 col-md-9 col-sm-12 col-xs-12',
-		'10' => 'col-lg-10 col-md-10 col-sm-12 col-xs-12',
-		'11' => 'col-lg-11 col-md-11 col-sm-12 col-xs-12',
-		'12' => 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
-	);
-	$content = json_decode($params, true);
-	ob_start();
-	if ( ! empty( $content ) ) {
-		foreach ( $content as $k => $row ) {
-            
-			print (drupalentor_render_el( $row ) );
-		}
-	}
-	$output = ob_get_clean();		
-   
-	return $output;
-
-}
-
-
-function drupalentor_render_el( $data = array(), $content = '' ) {
-    $settings = ! empty( $data['settings'] ) ? $data['settings'] : array();
-    $data['settings']['first_level'] = true;
-    $content_columns = '';
-
-    if ( ! empty( $data['columns']) ){
-        foreach ($data['columns'] as $key => $column) {
-            $content_elements = '';
-            $column['settings']['col_lg'] = $column['col_lg'];
-         
-            if(! empty( $column['elements'])){
-                foreach ($column['elements'] as $key => $element) {
-                    
-                    $content_row_1 = ''; 
-                    if(!empty($element['row'])){
-                        $content_row_1 = drupalentor_render_row($element['row']);
-                    }
-
-                    if($element['element_name']=='gva_row'){
-                        $content_elements .= $content_row_1;
-                    }else{
-                        $content_elements .= drupalentor_render_element($element['element_name'], $element['settings']);
-                    }
-                }
-            }
-            $content_columns .= drupalentor_render_element($column['element_name'], $column['settings'], $content_elements);
-        }
-    }
-   
-    $content = drupalentor_render_element($data['element_name'], $data['settings'], $content_columns);
-
-    return $content;
-
-}
-
-function drupalentor_render_row($row = array()){
-    
-        $content_row = '';
-        $content_columns = '';
-
-        if ( ! empty( $row['columns']) ){
-            foreach ($row['columns'] as $key => $column) {
-                $content_elements = '';
-                $column['settings']['col_lg'] = $column['col_lg'];
-                if(! empty( $column['elements'])){
-                    foreach ($column['elements'] as $key => $element) {
-                        if($element['element_name'] == 'gva_row'){
-                            $content_elements .= drupalentor_render_row($element['row']);
-                        }else{
-                            $content_elements .= drupalentor_render_element($element['element_name'], $element['settings']);
-                        }
-                    }
-                }
-                $content_columns .= drupalentor_render_element($column['element_name'], $column['settings'], $content_elements);
-            }
         }
 
-        $content_row = drupalentor_render_element($row['element_name'], $row['settings'], $content_columns);
-
-        return $content_row;
+        return $content;
+    }
 }
 
 
+function drupalentor_render_element(array $section, $settings = array(), $content =''){
 
-
-function drupalentor_render_element($id = '', $settings = array(), $content =''){
+    $id = $section['type'];
     $_class = 'element_' . $id;
-
     if( class_exists($_class) ){
 
         $s = new $_class;
-
+        $default_settings = [];
         if(method_exists($s, 'render_content')){
-            foreach ( $settings as $key => $setting ) {
-               
-                if ( $key === $id ) {
-                    foreach ( $setting as $name => $value ) {
-                        $settings[$name] = $value;
-                    }
-                }
+            if(method_exists($s, 'render_form')){
+                $default_settings = json_encode($s->render_form());
             }
-            return $s->render_content( $settings, $content);
+
+        
+            return $s->render_content($section, $settings, $content);
         }
     }
 }
 
 
+function drupalentor_html_generated($sections){
+    $html = '';
+    if ($sections) {
 
 
+        foreach ($sections as $key => $section) {
+            $widget_id = $section['type'];
+           $html .= print_widgets($section);
+        }
+    }
+ return $html;
+}
+
+function print_widgets($widget)
+{
+    $content = '';
+    $settings = $widget['settings'] ?? '[]';
+    $columns = $widget['columns'];
+
+    if (!empty($columns)) {
+        foreach ($columns as $ckey => $column) {
+            $elements = $column['elements'];
+            $element_content = ''; // Reset $element_content for each column
+
+            if (!empty($elements)) {
+                foreach ($elements as $ekey => $element) {
+                    // Fetch element settings
+                    $element_settings_json = drupalentor_load_widget($element['id'])->settings ?? null;
+                    $element_settings = $element_settings_json ? json_decode($element_settings_json, true) : null;
+
+                    // Render element
+                    $html_element = drupalentor_render_element($element, $element_settings);
+                    $html_element_sin_tabs = preg_replace('/\t/', '', $html_element);
+                    $output_element = $html_element_sin_tabs;
+                    $element_content .= $output_element;
+                }
+            }
+
+            // Fetch column settings
+            $column_settings_json = drupalentor_load_widget($column['id'])->settings ?? null;
+            $column_settings = $column_settings_json ? json_decode($column_settings_json, true) : null;
+
+            // Render column with elements
+            $html = drupalentor_render_element($column, $column_settings, $element_content);
+            $html_sin_tabs = preg_replace('/\t/', '', $html);
+            $output = $html_sin_tabs;
+            $content .= $output;
+        }
+    }
+
+    // Fetch section settings
+    $section_settings_json = drupalentor_load_widget($widget['id'])->settings ?? null;
+    $section_settings = $section_settings_json ? json_decode($section_settings_json, true) : null;
+
+    // Render section with columns and elements
+    $html = drupalentor_render_element($widget, $section_settings, $content);
+    $html_sin_tabs = preg_replace('/\t/', '', $html);
+    $output = $html_sin_tabs;
+
+    return $output;
+    
+}
 
 function drupalentor_load($nid) {
-    $result = \Drupal::database()->select('{drupalentor}', 'd')
+    $result = \Drupal::database()->select('{drupalentor_page}', 'd')
     ->fields('d')
-    ->condition('nid', $nid, '=')
+    ->condition('did', $nid, '=')
     ->execute()
     ->fetchObject();
     $page = new stdClass();
@@ -265,33 +352,59 @@ function drupalentor_load($nid) {
         $page->nid = $result->nid;  
         $page->did = $result->did;
         $page->uid = $result->uid;
-        $page->html = $result->html;
+        $page->html = $result->settings;
     }else{
         $page->html = array();
     }
+
   return $page;
 }
 
+
+function drupalentor_load_widget($wid) {
+    $result = \Drupal::database()->select('{drupalentor_widget}', 'd')
+    ->fields('d')
+    ->condition('wid', $wid, '=')
+    ->execute()
+    ->fetchObject();
+  return $result;
+}
+
 function drupalentor_load_blocks() {
-    $blocks = [];
-    $entyties = Drupal\block\Entity\Block::loadMultiple();
-    foreach ($entyties as $block) {
-      $blocks[] = ['value' => $block->id(), 'text' => $block->label()];
+    $theme = \Drupal::theme()->getActiveTheme();
+
+    // Obtener los bloques activos en el tema.
+    $block_list = [];
+    foreach (Block::loadMultiple() as $block_id => $block) {
+        if ($block->getTheme() === $theme->getName()) {
+            $block_list[$block_id] = $block->label();
+        }
     }
-    return $blocks;
+
+    return $block_list;
 }
 
 function drupalentor_load_views() {
      $getViews = Views::getViewsAsOptions(TRUE, 'all', NULL, FALSE, TRUE);
+     $viewsData = \Drupal::service('views.views_data');
      $views = [];
      foreach ($getViews as $key => $view_name_master) {
         $view = Views::getView($key);
+// dump($key);
         foreach ($view->storage->get('display') as $name_id => $display_id) {
+
            if( $display_id['display_plugin'] == 'block' ){
-              $views[] = ['value' => $key .','.$name_id, 'text' => $view_name_master];
+
+              $views[$key][] = [
+                'view_id' => $key, 
+                'block_id' =>  htmlspecialchars(json_encode(array($key, $name_id)), ENT_QUOTES, 'UTF-8'), 
+                'text' => $display_id['display_title'],
+                'master' => $view_name_master,
+            ];
            }
         }
      }
+
     return $views;
 }
 
@@ -353,3 +466,43 @@ function drupalentor_page_attachments(array &$page) {
         }
     }
 }
+function drupalentor_page_attachments_alter(array &$attachments) {
+    $route_match = \Drupal::routeMatch();
+    $route = \Drupal::routeMatch()->getRouteName();
+
+    $css_element = drupalentor_add_node_css($route_match);
+
+    if ($route === 'drupalentor.preview' || $route === 'entity.node.canonical') {
+      $attachments['#attached']['html_head'][] = [$css_element, 'drupalentor_node_css'];
+    }
+  }
+ 
+
+
+function drupalentor_add_node_css(RouteMatchInterface $route_match) {
+    $node = $route_match->getParameter('node');
+    if(!empty($node)){
+        $nid = $node->id();
+      $css_file_name = 'drupalentor_' . $nid . '.css';
+
+      if (file_exists('public://drupalentor/' . $css_file_name)) {
+        $file_uri = 'public://drupalentor/' . $css_file_name;
+
+        $file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+
+
+        
+        $element = [
+          '#type' => 'html_tag',
+          '#tag' => 'link',
+          '#attributes' => [
+            'rel' => 'stylesheet',
+            'href' => $file_url,
+          ],
+        ];
+        
+        return $element;
+      }
+    }
+  }
+  

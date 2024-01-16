@@ -26,29 +26,16 @@ class DrupalentorFieldFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
         $elements = array();
-        $content = '';
-        foreach ($items as $delta => $item) {
-            $id = !empty($item->value) ? $item->value : 0;
-            if($id){
-                $results = drupalentor_load($id);
-               
-                if(!$results){
-                    $content = t('Nothing to show');
-                }else{
-                    $content = drupalentor_frontend($results->html);
-                }
-            }
-    
-            $elements[$delta] = array(
-                '#type' => 'markup',
-                '#theme' => 'drupalentor-front',
-                '#content' => $content,
-                '#cache' => array(
-                    'max-age' => 0,
-                ),
-            );
-        }
-      return $elements;
+
+   
+      
+      return  array(
+        '#type' => 'markup',
+        '#markup' => '<h1><caca</h1>',
+        '#cache' => array(
+            'max-age' => 0,
+        ),
+    );;
   }
 
 }

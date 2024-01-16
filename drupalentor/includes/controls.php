@@ -2,7 +2,9 @@
 
 namespace Drupal\drupalentor;
 
-
+use Drupal\drupalentor\Controls_Base;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 
 class Controls_Manager {
 
@@ -55,7 +57,60 @@ class Controls_Manager {
 	/**
 	 * Color control.
 	 */
-	const COLOR = 'color';
+	const DRUPALENTOR_COLOR = 'drupalentor_color';
+
+	/**
+	 * Background control.
+	 */
+	const DRUPALENTOR_BACKGROUND_IMAGE = 'drupalentor_background_image';
+	/**
+	 * Background control.
+	 */
+	const DRUPALENTOR_BACKGROUND_GRADIENT = 'drupalentor_background_gradient';
+	/**
+	 * Background control.
+	 */
+	const DRUPALENTOR_VIDEO_BACKGROUND = 'drupalentor_video_background';
+	/**
+	 * Background control.
+	 */
+	const DRUPALENTOR_IMAGE = 'drupalentor_image';
+	/**
+	 * MArgin control.
+	 */
+	const DRUPALENTOR_MARGIN = 'drupalentor_margin';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_PADDING = 'drupalentor_padding';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_BORDER = 'drupalentor_border';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_GROUP_RADIO = 'drupalentor_group_radio';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_GROUP_CHECKBOX = 'drupalentor_group_checkbox';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_WIDTH = 'drupalentor_width';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_MULTIPLE_FIELDS = 'drupalentor_multiple_fields';
+	/**
+	 * Padding control.
+	 */
+	const DRUPALENTOR_GALLERY = 'drupalentor_gallery';
+	/**
+	 * Padding control.
+	 */
+	const HTML = 'html';
 	/**
 	 * Number control.
 	 */
@@ -70,6 +125,11 @@ class Controls_Manager {
 	 * Select control.
 	 */
 	const SELECT = 'select';
+
+	/**
+	 * Select control.
+	 */
+	const CHECKBOX = 'checkbox';
 
 	/**
 	 * Switcher control.
@@ -126,6 +186,11 @@ class Controls_Manager {
 	 */
 	const DIVIDER = 'divider';
 
+	/**
+	 * Divider control.
+	 */
+	const GROUP = 'group';
+
 
 
 	/**
@@ -161,7 +226,7 @@ class Controls_Manager {
 	/**
 	 * Font control.
 	 */
-	const FONT = 'font';
+	const DRUPALENTOR_FONT = 'drupalentor_font';
 
 	/**
 	 * Image dimensions control.
@@ -253,88 +318,33 @@ class Controls_Manager {
 
 
 
-	/**
-	 * Tabs.
-	 *
-	 * Holds the list of all the tabs.
-	 *
-	 * @since 1.0.0
-	 * @access private
-	 * @static
-	 *
-	 * @var array
-	 */
-	private static $tabs;
-
-	/**
-	 * Init tabs.
-	 *
-	 * Initialize control tabs.
-	 *
-	 * @since 1.6.0
-	 * @access private
-	 * @static
-	 */
-	private static function init_tabs() {
-		self::$tabs = [
-			self::TAB_CONTENT => esc_html__( 'Content', 'elementor' ),
-			self::TAB_STYLE => esc_html__( 'Style', 'elementor' ),
-			self::TAB_ADVANCED => esc_html__( 'Advanced', 'elementor' ),
-			self::TAB_RESPONSIVE => esc_html__( 'Responsive', 'elementor' ),
-			self::TAB_LAYOUT => esc_html__( 'Layout', 'elementor' ),
-			self::TAB_SETTINGS => esc_html__( 'Settings', 'elementor' ),
-		];
-	}
-
-	/**
-	 * Get tabs.
-	 *
-	 * Retrieve the tabs of the current control.
-	 *
-	 * @since 1.6.0
-	 * @access public
-	 * @static
-	 *
-	 * @return array Control tabs.
-	 */
-	public static function get_tabs() {
-		if ( ! self::$tabs ) {
-			self::init_tabs();
-		}
-
-		return self::$tabs;
-	}
-
-	/**
-	 * Add tab.
-	 *
-	 * This method adds a new tab to the current control.
-	 *
-	 * @since 1.6.0
-	 * @access public
-	 * @static
-	 *
-	 * @param string $tab_name  Tab name.
-	 * @param string $tab_label Tab label.
-	 */
-	public static function add_tab( $tab_name, $tab_label = '' ) {
-		if ( ! self::$tabs ) {
-			self::init_tabs();
-		}
-
-		if ( isset( self::$tabs[ $tab_name ] ) ) {
-			return;
-		}
-
-		self::$tabs[ $tab_name ] = $tab_label;
-	}
 
 	public static function get_controls_names() {
 		return [
+			self::TABS,
+			self::TAB,
+			self::GROUP,
 			self::TEXT,
+			self::HTML,
 			self::SELECT,
+			self::CHECKBOX,
 			self::INFO,
 			self::UPLOAD,
+			self::TEXTAREA,
+			self::DRUPALENTOR_BACKGROUND_IMAGE,
+			self::DRUPALENTOR_BACKGROUND_GRADIENT,
+			self::DRUPALENTOR_IMAGE,
+			self::DRUPALENTOR_VIDEO_BACKGROUND,
+			self::DRUPALENTOR_MARGIN,
+			self::DRUPALENTOR_PADDING,
+			self::DRUPALENTOR_GROUP_RADIO,
+			self::DRUPALENTOR_GROUP_CHECKBOX,
+			self::DRUPALENTOR_COLOR,
+			self::DRUPALENTOR_FONT,
+			self::DRUPALENTOR_WIDTH,
+			self::DRUPALENTOR_BORDER,
+			self::DRUPALENTOR_MULTIPLE_FIELDS,
+			self::DRUPALENTOR_GALLERY,
 		];
 	}
 
@@ -448,27 +458,287 @@ class Controls_Manager {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function render_controls($fields, $values, $type, $key) {
-		$control_id = $fields['type'];
-		$control_class_id = str_replace( ' ', '_', ucwords( str_replace( '_', ' ', $control_id ) ) );
-		$class_name = __NAMESPACE__ . '\Control_' . $control_class_id;
-		$fieldId = $fields['id'];
-	
-		// dump($values);
+	public function render_tabs($tabs, $values) {
+		$html_tabs = '';
+		$css = '';
 
-		// $fieldValues = ($fields['id'] == $values[$fieldId]) ? $values[$fieldId] : '';
-		$value = "";
-		if(!empty($values[$fieldId])){
-			$value = $values[$fieldId];
+		$control_tabs = new Control_Tabs();
+		$default_fields = new Controls_Base;
+	 	$tab_titles = [];
+		$items = [];
+
+
+		$array1 = $default_fields->defaultFields();
+		$array1 = $default_fields->groupFields($array1);
+		foreach ($array1 as $key => $value) {
+
+
+			if (array_key_exists($key, $tabs)) {
+			
+				$tabs[$key]['items'] = array_merge(
+					$tabs[$key]['items'],
+					array_diff_key($value['items'], $tabs[$key]['items'])
+				);
+			
+			} else {
+		
+				$tabs[$key] = $value;
+			}
 		}
 
-		$culo = new $class_name();
-		// dump($culo);
-		$culo = $culo->content_template($fields, $value, $type, $key);
-	// 	foreach ( $this->get_controls() as $control ) {
-	// 		$control->content_template();
-	// 	}
+
+		foreach($tabs as $tab_id => $tab){
+			$html_tab = '';
+		
+			foreach($tab['items'] as $item_id => $item){
+			
+				if(isset($item['type']) && $item['type'] === 'group'){
+					$group = new Control_Group();
+
+					$html_group = '';
+					
+					foreach ($item['items'] as $group_item_id => $group_item) {
+
+						$group_items = [
+							'item' => $group_item,
+							'wid' => $values ? $values['wid'] : null,
+							'item_id' => $group_item_id
+						];
+						$html_group .= $this->render_controls($group_items, $values['element'], 'group');
+					}
+					
+		
+					$html_tab  .= $group->content_template($html_group, $item_id, $item['title']);
+				}else{
+					$items[$item_id] = $item;
+
+					$data = [
+						'item' => $item,
+						'wid' => $values ? $values['wid'] : null,
+						'item_id' => $item_id
+					];
+
+					$html_tab .= $this->render_controls($data, $values['element']);
+				}
+			}
+
+			$tab_titles[$tab_id] = $tab['title'];
+			$control_tab = new Control_Tab();
+		
+			$html_tabs .= $control_tab->content_template($html_tab,$tab_id, $tab['title']); // Agregar el HTML del tab al HTML de todos los tabs
+		}
+
+		return ['form' => $control_tabs->content_template($html_tabs, $tab_titles)];
 	}
 
+	public function render_controls($data, $values, $wrapper = null) {
+		$html_form_fields = new Controls_Base;
+		return $html_form_fields->extractHtml($data, $values, $wrapper);
+	}
+
+	public function getClasses($items, $values, $wid) {
+		$class = [];
+
+		foreach($values as $item_id => $element){
+
+			if(!empty($element)){
+				if($items[$item_id]['style_selector'] === 'widget'){
+					$class['#widget-id-'.$wid ][] = $element;
+				}else{
+					$class['#widget-id-'.$wid .' '. $items[$item_id]['style_selector']][] =  $element;
+				}
+			}
+		}
+
+		if(!empty($class)){
+			return $this->transformArray($class);
+		}
+	}
+
+	public function transformArray($array) {
+		$newArray = [];
+
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				$flattenedValues = [];
+	
+				foreach ($value as $val) {
+					if (is_array($val)) {
+						$flattenedValues[] = implode(' ', $val);
+					} else {
+						$flattenedValues[] = $val;
+					}
+				}
+	
+				$newArray[$key] = implode(' ', $flattenedValues);
+			} else {
+				$newArray[$key] = $value;
+			}
+		}
+	
+		return $newArray;
+	}
+	public function getStyles($items, $value, string $wid) {
+
+		$style = [];
+		$css = "";
+
+	
+		$querys = Controls_Base::getMediaQuery();
+
+		if(!empty($value)){
+			foreach($value as $query => $item_value){
+				if($query === 'desktop'){
+					foreach($item_value as $state => $state_value){						
+						if($state === 'default'){
+						
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}else{
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}
+					}
+				}
+				if($query === 'tablet'){
+					$css .= '@media (max-width:959px){';
+					foreach($item_value as $state => $state_value){						
+						if($state === 'default'){
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}else{
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}
+					}
+					$css .= '}';
+				}
+				if($query === 'mobile'){
+					$css .= '@media (max-width:767px){';
+					foreach($item_value as $state => $state_value){						
+						if($state === 'default'){
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}else{
+							$css .= $this->generateCSS($state, $state_value, $items, $wid);
+						}
+					}
+					$css .= '}';
+				}
+
+			}
+		}
+		return $css;
+		
+	}
+
+	public function getBackgroundImage($value){
+
+		$css = "";
+		if(isset($value['background_image']['fid'])){
+	
+			$file = File::load($value['background_image']['fid']);
+			$file_uri = $file->getFileUri();
+			
+			$background_image = ImageStyle::load($value['image_style'])->buildUrl($file_uri);
+			$css .= 'background-image:' .'url(' . $background_image . ');';
+
+			$css .= 'background-repeat:' . ($value['background_image']['background_repeat'] ?? 'no-repeat') . ';';
+			$css .= 'background-position:' . ($value['background_image']['background_position'] ?? 'center center'). ';';
+			$css .= 'background-attachment:' . ($value['background_image']['background_attachment'] ?? 'initial'). ';';
+			$css .= 'background-size:' .  ($value['background_image']['background_size'] ?? 'cover'). ';';
+
+		}
+
+
+
+		return $css;
+	}
+
+	public function getBackgroundGradient($value){
+
+		$css = "";
+
+		if($value['gradient']['type'] === 'horizontal'){
+			$css .= 'background:' . 'linear-gradient(to right,  '.(($value['gradient']['start']['color'] ?? 'transparent') ?? 'transparent').' '.$value['gradient']['start']['location'].'%,'.$value['gradient']['end']['color'].' '.$value['gradient']['end']['location'].'%);';
+		}
+		if($value['gradient']['type'] === 'vertical'){
+			$css .= 'background:' . 'linear-gradient(to bottom,  '.($value['gradient']['start']['color'] ?? 'transparent').' '.$value['gradient']['start']['location'].'%,'.$value['gradient']['stendart']['color'].' '.$value['gradient']['end']['location'].'%);';
+		}
+		if($value['gradient']['type'] === 'diagonal'){
+
+			$css .= 'background:' . 'linear-gradient(135deg,  '.($value['gradient']['start']['color'] ?? 'transparent').' '.$value['gradient']['start']['location'].'%,'.$value['gradient']['end']['color'].' '.$value['gradient']['end']['location'].'%);';
+
+		}
+		if($value['gradient']['type'] === 'diagonal-bottom'){
+			$css .= 'background:' . 'linear-gradient(45deg,  '.($value['gradient']['start']['color'] ?? 'transparent').' '.$value['gradient']['start']['location'].'%,'.$value['gradient']['end']['color'].' '.$value['gradient']['end']['location'].'%);';
+		}
+		if($value['gradient']['type'] === 'radial'){
+			$css .= 'background:' . 'radial-gradient(ellipse at center,  '.($value['gradient']['start']['color'] ?? 'transparent').' '.$value['gradient']['start']['location'].'%,'.$value['gradient']['end']['color'].' '.$value['gradient']['end']['location'].'%);';
+		}
+
+		return $css;
+	}
+
+	public function generateCSS($state, $state_value, $items, $wid) {
+		$css = '';
+		$selectors = [];
+
+		foreach ($state_value as $item_id => $element) {
+
+			if (!empty($items[$item_id]['style_type']) && $items[$item_id]['style_type'] === 'style') {
+				if (!empty($element)) {
+					$selector = ($items[$item_id]['style_selector'] === 'widget') ? '#widget-id-' . $wid : '#widget-id-' . $wid .' '.$items[$item_id]['style_selector'];
+					$selector .= ($state != 'hover') ? '' : ':hover';
+	
+					$declaration = '';
+				
+					if ($items[$item_id]['type'] === 'drupalentor_font' ||
+						$items[$item_id]['type'] === 'drupalentor_margin' ||
+						$items[$item_id]['type'] === 'drupalentor_padding' ||
+						$items[$item_id]['type'] === 'drupalentor_border') {
+	
+						foreach ($element as $property => $value) {
+							$property = str_replace('_', '-', $property);
+							if (!empty($value)) {
+								$declaration .= $property . ':' . $value . ';';
+							}
+						}
+					}
+	
+					if ($items[$item_id]['type'] === 'select' ||
+						$items[$item_id]['type'] === 'text' ||
+						$items[$item_id]['type'] === 'drupalentor_color' ||
+						$items[$item_id]['type'] === 'drupalentor_width') {
+						$declaration .= $items[$item_id]['style_css'] . ':' . $element . ';';
+					}
+	
+					if ($items[$item_id]['type'] === 'drupalentor_background_image') {
+					
+						$background = $this->getBackgroundImage($element);
+						if (!empty($background)) {
+							$declaration .= $background;
+						}
+					}
+	
+					if ($items[$item_id]['type'] === 'drupalentor_background_gradient') {
+					
+						$background = $this->getBackgroundGradient($element);
+						if (!empty($background)) {
+							$declaration .= $background;
+						}
+					}
+	
+					if (!empty($declaration)) {
+						$selectors[$selector][] = $declaration;
+					}
+				}
+			}
+		}
+	
+		// Generate CSS from grouped selectors and declarations
+		foreach ($selectors as $selector => $declarations) {
+			$css .= $selector . '{' . implode('', $declarations) . '}';
+		}
+	
+		return $css;
+	}
+	
+	
 
 }

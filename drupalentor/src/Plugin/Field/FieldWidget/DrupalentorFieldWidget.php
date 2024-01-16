@@ -34,8 +34,8 @@ public function formElement(
     $node = \Drupal::routeMatch()->getParameter('node') ?? NULL;
     if(!empty($node)){
         $nid = $node->id();
-        $builder = \Drupal::database()->select('{drupalentor}', 'd')
-        ->fields('d', array('nid', 'html', 'lang'))
+        $builder = \Drupal::database()->select('{drupalentor_page}', 'd')
+        ->fields('d', array('nid', 'settings', 'langcode'))
         ->condition('nid', $nid)
         ->execute()
         ->fetchAssoc();
