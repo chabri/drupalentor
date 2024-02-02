@@ -1,0 +1,6 @@
+noahs_page_builder.editor:
+  title: 'Edit with noahs_page_builder'
+  description: ''
+  route_name: noahs_page_builder.editor
+  base_route: 'entity.node.canonical'
+  weight: 100

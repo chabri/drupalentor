@@ -1,0 +1,1 @@
+!function(n){n(".noahs-theme--open-tabs").on("click",function(e){e.preventDefault(),n(".noahs-theme--tabs-wrapper").toggleClass("hidden")})}(jQuery);

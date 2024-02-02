@@ -1,0 +1,17 @@
+{
+    "name": "drupal/noahs_page_builder",
+    "description": "noahs_page_builder editor",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "support": {
+        "issues": "https://drupal.org/project/issues/drupalenetor",
+        "source": "https://drupal.org/project/drupalenetor"
+    },
+    "keywords": [
+        "Drupal",
+        "noahs_page_builder"
+    ],
+    "require": {
+        "harvesthq/chosen": "^1.8",
+    }
+}

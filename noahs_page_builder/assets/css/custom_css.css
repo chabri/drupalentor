@@ -1,0 +1,7 @@
+.noahs-group-settings-fileds .fieldset__wrapper {
+  display: flex;
+  gap: 20px;
+}
+.noahs-group-settings-fileds .fieldset__wrapper input {
+  width: 100%;
+}

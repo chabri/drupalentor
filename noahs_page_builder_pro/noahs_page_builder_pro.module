@@ -1,0 +1,32 @@
+<?php
+use Drupal\noahs_page_builder\Controls_Base;
+use Drupal\noahs_page_builder_pro\noahs_page_builderProController;
+
+
+// define( 'NOAHS_PAGE_BUILDER_PATH',  \Drupal::service('extension.list.module')->getPath('noahs_page_builder') );
+
+require_once NOAHS_PAGE_BUILDER_PATH . '/includes/control-base.php';
+
+function noahs_page_builder_pro_theme($existing, $type, $theme, $path) {
+
+}
+function noahs_page_builder_pro_preprocess_page(&$variables) {
+    // // Crear una instancia de la clase noahs_page_builderProController
+    // $extendedInstance = new Controls_Base();
+  
+    // // Obtener el formulario actualizado con los nuevos elementos
+    // $additionalElement = [
+    //     'type'     => 'noahs_page_builder_additional',
+    //     'title'    => t('Additional Element'),
+    //     'tab'      => 'section_extras',
+    //     'style_type' => 'style',
+    //     'style_selector' => 'widget', 
+    //     'style_css' => 'additional', 
+    //     'responsive' => true,
+    //     'style_hover' => true,
+    // ];
+    // $extendedInstance->defaultFields($additionalElement);
+
+
+    // Utilizar $updatedForm como sea necesario en la función preprocess_page
+  }

@@ -1,0 +1,93 @@
+<?php
+
+function noahs_page_builder_schema() {
+  
+  $schema['noahs_page_builder_page'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'did' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique noahs_page_builder ID.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator from {node}.nid",
+      ],
+      'langcode' => [
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Language',
+      ],
+      'settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'page_settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['did'],
+  ];
+
+
+  $schema['noahs_page_builder_widget'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'did' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'langcode' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Language',
+      ],
+      'settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'wid' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'type' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+  ];
+
+  return $schema;
+}

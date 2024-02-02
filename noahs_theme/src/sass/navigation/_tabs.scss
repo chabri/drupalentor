@@ -1,0 +1,28 @@
+  .noahs-theme--tabs-action{
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 999;
+    background: blue;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    a{
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+  }
+  .noahs-theme--tabs-wrapper{
+    position: fixed;
+    right: 25px;
+    bottom: 85px;
+    background: #fff;
+    box-shadow: 0 0 60px rgba(0,0,0,.2);
+    z-index: 999;
+
+  }

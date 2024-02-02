@@ -1,0 +1,10 @@
+
+
+noahs_page_builder_pro.get_mask_image_list_modal:
+  path: '/admin/structure/noahs_page_builder/mask_image'
+  defaults:
+    _title: 'Available Mask Images'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsMaskImageProController::list'
+  requirements:
+    _permission: 'administer noahs_page_builder'
+

@@ -1,0 +1,7 @@
+name: Noahs Page Builder Pro
+type: module
+description: 'Best first page builder on drupal'
+package: noahs_page_builder
+version: 8.x
+core_version_requirement: ^8 || ^9 || ^10
+  

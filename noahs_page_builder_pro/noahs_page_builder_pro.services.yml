@@ -1,0 +1,5 @@
+services:
+  noahs_page_builder_pro.route_subscriber:
+    class: Drupal\noahs_page_builder_pro\Routing\RouteSubscriber
+    tags:
+     - { name: event_subscriber }

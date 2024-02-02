@@ -1,0 +1,18 @@
+name: Noahs Theme
+type: theme
+description: 'HTML5, SASS, Responsive grid starter theme.'
+package: Core
+base theme: false
+core_version_requirement: ^9.3 || ^10
+
+libraries:
+  - noahs_theme/global
+
+regions:
+  header: Header
+  tabs: Tabs
+  footer: Footer
+
+version: '3.0.0-alpha2'
+project: 'basic'
+datestamp: 1674980769

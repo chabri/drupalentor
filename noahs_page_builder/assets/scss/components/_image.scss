@@ -1,0 +1,8 @@
+.widget-noahs-image{
+  .widget-image-src{
+    max-width: 100%;
+    &.empty{
+    max-width: 450px;
+    }
+  }
+}

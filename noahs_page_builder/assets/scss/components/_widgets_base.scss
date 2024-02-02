@@ -1,0 +1,112 @@
+a{
+text-decoration: none;
+}
+.noahs_page_builder-widget {
+    &:before,
+    &:after{
+    content: '';
+    }
+    > .before, > .after{
+    overflow: hidden;
+    position:absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    --nohas-divider-width: 0%;
+    --nohas-divider-height: 0px;
+    --nohas-divider-color:  var(--noahs_page_builder-secondary-color);
+    display: flex;
+    align-items: start;
+        &:before,
+        &:after{
+        display: block;
+        content: '';
+        }
+    }
+
+    > .after{
+        top: auto;
+        bottom: 0;
+        align-items: end;
+    }
+}
+.element-widget,
+.widget-noahs_page_builder-row{
+    display: flex;
+}
+.noahs_page_builder-row-wrapper{
+  width: 100%;
+  display: flex;
+height: 100%;
+position: relative;
+z-index: 2;
+}
+.noahs_page_builder-row-container{
+    width: 100%;
+padding:0;
+}
+.row-wrapper {
+    display: flex;
+    justify-content: center;
+    }
+.noahs_page_builder-widget{
+    &.full-height{
+    height: 100vh;
+    }
+}
+.noahs_page_builder-slideshow{
+    width: 100%;
+    overflow: hidden;
+    .swiper-slide{
+        width: 100% ;
+    }
+}
+
+.media-preview-actions{
+background-image: repeating-conic-gradient(#ffffff 0% 25%, #eaeaea 0% 50%);
+background-position: 0 0, 22px 22px;
+background-size: 44px 44px;
+background-color: #eaeaea;
+position: relative;
+height: 100px;
+overflow: hidden;
+font-size: 40px;
+    &--mask{
+        label{
+        position: relative;
+        }
+        img{
+        padding: 5px;
+        border: 3px dotted transparent;
+        }
+        input{
+        display: none;
+        }
+        label:hover img, input:checked + img{ 
+            border: 3px dotted #000000;
+           
+        }
+    }
+    .btn-group{
+    bottom: -100%;
+    transition: all .2s ease-in-out;
+    }
+    .background-thumbnail-image{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+    &:hover{
+        .btn-group{
+        bottom: 0;
+        }
+    }
+}
+.widget-content{
+  width: 100%;
+}
+
+

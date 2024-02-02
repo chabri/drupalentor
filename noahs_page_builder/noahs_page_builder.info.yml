@@ -1,0 +1,12 @@
+name: Noahs Page Builder 
+type: module
+description: 'Text'
+package: noahs_page_builder
+version: 8.x
+core_version_requirement: ^8 || ^9 || ^10
+dependencies:
+  - field
+  - block
+  - token
+  - drupal:ckeditor5
+  

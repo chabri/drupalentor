@@ -1,0 +1,126 @@
+
+
+.widget-noahs_page_builder-separator{
+  .widget-content{
+  display: flex;
+  justify-content: center;
+  span{
+    display: flex;
+    flex-direction: column;
+  }
+  }
+}
+.noahs_page_builder-separator-item{
+margin: 15px 0;
+position: relative;
+width: 100%;
+text-align: center;
+display: inline-block;
+--separator-border-width: 1px;
+--separator-border-style: dashed;
+--separator-color: black;
+--separator-text-padding: 15px;
+--separator-mask-size: 20px;
+--separator-mask-color: #000000;
+--separator-stroke-width: 1px;
+display: flex;
+justify-content: center;
+align-items: center;
+  span{
+    padding-left: var(--separator-text-padding);
+    padding-right: var(--separator-text-padding);
+    flex-shrink: 0;
+  }
+  &:after{
+  display: none;
+  }
+  &:before,
+  &:after{
+    width: 100%;
+    content: "";
+  }
+
+  &.icon, &.title{
+    &:after {
+      display: block;
+    }
+  }
+
+  &.line,
+  &.double_line{
+    &:before,
+    &:after{
+      height:var(--separator-border-width);
+      background-color:  var(--separator-mask-color);
+    }
+  }
+
+  &.double_line{
+    &:before,
+    &:after {
+      box-shadow: 0 5px 0  var(--separator-mask-color);
+    }
+  }
+
+  &.dotted{
+    &:before,
+    &:after {
+    border-top: var(--separator-border-width) dotted var(--separator-color);
+    }
+  }
+  
+  &.dashed{
+    &:before,
+    &:after {
+    border-top: var(--separator-border-width) dashed var(--separator-color);
+    }
+  }
+  &.line_shadow{
+    overflow: hidden;
+    &:before,
+    &:after {
+      margin: 0 auto 0;
+      width: 100%;
+      height: 10px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 55%);
+    }
+  }
+  &.line_gradient{
+    &:before,
+    &:after {
+    height:var(--separator-border-width);
+    background: linear-gradient(to right, rgba(192, 192, 192, 0), #c0c0c0, rgba(192, 192, 192, 0));
+    }
+  }
+  &.curve{
+    &:before,
+    &:after {
+      mask-repeat: repeat-x;
+      mask-size:  var(--separator-mask-size) 100%;
+      height: 20px;
+      background-color: var(--separator-mask-color);
+      mask-image: var(--separator-pattern-url);
+      }
+  }
+  &.triangle{
+    &:before,
+    &:after {
+      mask-repeat: repeat-x;
+      mask-size: var(--separator-mask-size) 100%;
+      height: 20px;
+      background-color:  var(--separator-mask-color);
+      mask-image: var(--separator-pattern-url);
+    }
+  }
+  &.slash{
+    &:before,
+    &:after {
+      mask-repeat: repeat-x;
+      mask-size: var(--separator-mask-size) 100%;
+      height: 20px;
+      background-color:  var(--separator-mask-color);
+      mask-image: var(--separator-pattern-url);    
+    }
+  }
+
+}
