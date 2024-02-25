@@ -1,0 +1,193 @@
+<div id="top-panel">
+    <button id="btn-desktop" class="area_tooltip btn-top-panel" title="Desktop">
+        <i class="fa-solid fa-desktop"></i>
+    </button>
+    <button id="btn-tablet" class="area_tooltip btn-top-panel" title="Tablet">
+        <i class="fa-solid fa-tablet-screen-button"></i>
+    </button>
+    <button id="btn-mobile" class="area_tooltip btn-top-panel" title="Mobile">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+    </button>
+</div>
+<div class="noahs_page_builder-preview-wrapper">
+    <div id="pageMessages"></div>
+
+    <div class="noahs_page_builder-preview-content">
+        <iframe
+            src="/preview_theme/{{type}}/noahs_page_theme_builder"
+            id="noahs_page_builder-preview"></iframe>
+        <div class="l ui-resizable-handle ui-resizable-w resizable-wrapper" id="w"></div>
+        <div class="r ui-resizable-handle ui-resizable-e resizable-wrapper" id="e"></div>
+    </div>
+</div>
+<form id="noahs_page_builder_form_builder">
+    <div id="widgets_to_remove" data-remove-widgets=""></div>
+    <button
+        type="button"
+        class="btn btn-link btn-sm area_tooltip"
+        data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop"
+        title="{{ 'Page settings' | t}}">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+    <button type="submit" class="btn btn-success btn-sm ms-2">{{'Save' | t}}</button>
+    <a href="{{url}}" class="btn btn-outline-info btn-sm ms-2" target="_blank">{{'View page' | t}}</a>
+    <a href="/admin/content" class="btn btn-outline-primary btn-sm ms-2" target="_blank">{{'Content page' | t}}</a>
+</form>
+
+<!-- Modal Page Settings-->
+<div
+    class="modal fade"
+    id="staticBackdrop">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                {% if type == 'header'%}
+                    <h5 class="modal-title" id="staticBackdropLabel">{{'Page Settings' | t}}</h5>
+                {% else %}
+                    <h5 class="modal-title" id="staticBackdropLabel">{{'Header Settings' | t}}</h5>
+                 {% endif %}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="noahs_page_builder_sttings_page_form">
+                    {% if type == 'header'%}
+                        <h4>On Scroll Down</h4>
+                        <div class="mb-3 field__color">
+                            <label for="background_color" class="form-label">Background Color</label>
+                            <input class="form-control-color" type="text" id="background_color" name="page[background_color_scroll]" value="{{page_settings.background_color_scroll}}">
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="headerSticky" name="page[header_sticky]" {% if page_settings.header_sticky == true %}checked{% endif %}>
+                            <label class="form-check-label" for="headerSticky">Sticky header?</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sticky_in" class="form-label">Sticky in px</label>
+                            <input class="form-control" type="number" id="sticky_in" name="page[sticky_in]" value="{{page_settings.sticky_in}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sticky_in" class="form-label">Site logo width on sticky</label>
+                            <input class="form-control" type="text" id="sticky_in" name="page[site_logo_width]" value="{{page_settings.site_logo_width}}">
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="transition_sticky" name="page[transition_sticky]" {% if page_settings.transition_sticky == true %}checked{% endif %}>
+                            <label class="form-check-label" for="transition_sticky">Transition</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="hide_on_scroll_down" name="page[hide_on_scroll_down]" {% if page_settings.hide_on_scroll_down == true %}checked{% endif %}>
+                            <label class="form-check-label" for="hide_on_scroll_down">Hide on scroll down</label>
+                        </div>
+    
+                    {% else %}
+
+                        <div class="mb-3 field__color">
+                            <label for="background_color" class="form-label">Background Color</label>
+                            <input class="form-control-color" id="background_color" name="page[background_color]" value="{{page_settings.background_color}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="pageContainer" class="form-label">Page Container</label>
+                            <select class="form-control" id="pageContainer" name="page[container]">
+                            <option value="full-width" {% if page_settings.container == 'full-width' %}selected{% endif %}>Full Width</option>
+                            <option value="container" {% if page_settings.container == 'container' %}selected{% endif %}>Container</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="containerWidth" class="form-label">Custom Container Width</label>
+                            <input class="form-control" id="containerWidth" name="page[container_width]" value="{{page_settings.container_width}}">
+                        </div>
+          
+                    {% endif %}
+                    <div class="btn-group d-flex justify-content-end">
+                        <button type="submit" id="savenoahs_page_builderPageSettings" class="btn btn-success bt">{{ 'Save settings' |t }}</button>
+                        <a type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Close' |t }}</a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add Column -->
+
+<div class="modal fade"
+    id="noahsAddColumn">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'Page Settings' | t}}</h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% set classes = {
+                    'wd-10': '10%',
+                    'wd-20': '20%',
+                    'wd-30': '30%',
+                    'wd-40': '40%',
+                    'wd-50': '50%',
+                    'wd-60': '60%',
+                    'wd-70': '70%',
+                    'wd-80': '80%',
+                    'wd-90': '90%',
+                    'wd-100': '100%'
+                } %}
+
+                <div class="noahs_page_builder-column-modal">
+                    <ul class="row">
+                        {% for key, value in classes %}
+                            <li class="column-box {{ key }} area_tooltip" title="{{ value }}" data-column="{{ key }}"></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addElementWidgetModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'Available widgets' | t}}</h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="noahs_page_builder-element-widget-modal">
+                    {% for key, values in widgets %}
+                        <h4 class="mb-3">{{key}}</h4>
+                        <ul class="row g-3 p-0">
+                            {% for key, value in values %}
+                                <li class="widget-box col-2">
+                                    <div class="widget-box_element {{ key }} mb-2 area_tooltip" title="{{ value['description'] }}" data-element="{{ key }}">
+                                        {{value.icon | raw}}
+                                        <span>{{value['title']}}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
+            </div>
+        </div>
+    </div>
+</div>

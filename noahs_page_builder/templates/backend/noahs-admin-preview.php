@@ -1,5 +1,5 @@
 <div class="noahs_page_builder-wrapper">
-	<div id="noahs_page_builder"  data-did="<?php echo $nid; ?>" data-langcode="<?php echo $langcode; ?>">
+	<div id="noahs_page_builder"  data-did="<?php echo $nid ?? null; ?>" data-langcode="<?php echo $langcode; ?>">
     	<div class="builder-wrapper">
 			<?php 
                 echo noahs_page_builder_html_generated($sections);

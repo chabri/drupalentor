@@ -14,7 +14,7 @@ class Control_Noahs_Padding {
 		?>
 		<?php ob_start() ?>
 		
-			<div class="field_description">Use your property as px, em, rem, %, ...</div>
+			<div class="fs-6 fst-italic">Use your property as px, em, rem, %, ...</div>
 			<ul class="field-element-list-horizontal">
 			<li>
 					<input type="text" name="<?php echo $name; ?>[padding_left]" value="<?php echo !empty($value['padding_left']) ? $value['padding_left'] : null; ?>" class="form-control" field-settings>

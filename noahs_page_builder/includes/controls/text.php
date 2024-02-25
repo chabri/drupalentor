@@ -33,9 +33,11 @@ class Control_Text extends Controls_Base{
 
 		return $output;
 	}
+
 	public function render_control($data){
 		return $this->base($data, $this->content_template($data));
 	}
+	
 	protected function get_default_settings() {
 		return [
 			'input_type' => 'text',

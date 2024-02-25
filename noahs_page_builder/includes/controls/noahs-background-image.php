@@ -4,7 +4,7 @@ namespace Drupal\noahs_page_builder;
 
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
-
+use \Drupal\noahs_page_builder\Controller\NoahsController;
 class Control_Noahs_Background_Image{
 	
 	public function get_type() {
@@ -15,8 +15,7 @@ class Control_Noahs_Background_Image{
 
 
 		$id = $data['wid'];
-		$image_styles = \Drupal::entityQuery('image_style')->execute();
-		$image_styles['original'] = 'Original';
+		$image_styles = NoahsController::getImageStyle();
 
 		$image = null;
 

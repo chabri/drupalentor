@@ -5,6 +5,9 @@ namespace Drupal\noahs_page_builder;
 use Drupal\noahs_page_builder\Controls_Base;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Render\Markup;
+use Drupal\node\Entity\Node;
+
 
 class Controls_Manager {
 
@@ -78,6 +81,10 @@ class Controls_Manager {
 	 * Padding control.
 	 */
 	const NOAHS_PADDING = 'noahs_padding';
+	/**
+	 * Padding control.
+	 */
+	const NOAHS_BORDER_RADIUS = 'noahs_radius';
 	/**
 	 * Padding control.
 	 */
@@ -297,7 +304,12 @@ class Controls_Manager {
 	/**
 	 * Box shadow control.
 	 */
-	const BOX_SHADOW = 'box_shadow';
+	const NOAHS_SHADOWS = 'noahs_shadows';
+
+	/**
+	 * Box shadow control.
+	 */
+	const NOAHS_CUSTOM_CSS = 'noahs_custom_css';
 
 	/**
 	 * Text shadow control.
@@ -355,6 +367,8 @@ class Controls_Manager {
 			self::NOAHS_VIDEO_BACKGROUND,
 			self::NOAHS_MARGIN,
 			self::NOAHS_PADDING,
+			self::NOAHS_SHADOWS,
+			self::NOAHS_BORDER_RADIUS,
 			self::NOAHS_GROUP_RADIO,
 			self::NOAHS_GROUP_CHECKBOX,
 			self::NOAHS_COLOR,
@@ -368,24 +382,14 @@ class Controls_Manager {
 			self::NOAHS_ICON,
 			self::NOAHS_IMAGE_MASK,
 			self::NOAHS_DIVIDER,
+			self::NOAHS_CUSTOM_CSS,
 		];
 	}
 
 	/**
 	 * Register controls.
-	 *
-	 * This method creates a list of all the supported controls by requiring the
-	 * control files and initializing each one of them.
-	 *
-	 * The list of supported controls includes the regular controls and the group
-	 * controls.
-	 *
-	 * External developers can register new controls by hooking to the
-	 * `elementor/controls/controls_registered` action.
-	 *
-	 * @since 3.1.0
-	 * @access private
 	 */
+
 	private function register_controls() {
 		$this->controls = [];
 		foreach ( self::get_controls_names() as $control_id ) {
@@ -395,15 +399,6 @@ class Controls_Manager {
 	}
 
 	public function register( $control_instance, $control_id = null ) {
-		// TODO: Uncomment when Pro uses the new hook.
-
-		// TODO: For BC. Remove in the future.
-		//if ( $control_id ) {
-		//	Plugin::instance()->modules_manager->get_modules( 'dev-tools' )->deprecation->deprecated_argument(
-		//		'$control_id', '3.5.0'
-		//	);
-		//} else {
-		//}
 
 		$control_id = $control_instance->get_type();
 
@@ -412,13 +407,6 @@ class Controls_Manager {
 
 	/**
 	 * Get controls.
-	 *
-	 * Retrieve the controls list from the current instance.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @return Base_Control[] Controls list.
 	 */
 	public function get_controls() {
 
@@ -431,16 +419,8 @@ class Controls_Manager {
 
 	/**
 	 * Get control.
-	 *
-	 * Retrieve a specific control from the current controls instance.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param string $control_id Control ID.
-	 *
-	 * @return bool|Base_Control Control instance, or False otherwise.
 	 */
+
 	public function get_control( $control_id ) {
 
 		$controls = $this->get_controls();
@@ -448,29 +428,6 @@ class Controls_Manager {
 		return isset( $controls[ $control_id ] ) ? $controls[ $control_id ] : false;
 	}
 
-	/**
-	 * Get controls data.
-	 *
-	 * Retrieve all the registered controls and all the data for each control.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @return array {
-	 *    Control data.
-	 *
-	 *    @type array $name Control data.
-	 * }
-	 */
-	public function get_controls_data() {
-		$controls_data = [];
-
-		foreach ( $this->get_controls() as $name => $control ) {
-			$controls_data[ $name ] = $control->get_settings();
-		}
-
-		return $controls_data;
-	}
 
 	/**
 	 * Render controls.
@@ -519,8 +476,6 @@ class Controls_Manager {
 			$html_tab = '';
 	
 			foreach($tab['items'] as $item_id => $item){
-
-	
 				
 				if(isset($item['type']) && $item['type'] === 'group'){
 					$group = new Control_Group();
@@ -553,7 +508,7 @@ class Controls_Manager {
 						'delta' => $delta,
 						'parent' => $parent,
 					];
-				
+		
 					$values_element = isset($values['element']) ? $values['element'] : [];
 					
 					$html_tab .= $this->render_controls($data, $values_element, '', $delta);
@@ -578,6 +533,8 @@ class Controls_Manager {
 		return $html_form_fields->extractHtml($data, $values, $wrapper, $delta);
 	}
 
+
+	// Get Classes from selector
 	public function getClasses($items, $values, $wid) {
 		$class = [];
 
@@ -597,6 +554,7 @@ class Controls_Manager {
 		}
 	}
 
+	// Get Attributes from selector
 	public function getAttributes($items, $values, $wid) {
 		$class = [];
 
@@ -618,6 +576,7 @@ class Controls_Manager {
 
 	}
 
+	// Transform Array to implode
 	public function transformArray($array) {
 		$newArray = [];
 
@@ -641,6 +600,8 @@ class Controls_Manager {
 	
 		return $newArray;
 	}
+
+	// getStyles Principal Function
 	public function getStyles($items, $value, string $wid) {
 
 
@@ -695,8 +656,33 @@ class Controls_Manager {
 	}
 
 	public function getBackgroundImage($value){
-
 		$css = "";
+	// 	$tokenService = \Drupal::token();
+	// 	$route_match = \Drupal::routeMatch();
+
+	// 		$nid = $route_match->getParameter('nid');
+
+	// 	$node = Node::load($nid);
+
+	// 	// Definir el token que deseas renderizar, por ejemplo 'node:id'.
+	// 	$token = '[node:title]';
+	
+	// 	// Renderizar el token utilizando el servicio 'token'.
+	// 	$token_service = \Drupal::token();
+
+    //   // Renderizar el token [node:title] utilizando el servicio 'token'.
+    //   $rendered_token = $token_service->replace('[node:title]', ['node' => $node]);
+	//   dump($rendered_token);
+      // Convertir el texto renderizado en Markup para que sea seguro imprimirlo.
+  
+		// if(isset($value['token'])){
+	
+		// 	$token_service = \Drupal::token();
+		// 	$token = $token_service->replace($value['token']);
+		// 	dump(Markup::create($token)->__toString());
+		// }
+		
+		
 		if(isset($value['background_image']['fid'])){
 	
 			$file = File::load($value['background_image']['fid']);
@@ -742,20 +728,20 @@ class Controls_Manager {
 		return $css;
 	}
 
+	// Generate stiles from generateCSS first
 	public function generateCSS($state, $state_value, $items, $wid) {
 		$css = '';
-	
+
 		$selectors = [];
 		$config = \Drupal::config('noahs_page_builder.settings');
 		
 		foreach ($state_value as $item_id => $element) {
-		
-			
+
 			if($items[$item_id]['type'] === 'noahs_multiple_elements'){
 			
 	
 				if (!empty($element)) {
-					foreach($element as $k => $caca){
+					foreach($element as $k => $declaration){
 						$k_sin_numeros = preg_replace('/_\d+$/', '', $k);
 						$numero = null;
 						if (preg_match('/_(\d+)$/', $k, $matches)) {
@@ -775,21 +761,23 @@ class Controls_Manager {
 					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_font' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_margin' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_padding' ||
+						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_radius' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_border') {
-	
+						
 						foreach ($element as $property => $value) {
 							$property = str_replace('_', '-', $property);
 							if (!empty($value)) {
 								$declaration .= $property . ':' . $value . ';';
 							}
 						}
+				
 					}
 	
 					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'select' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'text' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_color' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_width') {
-						$declaration .= $items[$item_id]['fields'][$k_sin_numeros]['style_css'] . ':' . $caca . ';';
+						$declaration .= $items[$item_id]['fields'][$k_sin_numeros]['style_css'] . ':' . $declaration . ';';
 					}
 	
 					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_background_image') {
@@ -819,43 +807,11 @@ class Controls_Manager {
 		
 
 			if (!empty($items[$item_id]['style_type']) && $items[$item_id]['style_type'] === 'style') {
-			
+				
 				$declaration = '';
 				$selector = '';
-				if($items[$item_id]['type'] === 'noahs_divider'){
-
 			
-					$selector = '#widget-id-' . $wid . ' > .before:before';
-					if(!empty($element['position'])){
-						$selector = '#widget-id-' . $wid . ' > .after:after';
-						$declaration = 'transform: rotate(180deg) scaleX(-1);';
-						
-					}
-					if(!empty($element['direction'])){
-						$declaration = 'transform: scaleX(-1);';
-					}
-				
-					$declaration .= '--nohas-divider-width: ' . ($element['width'] ?? '100') . '%;';
-					$declaration .= '--nohas-divider-height: ' . ($element['height'] ?? '300') . 'px;';
-					$declaration .= 'width: var(--nohas-divider-width);';
-					$declaration .= 'height: var(--nohas-divider-height);';
-					$color = $element['color'] ?? $config->get('principal_color');
-					if(!empty($element['type']) && $element['type'] === 'waves'){
-						$declaration .= 'background: url(\'data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: '.rawurlencode($color).'; width: var(--nohas-divider-width)%; height: var(--nohas-divider-height)px;"%3E%3Cpath d="M321.39 56.44c58-10.79 114.16-30.13 172-41.86 82.39-16.72 168.19-17.73 250.45-.39C823.78 31 906.67 72 985.66 92.83c70.05 18.48 146.53 26.09 214.34 3V0H0v27.35a600.21 600.21 0 00321.39 29.09z"%3E%3C/path%3E%3C/svg%3E\')';
-					}
-					if(!empty($element['type']) && $element['type'] === 'tilt'){
-						$declaration .= 'background: url(\'data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: '.rawurlencode($color).'; width: var(--nohas-divider-width)%; height: var(--nohas-divider-height)px;"%3E%3Cpath d="M1200 120L0 16.48V0h1200v120z"%3E%3C/path%3E%3C/svg%3E\')';
-					}
-					if(!empty($element['type']) && $element['type'] === 'waves_opaque'){
-						$declaration .= 'background: url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: '.rawurlencode($color).'; width: 106%; height: 500px;"><path d="M0 0v46.29c47.79 22.2 103.59 32.17 158 28 70.36-5.37 136.33-33.31 206.8-37.5 73.84-4.36 147.54 16.88 218.2 35.26 69.27 18 138.3 24.88 209.4 13.08 36.15-6 69.85-17.84 104.45-29.34C989.49 25 1113-14.29 1200 52.47V0z" opacity=".25"/><path d="M0 0v15.81c13 21.11 27.64 41.05 47.69 56.24C99.41 111.27 165 111 224.58 91.58c31.15-10.15 60.09-26.07 89.67-39.8 40.92-19 84.73-46 130.83-49.67 36.26-2.85 70.9 9.42 98.6 31.56 31.77 25.39 62.32 62 103.63 73 40.44 10.79 81.35-6.69 119.13-24.28s75.16-39 116.92-43.05c59.73-5.85 113.28 22.88 168.9 38.84 30.2 8.66 59 6.17 87.09-7.5 22.43-10.89 48-26.93 60.65-49.24V0z" opacity=".5"/><path d="M0 0v5.63C149.93 59 314.09 71.32 475.83 42.57c43-7.64 84.23-20.12 127.61-26.46 59-8.63 112.48 12.24 165.56 35.4C827.93 77.22 886 95.24 951.2 90c86.53-7 172.46-45.71 248.8-84.81V0z"/></svg>\')';
-					}
-					if(!empty($element['type']) && $element['type'] === 'triangles'){
-						$declaration .= 'background: url(\'data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="fill: '.rawurlencode($color).'; width: var(--nohas-divider-width)%; height: var(--nohas-divider-height)px;"%3E%3Cpath d="M60 120L0 0h120L60 120zm120 0L120 0h120l-60 120zm120 0L240 0h120l-60 120zm120 0L360 0h120l-60 120zm120 0L480 0h120l-60 120zm120 0L600 0h120l-60 120zm120 0L720 0h120l-60 120zm120 0L840 0h120l-60 120zm120 0L960 0h120l-60 120zm120 0L1080 0h120l-60 120z"%3E%3C/path%3E%3C/svg%3E\')';
-					}
-		
-				}
-
-		
+				// dump($declaration);
 				if (!empty($element) && !empty($items[$item_id]['style_selector'])) {
 				
 					$selector = ($items[$item_id]['style_selector'] === 'widget')
@@ -866,6 +822,7 @@ class Controls_Manager {
 					if ($items[$item_id]['type'] === 'noahs_font' ||
 						$items[$item_id]['type'] === 'noahs_margin' ||
 						$items[$item_id]['type'] === 'noahs_padding' ||
+						$items[$item_id]['type'] === 'noahs_radius' ||
 						$items[$item_id]['type'] === 'noahs_border') {
 	
 						foreach ($element as $property => $value) {
@@ -874,6 +831,18 @@ class Controls_Manager {
 								$declaration .= $property . ':' . $value . ';';
 							}
 						}
+					}
+					if ($items[$item_id]['type'] === 'noahs_shadows') {
+
+						$shadow_x = isset($element['shadow_x']) && $element['shadow_x'] !== '' ? $element['shadow_x'] : '0';
+						$shadow_y = isset($element['shadow_y']) && $element['shadow_y'] !== '' ? $element['shadow_y'] : '0';
+						$blur = isset($element['blur']) && $element['blur'] !== '' ? $element['blur'] : '0';
+						$spread = isset($element['spread']) && $element['spread'] !== '' ? $element['spread'] : '0';
+						$color = isset($element['color']) && $element['color'] !== '' ? $element['color'] : 'black';
+						$box_shadow = "{$shadow_x}px {$shadow_y}px {$blur} {$spread} {$color}";
+
+						$declaration .= "box-shadow: {$box_shadow};";
+				
 					}
 
 					if ($items[$item_id]['type'] === 'noahs_coordinates'){
@@ -903,11 +872,6 @@ class Controls_Manager {
 						$declaration .= '-webkit-mask: url('.$element['mask'].') no-repeat center;';
 						$declaration .= 'mask-size: '.($element['mask_size'] ?? '100%'). ';';
 						$declaration .= '-webkit-mask-size: '.($element['mask_size'] ?? '100%'). ';';
-dump($element);
-						// $declaration
-						// $style_suffix = !empty($items[$item_id]['style_suffix']) ? $items[$item_id]['style_suffix'] : null;
-
-						// $declaration .= $items[$item_id]['style_css'] . ':' . $element . $style_suffix .';';
 					}
 	
 					if ($items[$item_id]['type'] === 'noahs_background_image') {
@@ -932,6 +896,11 @@ dump($element);
 
 					$selectors[$selector][] = $declaration;
 				}
+			}
+					
+			
+			if($items[$item_id]['type'] === 'noahs_custom_css'){
+				$css .= str_replace('selector', '#widget-id-' . $wid, $element);
 			}
 		}
 

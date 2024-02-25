@@ -9,6 +9,7 @@ noahs_page_builder.assets.admin:
       assets/css/jquery.fancybox.min.css: {}
       assets/css/flipdown.min.css: {}
       assets/css/swiper-bundle.min.css: {}
+    
       assets/css/aos.css: {}
       assets/css/bootstrap.min.css: {}
       assets/css/editor.css: {}
@@ -18,11 +19,13 @@ noahs_page_builder.assets.admin:
     vendor/ckeditor5/build/ckeditor.js: {scope: footer}
     assets/libs/builder/jquery.serializeToJSON.min.js: {}
     vendor/spectrum/dist/spectrum.min.js: {scope: footer}
+
     assets/libs/builder/flipdown.min.js: {scope: footer}
     assets/libs/builder/jquery.fancybox.min.js: {scope: footer}
     assets/libs/builder/swiper-bundle.min.js: {scope: footer}
     assets/libs/builder/aos.js: {scope: footer}
     assets/js/bootstrap.bundle.min.js: {scope: footer}
+
     assets/js/admin.js: {scope: footer}
     assets/js/modal_form.js: {scope: footer}
     assets/js/tabs.js: {scope: footer}
@@ -46,6 +49,8 @@ noahs_page_builder.assets.preview:
       vendor/font-awesome/css/solid.min.css: {}
       assets/css/bootstrap.min.css: {}
       assets/css/flipdown.min.css: {}
+      assets/css/codemirror.css: {}
+      assets/css/material-darker.css: {}
       assets/css/editor.css: {}
       assets/css/noahs.css: {}
   js:
@@ -57,10 +62,13 @@ noahs_page_builder.assets.preview:
     assets/libs/builder/flipdown.min.js: {scope: footer}
     assets/js/bootstrap.bundle.min.js: {scope: footer}
     assets/libs/builder/swiper-bundle.min.js: {scope: footer}
+    assets/libs/builder/codemirror.js: {scope: footer}
+    assets/libs/builder/css.js: {scope: footer}
+    assets/libs/builder/htmlmixed.min.js: {scope: footer}
     assets/js/admin-preview.js: {scope: footer}
     assets/js/tabs.js: {scope: footer}
     assets/js/color.js: {scope: footer}
-    
+    assets/js/code_mirror.js: {scope: footer}
   dependencies:
     - core/jquery
     - core/drupal

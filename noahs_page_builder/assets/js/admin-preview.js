@@ -85,11 +85,19 @@
         $('.noahs_page_builder-modal').toggleClass('right');
     })
 
-    $(document).on("click", '#noahs_page_builder_icon_data', function(e){
+    $(document).on("click", '.media-select-icon', function(e){
         e.preventDefault();
         var element_id  = $(this).data('element-id');
-        openIconModal(element_id);
+        var delta  = $(this).data('delta');
+        openIconModal(element_id, delta);
     })
+    $(document).on("click", '.media-remove-icon', function(e){
+        e.preventDefault();
+
+        $(this).closest('.media-preview-actions').find('input').val('');
+        $(this).closest('.media-preview-actions').find('.icon-empty').removeClass('fa-solid fa-cube');
+    })
+    
     $(document).on("click", '.noahs_page_builder-modal-tokens', function(e){
         e.preventDefault();
         
@@ -118,9 +126,15 @@
         e.preventDefault();
         $('.noahs_page_builder-media-modal').remove();
     })
+    
     $(document).on("click", '.noahs_page_builder-remove-item', function(e){
         e.preventDefault();
         $(this).closest('.accordion-item').remove();
+    })
+
+    $(document).on("click", '.media-remove_mask_image', function(e){
+        e.preventDefault();
+        $(this).closest('.media-preview-actions--mask').find('input').prop('checked', false);
     })
     $(document).on("keyup", '[name="element[separator_weight]"]', function(e){
 
@@ -184,36 +198,37 @@
 
         $('#noahs_page_builder_form_builder').on("submit", function(e){
             e.preventDefault();
-            const formData = getWidgetStructure();
-            console.log(JSON.parse(formData));
-            noahs_page_builderSavePage(formData);
-            var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
+
+            noahs_page_builderSavePage();
+            // var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
            
-            if(deletedIds){
-                JSON.parse(deletedIds).forEach(element => {
-                    // removeWidgetsDataBase(element);
-                });
+            // if(deletedIds){
+            //     JSON.parse(deletedIds).forEach(element => {
+            //         // removeWidgetsDataBase(element);
+            //     });
                
-            }
+            // }
             document.getElementById('noahs_page_builder-preview').contentWindow.location.reload(true);
 
             return false;
           })
+
+
         $('#noahs_page_builder_sttings_page_form').on("submit", function(e){
 
             e.preventDefault();
-            const formData = getWidgetStructure();
+
   
-            noahs_page_builderSavePage(formData);
+            noahs_page_builderSavePage();
           
-            var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
+            // var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
            
-            if(deletedIds){
-                JSON.parse(deletedIds).forEach(element => {
-                    // removeWidgetsDataBase(element);
-                });
+            // if(deletedIds){
+            //     JSON.parse(deletedIds).forEach(element => {
+            //         // removeWidgetsDataBase(element);
+            //     });
                
-            }
+            // }
            
             return false;
           })
@@ -241,20 +256,25 @@
     // se obteiene la estructura de datos de la página
     function getWidgetStructure(){
         var contenidoIframe = $('#noahs_page_builder-preview').contents().find('#noahs_page_builder').html();
-
+        var iframeContent = $('#noahs_page_builder-preview').contents();
+        var did = $(iframeContent).find('#noahs_page_builder').data('did');
+        var langcode = $(iframeContent).find('#noahs_page_builder').data('langcode');
         // Crear un objeto para almacenar la estructura serializada
         var estructuraSerializada = [];
 
         // Iterar sobre cada elemento con la clase "section"
         $(contenidoIframe).find('section[data-widget-type="section"]').each(function(index, section) {
+
+
             var sectionId = $(section).data('widget-id'); // Obtener el ID de la sección
             var type = $(section).data('type'); // Obtener el ID de la columna
             var widget_type = $(section).data('widget-type'); // Obtener el ID de la columna
             var settings = $(section).data('settings'); // Obtener el ID de la columnaa
           
             var sectionData = {
-                id: sectionId,
+                wid: sectionId,
                 type: type,
+                did: did,
                 widget_type: widget_type,
                 settings: settings,
                 columns: []
@@ -269,8 +289,9 @@
                 var settings = $(column).data('settings'); // Obtener el ID de la columna
 
                 var columnData = {
-                    id: columnId,
+                    wid: columnId,
                     type: type,
+                    did: did,
                     widget_type: widget_type,
                     column_size: column_size,
                     settings: settings,
@@ -286,8 +307,9 @@
                     var settings = $(widget).data('settings'); // Obtener el ID de la columna
 
                     var elementsData = {
-                        id: widgetId,
+                        wid: widgetId,
                         type: type,
+                        did: did,
                         widget_type: widget_type,
                         settings: settings,
                         // Otra información relevante del widget si es necesario
@@ -304,13 +326,14 @@
             // Agregar los datos de la sección al arreglo de estructura serializada
             estructuraSerializada.push(sectionData);
         });
-        $(contenidoIframe).find('.widget-cloned').each(function() {
 
-            var dataSettings = $(this).data('settings');
-            noahs_page_builderSaveWidgetfromStruture(dataSettings);
+        // $(contenidoIframe).find('.widget-cloned').each(function() {
 
-            $('.widget-cloned').removeClass('widget-cloned');
-        });
+        //     var dataSettings = $(this).data('settings');
+        //     noahs_page_builderSaveWidgetfromStruture(dataSettings);
+
+        //     $('.widget-cloned').removeClass('widget-cloned');
+        // });
         // Convertir la estructura serializada a JSON
         var estructuraSerializadaJSON = JSON.stringify(estructuraSerializada);
         return estructuraSerializadaJSON;
@@ -320,7 +343,7 @@
 
     // formulario de edicion modal
     function noahs_page_builderOpenModal(form){
-        $(form).remove();
+        $('.noahs_page_builder-modal').remove();
         $('body').append(form);
         $(document).trigger('myAjaxFinished');
 
@@ -361,11 +384,13 @@
             var formData = $(this).find(':input').filter(function () {
                 return $.trim(this.value).length > 0
             }).serializeJSON();
-            console.log(formData);
+
 
             const widget_id = $('input[name="wid"]').val();
-            noahs_page_builderSave(formData);
-            $('#noahs_page_builder-preview').contents().find('#widget-id-' + settings.wid).attr('data-settings', JSON.stringify(formData));
+
+            $('#noahs_page_builder-preview').contents().find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
+            noahs_page_builderSavePage();
+      
             document.getElementById('noahs_page_builder-preview').contentWindow.location.reload(true);
             return false;
         })
@@ -406,8 +431,8 @@
             $tempDiv.find('.accordion-collapse').attr('aria-labelledby', 'header_' + (count + 1));
         
             var updatedHtml = $tempDiv.html();
-        
-            $(this).closest('.noahs_page_builder_multiple_field').find('.accordion').append(updatedHtml);
+
+            $(this).closest('.noahs_page_builder_multiple_elements').find('.accordion').append(updatedHtml);
           
 
         })
@@ -467,7 +492,7 @@
         };
 
         $.ajax({
-        url: '/admin/noahs_page_builder/media-modal', // Reemplaza con la URL de tu ruta de Ajax.
+        url: '/admin/noahs_page_builder/media-modal', 
         method: 'POST',
         data: JSON.stringify(data),
         success:function(data) {
@@ -609,7 +634,7 @@
     }
 
     // Icon modal
-    function openIconModal(element_id){
+    function openIconModal(element_id, delta){
 
         var data = {
             element_id: element_id,
@@ -621,11 +646,8 @@
         data: JSON.stringify(data),
         success:function(data) {
 
-       
-
             $('body').append(data);
 
-    
                 $('[data-icon]').on('click', function(e){
                     e.preventDefault();
                     $('[data-icon]').removeClass('selected');
@@ -640,7 +662,7 @@
                     var iconClass = $(this).data('icon-class');
                     var element_id = $(this).data('element-id');
     
-                    $('#' + element_id).closest('.media-preview-actions').find('#noahs_page_builder_icon_class').val(iconClass);
+                    $('#' + element_id).closest('.media-preview-actions').find('#noahs_page_builder_icon_class_' + delta).val(iconClass);
                     $("#item").removeAttr('class');
 
                     $('#' + element_id).closest('.media-preview-actions').find('span').removeAttr('class')
@@ -648,8 +670,7 @@
 
                     $('.noahs_page_builder-media-modal').remove();
                 })
-            
-
+        
 
             $('.close-media-modal').on("click", function(e){
                 e.preventDefault();
@@ -720,17 +741,16 @@
     }
 
     //Añadir wl widget
-    function addWidget(widget_id, did, langcode){
+    function addWidget(widget_id){
         var data = {
         widget_id: widget_id,
-        did: did,
-        langcode: langcode,
+        nid:  drupalSettings.nid,
         };
 
 
         var result="";
         $.ajax({
-        url: '/admin/noahs_page_builder/widget/' + widget_id + '/' + did + '/' + langcode, // Reemplaza con la URL de tu ruta de Ajax.
+        url: '/admin/noahs_page_builder/widget/' + widget_id,
         method: 'POST',
         data: JSON.stringify(data),
         async: false,  
@@ -801,13 +821,13 @@
                     success: function (data) {
 
                         var contenidoIframe = $('#noahs_page_builder-preview').contents().find('head');
-                        var stylesContainer = contenidoIframe.find('[data-noahs_page_builder="' + drupalSettings.did + '"]');
-                        if (stylesContainer.length) {
-                            stylesContainer.text(data.styles);
-                        } else {
+                        // var stylesContainer = contenidoIframe.find('[data-noahs_page_builder="' + drupalSettings.did + '"]');
+                        // if (stylesContainer.length) {
+                        //     // stylesContainer.text(data.styles);
+                        // } else {
                            
-                            contenidoIframe.append('<style type="text/css" data-noahs_page_builder="' + drupalSettings.did + '">' + data.styles + '</style>');
-                        }
+                        //     // contenidoIframe.append('<style type="text/css" data-noahs_page_builder="' + drupalSettings.did + '">' + data.styles + '</style>');
+                        // }
                         // createAlert('','Styles Saved or updated!','everything went well.','info',true,true,'pageMessages');                
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -825,79 +845,40 @@
             }
         });
     }
+
+
     // Guardar Widget
     function noahs_page_builderSave(settings) {
 
-        var result = settings;
-        var data = {
-            wid: result['wid'],
-            did: result['did'],
-            uid: result['uid'],
-            langcode: result['langcode'],
-            type: result['type'],
-            settings: JSON.stringify(settings),
-        };
-        var formData = getWidgetStructure();
 
-        noahs_page_builderSavePage(formData);
+    
 
-        $.ajax({
-            url: '/admin/noahs_page_builder/save_widget',
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function (data) {
-
-                addClasses(data.classes);
-
-                createAlert('','Widget Saved!','everything went well.','success',true,true,'pageMessages');
-                // Ejecutar el segundo AJAX después de que el primero termine
-                $.ajax({
-                    url: '/admin/save-styles/' + result['did'],
-                    type: 'POST',
-                    data: data,
-                    dataType: 'json',
-                    success: function (data) {
-
-                        var contenidoIframe = $('#noahs_page_builder-preview').contents().find('head');
-                        var stylesContainer = contenidoIframe.find('[data-noahs_page_builder="' + drupalSettings.did + '"]');
-                        if (stylesContainer.length) {
-                            stylesContainer.text(data.styles);
-                        } else {
-                           
-                            contenidoIframe.append('<style type="text/css" data-noahs_page_builder="' + drupalSettings.did + '">' + data.styles + '</style>');
-                        }
-                        // createAlert('','Styles Saved or updated!','everything went well.','info',true,true,'pageMessages');                     
-                      },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                        createAlert('Opps!',textStatus + ":" +  'Something went wrong','Check your drupal Recent log messages.','danger',true,false,'pageMessages');
-                    }
-                });
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                createAlert('Opps!',textStatus + ":" +  'Something went wrong','Check your drupal Recent log messages.','danger',true,false,'pageMessages');
-            },
-            complete: function () {
-                // getFinalWidget(settings);
-            
-             }
-        });
     }
 
     // Guardar Página
-    function noahs_page_builderSavePage(settings) {
+    function noahs_page_builderSavePage() {
+        var settings = getWidgetStructure();
 
         var pageSettings = $('#noahs_page_builder_sttings_page_form').serializeJSON();
+        console.log(pageSettings);
+        var data_id = drupalSettings.did;
         var data = {    
-            nid: drupalSettings.nid,
+            nid: data_id,
             did: drupalSettings.did,
             uid: drupalSettings.uid,
             langcode: drupalSettings.langcode,
             settings: settings,
             page_settings: JSON.stringify(pageSettings),
         };
+        if(drupalSettings.theme_builder){
+            data_id = drupalSettings.theme_builder_type;
+            var data = {    
+                type: data_id,
+                langcode: drupalSettings.langcode,
+                settings: settings,
+                page_settings: JSON.stringify(pageSettings),
+            };
+        }
 
         $.ajax({
             url: drupalSettings.savePage,
@@ -905,18 +886,13 @@
             data: data,
             dataType: 'json',
             success: function (data) {
+
                 $.ajax({
-                    url: '/admin/save-styles/' + drupalSettings.did,
+                    url: '/admin/save-styles/' + data_id,
                     type: 'POST',
-                    data: data,
                     dataType: 'json',
                     success: function (data) {
-                        var stylesContainer =$('head').find('[data-noahs_page_builder="' + drupalSettings.did + '"]');
-                        if (stylesContainer.length) {
-                          stylesContainer.text(data.styles);
-                        } else {
-                          $('head').append('<style type="text/css" data-noahs_page_builder="' + drupalSettings.did + '">' + data.styles + '</style>');
-                        }
+                 
                         createAlert('','Styles Saved or updated!','everything went well.','info',true,true,'pageMessages');     
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -981,11 +957,11 @@
 
     }
     // Añadir columna
-    function noahs_page_builderAddColum(widget_id, did, langcode){
+    function noahs_page_builderAddColum(widget_id){
         $('#noahsAddColumn').modal('show');
 
         $('.noahs_page_builder-column-modal .column-box').on('click', function(){
-            var html = addWidget('noahs_column', did, langcode);
+            var html = addWidget('noahs_column');
 
             $('#noahs_page_builder-preview').contents().find('section[id="widget-id-'+widget_id+'"]').find('.row-elements').append(html);
 
@@ -996,13 +972,13 @@
     }
 
     // Añadir Widget
-    function addElementWidgetModal(element_id, did, langcode){
+    function addElementWidgetModal(element_id){
     
         $('#addElementWidgetModal').modal('show');
         // Eliminar controladores de eventos previos para .widget-box_element
         $('.noahs_page_builder-element-widget-modal .widget-box_element').off('click').on('click', function(){
             var element = $(this).data('element');
-            var html = addWidget(element, did, langcode);
+            var html = addWidget(element);
             $('#noahs_page_builder-preview').contents().find('div[id="widget-id-'+element_id+'"]').find('.noahs_page_builder-column--content-inner ').append(html);
             $('#addElementWidgetModal').modal('hide');
         });

@@ -2,31 +2,174 @@
 use Drupal\noahs_page_builder\Controls_Base;
 use Drupal\noahs_page_builder_pro\noahs_page_builderProController;
 
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\BaseFieldDefinition;
 
 // define( 'NOAHS_PAGE_BUILDER_PATH',  \Drupal::service('extension.list.module')->getPath('noahs_page_builder') );
 
 require_once NOAHS_PAGE_BUILDER_PATH . '/includes/control-base.php';
 
-function noahs_page_builder_pro_theme($existing, $type, $theme, $path) {
+function noahs_page_builder_pro_form_alter(&$form, &$form_state, $form_id) {
+  // Verificar si el formulario es el de edición de nodos del tipo 'page'.
+  $noahs_page_builder_config = \Drupal::config('noahs_page_builder.settings');
 
-}
-function noahs_page_builder_pro_preprocess_page(&$variables) {
-    // // Crear una instancia de la clase noahs_page_builderProController
-    // $extendedInstance = new Controls_Base();
-  
-    // // Obtener el formulario actualizado con los nuevos elementos
-    // $additionalElement = [
-    //     'type'     => 'noahs_page_builder_additional',
-    //     'title'    => t('Additional Element'),
-    //     'tab'      => 'section_extras',
-    //     'style_type' => 'style',
-    //     'style_selector' => 'widget', 
-    //     'style_css' => 'additional', 
-    //     'responsive' => true,
-    //     'style_hover' => true,
-    // ];
-    // $extendedInstance->defaultFields($additionalElement);
+  $route = \Drupal::routeMatch()->getRouteName();
+  $route_match = \Drupal::routeMatch();
 
+  $use_in_ctype = $noahs_page_builder_config->get('use_in_ctype');
+  $node = $route_match->getParameter('node');
 
-    // Utilizar $updatedForm como sea necesario en la función preprocess_page
+  if($form_id === 'commerce_product_downloads_edit_form'){
+    $form['noahs_settings' ] = array(
+      '#type' => 'details',
+      '#title' => t('Noahs Settings'),
+      '#weight' => 1, 
+      '#group' => 'advanced',// Puedes ajustar este valor para cambiar la posición del campo.
+    );
+    $form['noahs_override_default']['#group'] = 'noahs_settings';
+    $form['noahs_dontuse']['#group'] = 'noahs_settings';
   }
+}
+function noahs_page_builder_pro_form_node_form_alter(&$form, \Drupal\Core\Form\FormStateInterface &$form_state, $form_id) {
+  $form['noahs_settings' ] = array(
+    '#type' => 'details',
+    '#title' => t('Noahs Settings'),
+    '#weight' => 1, 
+    '#group' => 'advanced',// Puedes ajustar este valor para cambiar la posición del campo.
+  );
+  $form['noahs_override_default']['#group'] = 'noahs_settings';
+  $form['noahs_dontuse']['#group'] = 'noahs_settings';
+}
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function noahs_page_builder_pro_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+
+  if ($entity_type->id() === 'node' || $entity_type->id() === 'commerce_product') {
+
+
+    $fields['noahs_override_default'] = BaseFieldDefinition::create('boolean')
+      ->setLabel( t('Override Default Theme'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', array(
+        'type'    => 'boolean',
+        'weight'  => 1,
+      ))
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['noahs_dontuse'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Don`t Use Noahs in this node'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', array(
+        'type'    => 'boolean',
+        'weight'  => 2,
+      ))
+      ->setDisplayConfigurable('form', TRUE);  
+
+    return $fields;
+  }
+}
+
+
+function noahs_page_builder_pro_theme_suggestions_menu_alter(array &$suggestions, array $variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  if($route === 'noahs_page_builder_pro.iframe' || $variables['theme_hook_original'] != 'menu__toolbar__admin'){
+ 
+    $suggestions[] = 'menu__noahs__front';
+  }
+}
+
+
+function noahs_page_builder_pro_theme($existing, $type, $theme, $path) {
+  return array(
+    'noahs-pro-theme-form' => array(
+        'variables' => array(
+            'type' => '',
+            'widgets' => [],
+            'page_settings' => [],
+        ),
+        'path' => $path . '/templates/backend',
+    ),
+    'noahs-pro-theme-iframe' => array(
+        'variables' => array(
+            'content' => '',
+            'page_settings' => [],
+        ),
+        'path' => $path . '/templates/backend',
+    ),
+    'html__preview_theme' => array(
+      'template' => 'html--preview--theme-noahs',
+      'base hook' => 'html',
+      'path' => $path . '/templates/backend',
+  ),
+    // 'html__admin__structure__noahs_page_builder' => array(
+    //   'template' => 'html--theme--noahs',
+    //   'base hook' => 'html',
+    //   'path' => $path . '/templates/backend',
+    // ),
+    'page__admin__noahs_page_builder_pro' => array(
+      'template' => 'page--noahs-pro-theme-builder',
+      'base hook' => 'page',
+      'path' => $path . '/templates/backend',
+    ),
+    'page__preview_theme' => array(
+      'template' => 'page--preview--noahs',
+      'base hook' => 'page',
+      'path' => $path . '/templates/backend',
+    ),
+    'menu__noahs__front' => array(
+      'template' => 'menu--noahs-front',
+      'base hook' => 'menu',
+      'path' => $path . '/templates/frontend',
+    ),
+    'input__custom_class' => array(
+      'template' => 'input--nohas',
+      'path' => $path . '/templates/form',
+    ),
+  );
+}
+function noahs_page_builder_pro_preprocess_form_element(&$variables) {
+
+  $config = \Drupal::config('noahs_page_builder.settings');
+
+  $variables['attributes']['class'][] = 'mb-3';
+    if($variables['type'] === 'checkbox'){
+      if($config->get('checkbox_style')){
+        $variables['attributes']['class'][] = 'form-check form-switch';
+      }      
+
+    }
+}
+
+function noahs_page_builder_pro_preprocess_input(&$variables) {
+
+  if($variables['theme_hook_original'] === 'input__checkbox'){
+    $variables['attributes']['class'][] = 'form-check-input';
+  }
+  
+  if($variables['theme_hook_original'] === 'input__textfield'){
+    $variables['attributes']['class'][] = 'form-control';
+  }
+}
+
+function noahs_page_builder_pro_preprocess_textarea(&$variables) {
+  $variables['attributes']['class'][] = 'form-control';
+}
+
+function noahs_page_builder_pro_preprocess_select(&$variables) {
+  $variables['attributes']['class'][] = 'form-control';
+}
+
+function noahs_page_builder_pro_preprocess_page(&$variables) {
+
+  $route = \Drupal::routeMatch()->getRouteName();
+  $route_match = \Drupal::routeMatch();
+  $node = $route_match->getParameter('node');
+
+  if($route === 'entity.node.canonical' || $route === 'noahs_page_builder_pro.iframe'){
+      $variables['#attached']['library'][] = 'noahs_page_builder_pro/noahs_page_builder_pro.assets.frontend';
+  }
+}
+

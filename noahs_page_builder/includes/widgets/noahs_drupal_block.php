@@ -2,6 +2,7 @@
 
 
 use Drupal\noahs_page_builder\WidgetBase;
+use Drupal\block\Entity\Block;
 
    class element_noahs_drupal_block extends WidgetBase{
 
@@ -29,20 +30,16 @@ use Drupal\noahs_page_builder\WidgetBase;
 
       public function template( $settings ){
          $render_block = '';
-         $settings = $settings['element'];
+         $settings = $settings->element;
 
-         if(!empty($settings['drupal_block'])){
-            $block = \Drupal\block\Entity\Block::load($settings['drupal_block']);
+         if(!empty($settings->drupal_block)){
+            $block_manager = \Drupal::service('plugin.manager.block');
+            $config = [];
+            $plugin_block = $block_manager->createInstance($settings->drupal_block, $config);
         
-            $render_block = '<div>Missing view, block "'.$settings['drupal_block'].'"</div>';
-            if($block){
-            $block_content = \Drupal::entityTypeManager()
-               ->getViewBuilder('block')
-               ->view($block);
-               $block = null;
-               $render_block = \Drupal::service('renderer')->render($block_content);
-               $render_block->__toString();
-             
+            $render_block = '<div>Missing view, block "'.$settings->drupal_block.'"</div>';
+            if($plugin_block){
+               $render_block = \Drupal::service('renderer')->render($plugin_block->build());
             }
          }
          ?>
@@ -54,9 +51,8 @@ use Drupal\noahs_page_builder\WidgetBase;
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

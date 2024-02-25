@@ -107,17 +107,18 @@ background-color: #4a4a4a;
     .noahs_page_builder-widget{
     position: relative;
     min-height: 50px;
+    display: flex;
     }
     .widget-noahs-row,
     .widget-noahs-column{
     border: 1px dashed #dedede;
     // padding-top: 28px;
-    }
+    } 
     .element-widget{
         border: 1px dashed transparent;
     }
     .widget-noahs_page_builder-column{
-      
+       
     }
     h2.accordion-header{
     margin-top: 0;

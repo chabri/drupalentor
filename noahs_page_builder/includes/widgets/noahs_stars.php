@@ -36,8 +36,8 @@ use Drupal\noahs_page_builder\WidgetBase;
 
       public function template( $settings ){
 
-         $settings = $settings['element'];
-         $numero  = $settings['stars'];
+         $settings = $settings->element;
+         $numero  = $settings->stars;
          $total = 5;
 
          $porcentaje = ($numero / $total) * 100;
@@ -54,9 +54,8 @@ use Drupal\noahs_page_builder\WidgetBase;
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content($settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

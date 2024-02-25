@@ -1,0 +1,16 @@
+
+noahs_page_builder_pro.themes:
+  title: 'Noahs Pro Themes'
+  description: 'Description'
+  parent: noahs_page_builder.admin
+  route_name: noahs_page_builder_pro.themes
+# noahs_page_builder.custom_css:
+#   title: 'Noahs Custom Css'
+#   description: 'Description'
+#   parent: noahs_page_builder.admin
+#   route_name: noahs_page_builder.custom_css
+# noahs_page_builder.get_icons_list:
+#   title: 'Icons'
+#   description: 'Description'
+#   parent: noahs_page_builder.admin
+#   route_name: noahs_page_builder.get_icons_list

@@ -27,7 +27,7 @@ use Drupal\Core\Url;
             'title'   => ('Logo Width'),
             'style_type' => 'style',
             'style_selector' => '.widget-content img', 
-            'style_css' => 'width', 
+            'style_css' => 'max-width', 
             'tab' => 'section_content',
             'responsive' => true,
             'placeholder' => 'use as 10%, 100px, 100vw...',
@@ -38,22 +38,22 @@ use Drupal\Core\Url;
 
       public function template( $settings ){
 
-         $settings = $settings['element'];
+
          $logo_relative_path = theme_get_setting('logo.url');
 
 
          ?>
          <?php ob_start() ?>
                <div class="widget-content">
-                  <img src="<?php echo $logo_relative_path; ?>">
+                  <img src="<?php echo $logo_relative_path; ?>" class="site__logo">
                </div>
 
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
 
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

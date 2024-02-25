@@ -30,7 +30,7 @@ class Control_Noahs_Coordinates extends Controls_Base {
 
 
 
-		<div class="field_description">Use your property as px, em, rem, %, ...</div>
+		<div class="fs-6 fst-italic">Use your property as px, em, rem, %, ...</div>
 			<ul class="field-element-list-horizontal">
 				<?php foreach($fields as $key => $field){ 
 					$final_value = $value[$key] ?? null;

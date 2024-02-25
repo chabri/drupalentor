@@ -1,0 +1,23 @@
+:root {
+
+    --header-shadow: #{0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05)};
+  
+  }
+
+.noahs-pro-theme--header{
+position: relative;
+z-index: 99;
+transition:all .2s ease-in-out;
+    &.sticky{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    box-shadow: var(--header-shadow);
+    }
+
+    .site__logo{
+    transition:all .2s ease-in-out;
+    }
+}

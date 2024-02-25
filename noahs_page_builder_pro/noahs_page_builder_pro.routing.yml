@@ -8,3 +8,39 @@ noahs_page_builder_pro.get_mask_image_list_modal:
   requirements:
     _permission: 'administer noahs_page_builder'
 
+noahs_page_builder_pro.themes:
+  path: '/admin/structure/noahs_page_builder/themes'
+  defaults:
+    _title: 'Noas Themes'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsThemesProController::list'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'
+    
+noahs_page_builder_pro.build:
+  path: '/admin/noahs_page_builder_pro/{type}/theme_builder'
+  defaults:
+    _title: 'Edit noahs_page_builder'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController::build'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'
+
+
+noahs_page_builder_pro.iframe:
+  path: '/preview_theme/{type}/noahs_page_theme_builder'
+  defaults:
+    _title: 'Edit noahs_page_builder'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController::iframe'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'
+
+noahs_page_builder_pro.save_theme:
+  path: '/admin/structure/noahs_page_builder/save_theme'
+  defaults:
+    _title: 'Save Configuration of Gavias BlockBuilder'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController::saveTheme'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    

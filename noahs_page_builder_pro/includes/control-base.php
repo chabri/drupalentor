@@ -8,6 +8,6 @@ class Controls_Base_Pro extends Controls_Base {
     // Por ejemplo:
     // Tu nueva lógica aquí.
 	require_once NOAHS_PAGE_BUILDER_PATH . '/includes/controls.php';
-	dump('caca');
+
   }
 }

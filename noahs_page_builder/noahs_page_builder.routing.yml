@@ -35,7 +35,23 @@ noahs_page_builder.editor:
         type: 'entity:node'
   requirements:
     _permission: 'administer noahs_page_builder'
+    _custom_access: '\Drupal\noahs_page_builder\Controller\CheckTestController::checkAccess'
+    _entity_access: node.view
 
+noahs_page_builder.product_editor:
+  path: '/edit_product/{node}/noahs_page_builder'
+  defaults:
+    _title: 'Edit With Noahs'
+    _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::editor'
+  _format: 'html'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      node:
+        type: 'entity:commerce_product'
+  requirements:
+    _permission: 'administer noahs_page_builder'
+    
 noahs_page_builder.preview:
   path: '/preview/{node}/noahs_page_builder'
   defaults:
@@ -50,8 +66,22 @@ noahs_page_builder.preview:
   requirements:
     _permission: 'administer noahs_page_builder'
 
+noahs_page_builder.product_preview:
+  path: '/product_preview/{node}/noahs_page_builder'
+  defaults:
+    _title: 'Edit noahs_page_builder'
+    _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::preview'
+  _format: 'html'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      node:
+        type: 'entity:commerce_product'
+  requirements:
+    _permission: 'administer noahs_page_builder'
+
 noahs_page_builder.widget:
-  path: '/admin/noahs_page_builder/widget/{widget_id}/{did}/{langcode}'
+  path: '/admin/noahs_page_builder/widget/{widget_id}'
   defaults:
     _title: 'Edit noahs_page_builder'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::renderWidget'
@@ -93,13 +123,6 @@ noahs_page_builder.widget_clone:
   requirements:
     _permission: 'open modal form'
 
-noahs_page_builder.remove_widgets:
-  path: '/admin/remove-widgets/{id}'
-  defaults:
-    _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::removeWidget'
-    _title: 'Remove'
-  requirements:
-    _permission: 'open modal form'
 
 noahs_page_builder.final_widget:
   path: '/admin/final-widget/{nid}/{widget}/{widget_id}'
@@ -123,15 +146,7 @@ noahs_page_builder.upload_media_modal:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsModalMediaController::uploadMediaModal'
     _title: 'noahs_page_builder Media Modal'
   requirements:
-    _permission: 'open modal form'
-
-noahs_page_builder.save_widget:
-  path: '/admin/noahs_page_builder/save_widget'
-  defaults:
-    _title: 'Save Configuration of Gavias BlockBuilder'
-    _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::saveWidget'
-  requirements:
-    _permission: 'administer noahs_page_builder'    
+    _permission: 'open modal form' 
 
 noahs_page_builder.save_page:
   path: '/noahs_page_builder/save_page'

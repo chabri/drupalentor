@@ -13,7 +13,7 @@ use Drupal\noahs_page_builder\Autoloader;
 use Drupal\noahs_page_builder\Controls_Manager;
 use Drupal\noahs_page_builder\ModalForm;
 use Drupal\Core\Render\Markup;
-
+use Symfony\Component\HttpFoundation\Request;
 /**
  * Controller routines for domain finder routes.
  */
@@ -32,25 +32,17 @@ class NoahsModalController extends ControllerBase {
     $this->register_autoloader();
   }
 
-
-  public function modal($nid, $widget, $widget_id) {
-
-
-    $data = noahs_page_builder_load($nid) ?? NULL;
+  public function modal(Request $request){
+    $data = json_decode($request->getContent(), TRUE);
+    $nid = $data['nid'];
+    $widget_id = $data['section_id'];
+    $widget = $data['widget'];
+    $settings = json_decode($data['settings'], true);
     $fields = noahs_page_builder_get_widget_fields($widget);
-    $sections = noahs_page_builder_get_sections($data->html);
-  
 
-    if(noahs_page_builder_load_widget($widget_id)){
- 
-      $settings = json_decode(noahs_page_builder_load_widget($widget_id)->settings, true);
-
-    }else{
-      $settings = null;
-    }
-
-    $jsonData = json_encode($settings);
-    $escapedJsonData = htmlspecialchars($jsonData, ENT_QUOTES, 'UTF-8');
+    // $jsonData = json_encode($data['settings']);
+    // $escapedJsonData = htmlspecialchars($jsonData, ENT_QUOTES, 'UTF-8');
+    // $escapedJsonData = htmlspecialchars($jsonData, ENT_QUOTES, 'UTF-8');
 
     $form = ModalForm::render_form($fields, $settings);
 
@@ -69,16 +61,17 @@ class NoahsModalController extends ControllerBase {
     $output .= '<form class="form-widget" id="noahs_page_builder_edit_widget_form">';
     $output .= '<input type="hidden" name="wid" value="'.$widget_id.'"/>';
     $output .= '<input type="hidden" name="did" value="'.$nid.'"/>';
-    $output .= '<input type="hidden" name="uid" value="'.\Drupal::currentUser()->id().'"/>';
     $output .= '<input type="hidden" name="type" value="'.$widget.'"/>';
-    $output .= '<input type="hidden" name="langcode" value="'.$langcode.'"/>';
+    $output .= '<div class="form-wrapper">';
+
     foreach($form  as $item){
       $output .= $item;
     }
-    $output .= '<div class="btn-group-margin sticky-bottom pt-2 pb-2 bg-white">
+    $output .= '</div>';
+    $output .= '<div class="p-3 w-100 d-flex justify-content-between shadow-sm bg-white">
     <button class="btn btn-danger btn-labeled noahs_page_builder-close-modal"><span class="btn-label"><i class="fa-solid fa-xmark"></i></span>'.t('Close').'</button>
     <button type="submit" class="btn btn-success btn-labeled save-widget"><span class="btn-label"><i class="fa-regular fa-floppy-disk"></i></span>'.t('Save changes').'</button>
-
+    
     </div>';
     $output .= '</form>';
     $output .= '</div>';
@@ -92,62 +85,61 @@ class NoahsModalController extends ControllerBase {
 
   }
 
-     public function save(){
-        header('Content-type: application/json');
-        $data = \Drupal::request()->request->get('data');
-        $id = \Drupal::request()->request->get('nid');
-        $node = Node::load($id);
-        $lang = $node->get('langcode')->value;
+    //  public function save(){
+    //     header('Content-type: application/json');
+    //     $data = \Drupal::request()->request->get('data');
+    //     $id = \Drupal::request()->request->get('nid');
+    //     $node = Node::load($id);
         
-        $builder = \Drupal::database()->select('{noahs_page_builder}', 'd')
-          ->fields('d', array('nid', 'html', 'lang'))
-          ->condition('nid', $id)
-          ->execute()
-          ->fetchAssoc();
+    //     $builder = \Drupal::database()->select('{noahs_page_builder}', 'd')
+    //       ->fields('d', array('nid', 'html', 'lang'))
+    //       ->condition('nid', $id)
+    //       ->execute()
+    //       ->fetchAssoc();
         
-        if($builder != NULL){
-            $schema = \Drupal::database()->update("noahs_page_builder")
-            ->fields(array(
-                'html' => $data,
-            ))
-            ->condition('nid', $id)
-            ->execute();
-        }else{
-            $builder = \Drupal::database()->insert("noahs_page_builder")
-              ->fields(array(
-                  'html' => $data,
-                  'nid' => $id,
-                  'lang' => $lang,
-              ))
-            ->execute();
-        }
+    //     if($builder != NULL){
+    //         $schema = \Drupal::database()->update("noahs_page_builder")
+    //         ->fields(array(
+    //             'html' => $data,
+    //         ))
+    //         ->condition('nid', $id)
+    //         ->execute();
+    //     }else{
+    //         $builder = \Drupal::database()->insert("noahs_page_builder")
+    //           ->fields(array(
+    //               'html' => $data,
+    //               'nid' => $id,
+    //               'lang' => $lang,
+    //           ))
+    //         ->execute();
+    //     }
 
-        $result = array(
-          'data' => 'update  - saved',
-          'html' => $data,
-          'lang' => $node->get('langcode')->value,
-          'nid' => $id,
-        );
+    //     $result = array(
+    //       'data' => 'update  - saved',
+    //       'html' => $data,
+    //       'lang' => $node->get('langcode')->value,
+    //       'nid' => $id,
+    //     );
  
-        print json_encode($result);
-        exit(0);
-    }
+    //     print json_encode($result);
+    //     exit(0);
+    // }
     
-    public function getImageStyle(){
-        header('Content-type: application/json');
-        $img = \Drupal::request()->request->get('img');
-        $image_Style = \Drupal::request()->request->get('image_style');
-        $styleMedia = ImageStyle::load($image_Style);
-        $image_path = $styleMedia->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
-         $style = \Drupal::entityTypeManager()->getStorage('image_style')->load($image_Style);
-         $url = $style->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
+    // public function getImageStyle(){
+    //     header('Content-type: application/json');
+    //     $img = \Drupal::request()->request->get('img');
+    //     $image_Style = \Drupal::request()->request->get('image_style');
+    //     $styleMedia = ImageStyle::load($image_Style);
+    //     $image_path = $styleMedia->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
+    //      $style = \Drupal::entityTypeManager()->getStorage('image_style')->load($image_Style);
+    //      $url = $style->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
         
-        $result = array(
-          'data' => 'update  - generated',
-          'image_path' => $image_path,
-        );
+    //     $result = array(
+    //       'data' => 'update  - generated',
+    //       'image_path' => $image_path,
+    //     );
  
-        print json_encode($result);
-        exit(0);
-    }
+    //     print json_encode($result);
+    //     exit(0);
+    // }
 }

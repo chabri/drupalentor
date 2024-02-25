@@ -69,16 +69,16 @@
 		$html_hover .= '<div class="collapse" id="'.$data['item_id'].'">';
 						}
       
-        $html_hover .= '<div class="hover_tabs">';
+        $html_hover .= '<div class="hover_tabs btn-group d-flex mb-2">';
         $hover_status = ['default' => t('Default'), 'hover' => t('Hover')];
         foreach($hover_status as $key_status => $status){
-            $html_hover .= '<a href="#hover_tab_'.$data['item_id'].$key_status.'" class="hover_tabs-tab">'.$status.'</a>';
+            $html_hover .= '<a href="#hover_tab_'.$data['item_id'].$key_status.'" class="hover_tabs-tab btn">'.$status.'</a>';
         }
         $html_hover .= '</div>';
 
         foreach($hover_status as $key_status => $status){
 
-            $html_hover .= '<div class="field__hover-content" id="hover_tab_'.$data['item_id'].$key_status.'" data-hover-status="'.$key_status.'">';
+            $html_hover .= '<div class="field__hover-content rounded" id="hover_tab_'.$data['item_id'].$key_status.'" data-hover-status="'.$key_status.'">';
             if(!empty($data['item']['responsive'])){
                 $name = 'element[css][desktop]['.$key_status.']['.$data['item_id'].']';
                 $value = isset($values['css']['desktop'][$key_status][$data['item_id']]) ? $values['css']['desktop'][$key_status][$data['item_id']] : '';
@@ -125,7 +125,7 @@
 				$responsive .= '<div class="collapse" id="'.$data['item_id'].'">';
 			}
 		}
-		$responsive .= '<div class="responsive__tabs">';
+		$responsive .= '<div class="responsive__tabs btn-group d-flex">';
 		foreach (self::getMediaQuery() as $k => $query) {
 			
 			$icon = '<i class="fa-solid fa-mobile-screen-button"></i>';
@@ -135,7 +135,7 @@
 			if($k === 'desktop'){
 				$icon = '<i class="fa-solid fa-desktop"></i>';
 			}
-			$responsive .= '<a href="#responsive_tab_'.$k.'" class="responsive_tabs-tab" title="'.$k.'">'.$icon.'</a>';
+			$responsive .= '<a href="#responsive_tab_'.$k.'" class="responsive_tabs-tab btn" title="'.$k.'">'.$icon.'</a>';
 		}
 		// <div class="collapse" id="'.$data['item_id'].'">
 		// 	' . $content . '
@@ -280,7 +280,7 @@
 
 		$form['group_extra'] = [
 			'type' => 'group',
-			'title' => t('Extra'),
+			'title' => t('Space'),
 		];
 		$form['margin'] = [
 			'type'     => 'noahs_margin',
@@ -347,6 +347,7 @@
 			'type'    => 'select',
 			'title'   => ('Position'),
 			'options' => [
+				'' => t('Default'),
 				'relative' => t('Relative'),
 				'static' => t('Static'),
 				'absolute' => t('Absolute'),
@@ -400,6 +401,7 @@
 				'fade' => [
 					'text' => 'Fade animations',
 					'options' => [
+						''             => 'none',
 						'fade'             => 'Fade',
 						'fade-up'          => 'Fade Up',
 						'fade-down'        => 'Fade Down',
@@ -414,6 +416,7 @@
 				'flip' => [
 					'text' => 'Flip animations',
 					'options' => [
+						''    => 'none',
 						'flip-up'    => 'Flip Up',
 						'flip-down'  => 'Flip Down',
 						'flip-left'  => 'Flip Left',
@@ -432,6 +435,7 @@
 				'zoom' => [
 					'text' => 'Zoom animations',
 					'options' => [
+						''    => 'none',
 						'zoom-in'        => 'Zoom In',
 						'zoom-in-up'     => 'Zoom In Up',
 						'zoom-in-down'   => 'Zoom In Down',
@@ -495,6 +499,12 @@
 				'min' => '0',
 				'step' => '10'
 			 ],
+		];
+		$form['custom_css'] = [
+			'type'    => 'noahs_custom_css',
+			'tab' => 'section_extras',
+			'title'   => ('Custom Css'),
+			'style_type' => 'style',
 		];
 		
 		return $form;

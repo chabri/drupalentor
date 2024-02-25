@@ -15,7 +15,6 @@
 			'Montserrat' => 'Montserrat',
 			'Roboto Condensed' => 'Roboto Condensed',
 			'Oswald' => 'Oswald',
-			'Source Sans Pro' => 'Source Sans Pro',
 			'Raleway' => 'Raleway',
 			'Ubuntu' => 'Ubuntu',
 			'PT Sans' => 'PT Sans',

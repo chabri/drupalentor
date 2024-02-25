@@ -77,22 +77,26 @@ use Drupal\noahs_page_builder\WidgetBase;
 
       public function template( $settings ){
         
-         $settings = $settings['element'];
+         $settings = $settings->element;
+        
          $node = \Drupal::routeMatch()->getParameter('node');
-
+         if(!empty($node)){
+            $title =  $node->getTitle();
+         }else{
+            $title = 'Page Title';
+         }
 
          $ouput = '';
          $ouput .= '<div class="widget-content d-flex w-100">';
-         $ouput .=  '<' . ($settings['heading_type'] ?? 'h1') . '>';
-         $ouput .=  '<span>' . $node->getTitle() . '</span>';
-         $ouput .=  '</' . ($settings['heading_type'] ?? 'h1') . '>';
+         $ouput .=  '<' . ($settings->heading_type ?? 'h1') . '>';
+         $ouput .=  '<span>' . $title . '</span>';
+         $ouput .=  '</' . ($settings->heading_type ?? 'h1') . '>';
          $ouput .= '</div>';
 
          return $ouput;  
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

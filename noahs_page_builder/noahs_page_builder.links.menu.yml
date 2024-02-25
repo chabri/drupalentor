@@ -1,15 +1,15 @@
 noahs_page_builder.admin:
-  title: 'Dupalentor'
+  title: 'Noahs'
   description: 'Description'
   parent: system.admin_structure
   route_name: noahs_page_builder.admin
 noahs_page_builder.settings:
-  title: 'Dupalentor Settings'
+  title: 'Noahs Settings'
   description: 'Description'
   parent: noahs_page_builder.admin
   route_name: noahs_page_builder.settings
 noahs_page_builder.custom_css:
-  title: 'Dupalentor Custom Css'
+  title: 'Noahs Custom Css'
   description: 'Description'
   parent: noahs_page_builder.admin
   route_name: noahs_page_builder.custom_css

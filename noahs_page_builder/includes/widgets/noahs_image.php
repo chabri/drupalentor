@@ -109,6 +109,28 @@ use Drupal\image\Entity\ImageStyle;
             ]
          ];
 
+         $form['section_styles'] = [
+            'type' => 'tab',
+            'title' =>  t('Styles')
+         ];
+         $form['box_shadows'] = [
+            'type'    => 'noahs_shadows',
+            'title'   => t('Image Shadow'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.widget-image-src', 
+            'responsive' => true, 
+            'style_hover' => true,
+         ];
+         $form['border-radius'] = [
+            'type'    => 'noahs_radius',
+            'title'   => t('Border Radius'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.widget-image-src', 
+            'responsive' => true, 
+            'style_hover' => true,
+         ];
          return $form;
       }
 

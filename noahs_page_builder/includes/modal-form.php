@@ -7,19 +7,17 @@
 
 	// public function content_template();
 
-	public static function render_form($fields, $values = null,  $delta = null, $parent = null) {
-
+	public static function render_form($fields, $values,  $delta = null, $parent = null) {
 
 		$form = [];
-		// group by tabs
 		$tabs = array();
 
 		$default_fields = new Controls_Base;
-		$caca = $default_fields->groupFields($fields);
+		$groupFields = $default_fields->groupFields($fields);
 
 		$tabs_class = new Controls_Manager();
 		
-		$data_controls = $tabs_class->render_tabs($caca, $values);
+		$data_controls = $tabs_class->render_tabs($groupFields, $values);
 
 		$form[] = $data_controls['form'];
 
@@ -73,6 +71,7 @@
 		$data_controls = $tabs_class->getStyles($fields, $settings['element']['css'] ?? null, '', $settings['wid']);
 		return $data_controls;
 	}
+	
 	public static function render_classes($class) {
 		return $class;
 	}

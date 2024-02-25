@@ -105,7 +105,7 @@
         // Añadir sección
         $('.add-section .add-section_wrapper').on('click', function () {
     
-            var html =  window.addWidget('noahs_row', did, langcode);
+            var html =  window.addWidget('noahs_row');
 
             $(this).closest('#noahs_page_builder').find('.builder-wrapper').append(html);
            
@@ -117,6 +117,7 @@
             var widget = $(this).closest('.noahs_page_builder-widget').data('type');
             var widget_id = $(this).closest('.noahs_page_builder-widget').data('widget-id');
             var settings = $(this).closest('.noahs_page_builder-widget').data('settings');
+
             var form = addWidgetForm(widget, widget_id, settings);
 
             window.noahs_page_builderOpenModal(form);
@@ -134,12 +135,12 @@
 
         //Añadir columna
         $('.builder-wrapper').on('click', '.noahs_page_builder-add-column', function() {
-            window.noahs_page_builderAddColum($(this).data('widget-id'), did, langcode);
+            window.noahs_page_builderAddColum($(this).data('widget-id'));
         });
 
         //Añadir elemento
         $('.builder-wrapper').on('click', '.noahs_page_builder-add-element-widget', function() {
-            window.addElementWidgetModal($(this).data('widget-id'), did, langcode);
+            window.addElementWidgetModal($(this).data('widget-id'));
         });
         // var str = '{&quot;wid&quot;:&quot;65a03b9626af8&quot;,&quot;did&quot;:&quot;2&quot;,&quot;uid&quot;:&quot;1&quot;,&quot;type&quot;:&quot;noahs_page_builder_text&quot;,&quot;langcode&quot;:&quot;en&quot;,&quot;element&quot;:{&quot;text&quot;:&quot;<p>1tewfwefwefefwefwkefiowejkifoweiofwjeiofjweoifweoifewiofjweiofjowie<\/p>&quot;,&quot;css&quot;:{&quot;desktop&quot;:{&quot;default&quot;:{&quot;text_color&quot;:&quot;#c92c2c&quot;}}}}}';
         // console.log(str.replace('65a03b9626af8', 'caca'));
@@ -152,7 +153,7 @@
             var currentSection = $(this).closest('.noahs_page_builder-widget');
             var clonedSection = currentSection.clone();
 
-            $(clonedSection).attr('id', 'widget-id-' + newId).attr('data-widget-id', newId);
+            $(clonedSection).attr('data-widget-id', newId);
             $(clonedSection).data('settings').wid = newId;
             $(clonedSection).attr('data-settings', JSON.stringify($(clonedSection).data('settings')));
             $(clonedSection).find('[data-widget-id]').attr('data-widget-id', newId);
@@ -166,28 +167,28 @@
                 var newSuffix = generateUniqueId();
                 var self = this; // Guardar la referencia al objeto actual
                 $(this).find('[data-widget-id]').attr('data-widget-id', newSuffix);
-                $(this).attr('id', 'widget-id-' + newSuffix).attr('data-widget-id', newSuffix);
+                $(this).attr('data-widget-id', newSuffix);
                 $(this).data('settings').wid = newSuffix;
                 $(this).attr('data-settings', JSON.stringify($(this).data('settings')));
 
                 $(this).addClass('widget-cloned');
-                $.ajax({
-                    url: '/admin/widget-clone/' + oldSuffix + '/' + newSuffix,
-                    method: 'POST',
-                    async: false,
-                    success: function (data) {
-                        var stylesContainer = $('head').find('[data-widget-style="' + data.wid + '"]');
-                        if (stylesContainer.length) {
-                            stylesContainer.text(data.styles);
-                        } else {
-                            $('head').append(data.styles);
-                        }
-                        result = data;
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert(textStatus + ":" + jqXHR.responseText);
-                    }
-                });
+                // $.ajax({
+                //     url: '/admin/widget-clone/' + oldSuffix + '/' + newSuffix,
+                //     method: 'POST',
+                //     async: false,
+                //     success: function (data) {
+                //         var stylesContainer = $('head').find('[data-widget-style="' + data.wid + '"]');
+                //         if (stylesContainer.length) {
+                //             stylesContainer.text(data.styles);
+                //         } else {
+                //             $('head').append(data.styles);
+                //         }
+                //         result = data;
+                //     },
+                //     error: function (jqXHR, textStatus, errorThrown) {
+                //         alert(textStatus + ":" + jqXHR.responseText);
+                //     }
+                // });
             });
         
             // Agregar el elemento clonado al DOM
@@ -200,28 +201,28 @@
             // });
 
 
-            var data = {};
+            // var data = {};
 
-            $.ajax({
-                url: '/admin/widget-clone/'+oldId+'/'+newId,
-                method: 'POST',
-                data: JSON.stringify(data),
-                async: false,  
-                success:function(data) {
-                        // $(clonedSection).attr('data-cloned-settings', data.settings);
+            // $.ajax({
+            //     url: '/admin/widget-clone/'+oldId+'/'+newId,
+            //     method: 'POST',
+            //     data: JSON.stringify(data),
+            //     async: false,  
+            //     success:function(data) {
+            //             // $(clonedSection).attr('data-cloned-settings', data.settings);
 
-                        var stylesContainer =$('head').find('[data-widget-style="' + data.wid + '"]');
-                        if (stylesContainer.length) {
-                          stylesContainer.text(data.styles);
-                        } else {
-                          $('head').append(data.styles);
-                        }
-                    result =  data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert(textStatus + ":" + jqXHR.responseText);
-                }
-            });
+            //             var stylesContainer =$('head').find('[data-widget-style="' + data.wid + '"]');
+            //             if (stylesContainer.length) {
+            //               stylesContainer.text(data.styles);
+            //             } else {
+            //               $('head').append(data.styles);
+            //             }
+            //         result =  data;
+            //     },
+            //     error: function (jqXHR, textStatus, errorThrown) {
+            //         alert(textStatus + ":" + jqXHR.responseText);
+            //     }
+            // });
         });
 
         $('.builder-wrapper').on('click', '.save-widget', function() {
@@ -273,9 +274,9 @@
 
         var result="";
         $.ajax({
-        url: '/admin/modal-form/' + drupalSettings.nid + '/' + widget_id + '/' + section_id, // Reemplaza con la URL de tu ruta de Ajax.
+        url: '/admin/modal-form/' + drupalSettings.nid + '/' + widget_id + '/' + section_id,
         method: 'POST',
-        data: data,
+        data: JSON.stringify(data),
         async: false,  
         success:function(data) {
 

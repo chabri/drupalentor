@@ -9,9 +9,16 @@ use Drupal\Core\Url;
 use Drupal\noahs_page_builder\WidgetBase;
 use Drupal\Core\Asset\LibraryDiscoveryInterface;
 use Drupal\noahs_page_builder\Controller\NoahsController;
+use Drupal\noahs_page_builder\Controller\NoahsSaveStylesController;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Block\BlockManager;
+
 use Drupal\noahs_page_builder\Controls_Base;
 use Drupal\Core\File\FileSystem;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController;
+
+
 
 $moduleHandler = \Drupal::service('module_handler');
 
@@ -25,39 +32,88 @@ define( 'NOAHS_PAGE_BUILDER_PRO_PATH',  \Drupal::service('extension.list.module'
 define( 'NOAHS_PAGE_BUILDER_CSS_PATH', 'public://noahs_css');
 
 
-function noahs_page_builder_theme_registry_alter(&$theme_registry) {
+function noahs_page_builder_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
 
-    // $theme_registry['page']['path'] = \Drupal::service('extension.list.module')->getPath('noahs_page_builder') . '/templates';
-  }
+    $noahs_page_builder_config = \Drupal::config('noahs_page_builder.settings');
 
-  function noahs_page_builder_theme_suggestions_page_alter(array &$suggestions, array $variables) {
     $route = \Drupal::routeMatch()->getRouteName();
+    $route_match = \Drupal::routeMatch();
+    $node = $route_match->getParameter('node');
+    // dump($node->get('langcode')->value);
+    $use_in_ctype = $noahs_page_builder_config->get('use_in_ctype');
+
+    switch($form_id){
+        case 'node_type_add_form':
+        case 'node_type_edit_form':
+            // dump($form);
+            // $form["noahs_builder"] = [
+            // "#type" => "details",
+            // "#title" => 'Noahs Builder',
+            // "#group" => "additional_settings",
+            // "options" => [
+            //     "#type" => "radios",
+            //     "#title" =>'Active Page Builder',
+            //     "#options" => [
+            //         "no" => 'Inactive',
+            //         "yes" =>'Active',
+            //     ],
+            //     "#description" =>'Active this if you want to use Noahs Builder in this content type',
+            //     ]
+            // ];
+            // break;
+
+    }
+
+    if($route === 'quick_node_clone.node.quick_clone' || 
+    $route === 'entity.node.content_translation_add'){
+        foreach($use_in_ctype as $type){
+            if(!is_numeric($type)){
+                if($form_id === 'node_'.$type.'_quick_node_clone_form' 
+                || $form_id === 'node_'.$type.'_form' ){
+
+                    $form_state->set('noahs_page_builder_original_nid', $node->id());
+                    $form_state->set('noahs_page_builder_lancgode', $node->get('langcode')->value);
+                    $form['actions']['submit']['#submit'][] = 'noahs_page_builder_clone_submit';
+                }
+            }
+        }
+    }
+}
 
 
-    if($route === 'entity.node.canonical'){
+function noahs_page_builder_clone_submit($form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  
+    $clone_page = \Drupal::classResolver(NoahsController::class)->clonePage(
+        $form_state->get('noahs_page_builder_original_nid'), 
+        $form_state->get('nid'), 
+        $form_state->get('noahs_page_builder_lancgode'),
+        $form_state->get('langcode'),
+    );
+    $save_cloned_page_styles = \Drupal::classResolver(NoahsSaveStylesController::class)->save($form_state->get('nid'));
+    \Drupal::messenger()->addMessage('New Noahs Page Added');
+}
+
+
+function noahs_page_builder_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+
+    $route = \Drupal::routeMatch()->getRouteName();
+    if (strpos($route, ".canonical") !== false) {
         $suggestions[] = 'page__noahs__front';
     }
-    
-  }
+}
+
+
 
 function noahs_page_builder_preprocess_html(array &$vars) {
-
    
     $route = \Drupal::routeMatch()->getRouteName();
-
-
     $quote_menu_paths = [
       'noahs_page_builder.editor',
     ];
-    
-    
-
-    // If the route matches, add the class to the pages above.
-    // We then use this class for theming.
     if (in_array($route, $quote_menu_paths)) {
       $vars['attributes']['class'][] = 'noahs_page_builder-editor-active';
     }
-  }
+}
   
 function noahs_page_builder_theme($existing, $type, $theme, $path) {
   return array(
@@ -65,9 +121,11 @@ function noahs_page_builder_theme($existing, $type, $theme, $path) {
         'variables' => array(
             'page' => '',
             'content' => '',
+            'did' => '',
             'url' => '',
             'widgets' => [],
             'page_settings' => [],
+            'iframe_url' => '',
         ),
         'path' => $path . '/templates/backend',
     ),
@@ -79,6 +137,11 @@ function noahs_page_builder_theme($existing, $type, $theme, $path) {
         'path' => $path . '/templates/backend',
     ),
 
+    'html__product_preview__noahs_page_builder' => array(
+        'template' => 'html--preview--noahs',
+        'base hook' => 'html',
+        'path' => $path . '/templates/backend',
+    ),
     'html__preview__noahs_page_builder' => array(
         'template' => 'html--preview--noahs',
         'base hook' => 'html',
@@ -133,35 +196,135 @@ function noahs_page_builder_preprocess_page(&$variables) {
 
     $route = \Drupal::routeMatch()->getRouteName();
     $route_match = \Drupal::routeMatch();
-    $node = $route_match->getParameter('node');
 
 
-    if($route === 'entity.node.canonical'){
-      
-        $node_id = $node->id();
+// dump($route);
+    $moduleHandler = \Drupal::service('module_handler');
+    if (strpos($route, ".canonical") !== false) {
         $variables['#attached']['library'][] = 'noahs_page_builder/noahs_page_builder.assets.frontend';
+    }
+    if ($moduleHandler->moduleExists('noahs_page_builder_pro')) {
+        $proClass = new NoahsBuildThemeProController();
+        $header = $proClass->loadNoahsTheme('header') ?? NULL;
+        $footer = $proClass->loadNoahsTheme('footer') ?? NULL;
+
+        if($header){
+             
+            $sections_header = noahs_page_builder_get_sections($header->settings);
+            $variables['noahs_header_html'] = noahs_page_builder_html_generated($sections_header);
+            $header_settings = !empty($header->page_settings) ? json_decode($header->page_settings, true) : [];
+            $classes = \Drupal::classResolver(NoahsController::class)->getClasses($header_settings, 'class');
+            $attributes = \Drupal::classResolver(NoahsController::class)->getClasses($header_settings, 'attributes');
+            $variables['#attached']['drupalSettings']['noahs_page_builder']['classes'] = $classes;
+            $variables['#attached']['drupalSettings']['noahs_page_builder']['attributes'] = $attributes;
+            $variables['#attached']['drupalSettings']['header_settings'] = $header_settings;
+
+        }
+        if($footer){
+            $sections_footer = noahs_page_builder_get_sections($footer->settings);
+            $variables['noahs_footer_html'] = noahs_page_builder_html_generated($sections_footer);
+            $footer_settings = !empty($footer->page_settings) ? json_decode($footer->page_settings, true) : [];
+            $classes = \Drupal::classResolver(NoahsController::class)->getClasses($footer_settings, 'class');
+            $attributes = \Drupal::classResolver(NoahsController::class)->getClasses($footer_settings, 'attributes');
+            $variables['#attached']['drupalSettings']['noahs_page_builder']['classes'] = $classes;
+            $variables['#attached']['drupalSettings']['noahs_page_builder']['attributes'] = $attributes;
+            $variables['#attached']['drupalSettings']['footer_settings'] = $footer_settings;
+        }
+        if($route === 'entity.commerce_product.canonical'){
+            $proClass = new NoahsBuildThemeProController();
+            $product = $route_match->getParameter('commerce_product');
+            $product_type = $product->bundle();
+            $data = $proClass->loadNoahsTheme('commerce_' . $product_type) ?? NULL;
+            if($data){
+
+                if($product->noahs_override_default->value != "1"){
+                    $sections_product = noahs_page_builder_get_sections($data->settings);
+                    $variables['noahs_node_html'] = noahs_page_builder_html_generated($sections_product);
+                    $product_settings = !empty($footer->page_settings) ? json_decode($footer->page_settings, true) : [];
+                    $classes = \Drupal::classResolver(NoahsController::class)->getClasses($product_settings, 'class');
+                    $attributes = \Drupal::classResolver(NoahsController::class)->getClasses($product_settings, 'attributes');
+                    $variables['#attached']['drupalSettings']['noahs_page_builder']['classes'] = $classes;
+                    $variables['#attached']['drupalSettings']['noahs_page_builder']['attributes'] = $attributes;
+                    $variables['#attached']['drupalSettings']['product_settings'] = $product_settings;
+                }
+                if($product->noahs_dontuse->value === "1"){
+                    $variables['noahs_node_html'] = '';
+                }
+            }
+        }
+    }
+
+
+    if($route === 'entity.node.canonical' || $route === 'entity.commerce_product.canonical'){
+      
+
+       if($route === 'entity.commerce_product.canonical'){
+            $node = $route_match->getParameter('commerce_product');
+            $node_id = 'product_' . $node->id();
+        }else{
+            $node = $route_match->getParameter('node');
+            $node_id = $node->id();
+        }
+       
         $data = noahs_page_builder_load($node_id) ?? NULL;
 
-        $sections = noahs_page_builder_get_sections($data->html);
+        $sections = noahs_page_builder_get_sections($data->settings);
+        $page_settings = !empty($data->page_settings) ? json_decode($data->page_settings, true) : [];
 
         $classes = \Drupal::classResolver(NoahsController::class)->getClasses($data, 'class');
         $attributes = \Drupal::classResolver(NoahsController::class)->getClasses($data, 'attributes');
 
-        // dump($attributes);
+        // ($attributes);
         $variables['#attached']['drupalSettings']['noahs_page_builder']['classes'] = $classes;
         $variables['#attached']['drupalSettings']['noahs_page_builder']['attributes'] = $attributes;
+      
+        $variables['noahs_node_html'] = noahs_page_builder_html_generated($sections);
 
-        $variables['custom_variable'] = noahs_page_builder_html_generated($sections);
+        if ($moduleHandler->moduleExists('noahs_page_builder_pro')) {
+            $sections = noahs_page_builder_get_sections($data->settings);
+            $proClass = new NoahsBuildThemeProController();
+            $page = $proClass->loadNoahsTheme($node->bundle()) ?? null;
 
+            if($page){
+                if(!empty($node->noahs_override_default->value) && $node->noahs_override_default->value != "1"){
+                    $content_type_theme = noahs_page_builder_get_sections($page->settings);
+                    $variables['noahs_node_html'] = noahs_page_builder_html_generated($content_type_theme);
+                    $page_settings = !empty($page->page_settings) ? json_decode($page->page_settings, true) : [];
+                    $variables['#attached']['drupalSettings']['page_settings'] = $page_settings;
+                }
+              
+                if(!empty($node->noahs_dontuse->value) && $node->noahs_dontuse->value === "1"){
+                    $variables['noahs_node_html'] = '';
+                }
+            }
+        }
     }
 }
+function noahs_page_builder_menu_local_tasks_alter(&$data, $route_name, \Drupal\Core\Cache\RefinableCacheableDependencyInterface &$cacheability) {
+    $route_match = \Drupal::routeMatch();
 
+    if($route_name === 'entity.commerce_product.edit_form'){
+        $product = $route_match->getParameter('commerce_product');
+        $data['tabs'][0]['node.add_page'] = [
+            '#theme' => 'menu_local_task',
+            '#link' => [
+            'title' => t('Edit With Noahs'),
+            'url' => Url::fromRoute('noahs_page_builder.product_editor', ['node' =>  $product->id()]),
+            'localized_options' => [
+                'attributes' => [
+                'title' => t('Add content'),
+                ],
+            ],
+            ],
+        ];
+    }
+}
 function noahs_page_builder_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.noahs_page_builder':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Allow users to request protected downloads.') . '</p>';
+      $output .= '<p>' . t('Best frontend editor on drupal 10+.') . '</p>';
       return $output;
   }
 }
@@ -301,19 +464,12 @@ function noahs_page_builder_get_widget_fields($widgetId){
   }
 
 function noahs_page_builder_get_sections($html){
-    $sections = [];
- 
+
     if($html){
+
         $content = json_decode($html);
 
-        foreach ( $content as $k => $row ) {
-
-            $row->settings = isset($row->settings) ? json_encode($row->settings) : '{}';
-
-            $sections[$k] = $row->settings;
-
-        }
-
+   
         return $content;
     }
 }
@@ -321,36 +477,45 @@ function noahs_page_builder_get_sections($html){
 
 function noahs_page_builder_render_element($el_settings, $content =''){
 
+    $type = $el_settings->type;
 
-    $id = $el_settings->type;
-    $_class = 'element_' . $id;
-
-    if (is_string($el_settings->settings)) {
-        $el_settings->settings = json_decode($el_settings->settings);
-    }
-
+    $_class = 'element_' . $type;
 
     if( class_exists($_class) ){
 
         $s = new $_class;
         if(method_exists($s, 'render_content')){
+      
             return $s->render_content($el_settings, $content);
         }
     }
 }
 
+// function getNewWidget($type){
+//     $_class = 'element_' . $id;
+
+//     if( class_exists($_class) ){
+
+//         $s = new $_class;
+//         if(method_exists($s, 'render_content')){
+//             return $s->render_content((object) $el_settings, $content);
+//         }
+//     }
+// }
 
 function noahs_page_builder_html_generated($sections){
 
 $html = '';
+
     if ($sections) {
         foreach ($sections as $key => $section) {
 
             $widget_id = $section->type;
+            
            $html .= print_widgets($section);
+         
         }
     }
-
     return $html;
 }
 
@@ -367,15 +532,10 @@ function print_widgets($widget)
   
             if (!empty($elements)) {
                 foreach ($elements as $ekey => $element) {
-                    // Fetch element settings
-     
-                    $element_settings_json = noahs_page_builder_load_widget($element->id) ? noahs_page_builder_load_widget($element->id) : $element;
-                    // $element_settings = $element_settings_json ? json_decode($element_settings_json, true) : null;
-             
-               
-                    // Render element
 
-                    $html_element = noahs_page_builder_render_element($element_settings_json);
+                    $element_settings_json = $element->settings;
+
+                    $html_element = noahs_page_builder_render_element($element);
 
                     if(!empty($html_element)){
                         $html_element_sin_tabs = preg_replace('/\t/', '', $html_element);
@@ -384,14 +544,12 @@ function print_widgets($widget)
                     }
                 }
             }
-
-
+            
             // Fetch column settings
-            $column_settings_json = noahs_page_builder_load_widget($column->id) ? noahs_page_builder_load_widget($column->id) : $column;
-            // $column_settings = $column_settings_json ? json_decode($column_settings_json, true) : null;
+            $column_settings_json = $column->settings;
 
             // Render column with elements
-            $html = noahs_page_builder_render_element($column_settings_json, $element_content);
+            $html = noahs_page_builder_render_element($column, $element_content);
             $html_sin_tabs = preg_replace('/\t/', '', $html);
           
             $output = $html_sin_tabs;
@@ -400,16 +558,8 @@ function print_widgets($widget)
         }
     }
 
-    // Fetch section settings
 
-    $section_settings_json = noahs_page_builder_load_widget($widget->id) ? noahs_page_builder_load_widget($widget->id) : $widget;
-  
-// dump($section_settings_json);
-    // $section_settings = $section_settings_json ? json_decode($section_settings_json, true) : null;
-    // dump( $content);
-    // Render section with columns and elements
-
-    $html = noahs_page_builder_render_element($section_settings_json, $content);
+    $html = noahs_page_builder_render_element($widget, $content);
     $html_sin_tabs = preg_replace('/\t/', '', $html);
 
     $output = $html_sin_tabs;
@@ -420,9 +570,11 @@ function print_widgets($widget)
 }
 
 function noahs_page_builder_load($nid) {
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $result = \Drupal::database()->select('{noahs_page_builder_page}', 'd')
     ->fields('d')
     ->condition('did', $nid, '=')
+    ->condition('langcode', $langcode)
     ->execute()
     ->fetchObject();
     $page = new stdClass();
@@ -430,38 +582,41 @@ function noahs_page_builder_load($nid) {
         $page->nid = $result->nid;  
         $page->did = $result->did;
         $page->uid = $result->uid;
-        $page->html = $result->settings;
+        $page->settings = $result->settings;
         $page->page_settings = $result->page_settings;
+        $page->langcode = $result->langcode;
     }else{
-        $page->html = array();
+        $page->settings = array();
     }
 
   return $page;
 }
 
 
-function noahs_page_builder_load_widget($wid) {
-    $result = \Drupal::database()->select('{noahs_page_builder_widget}', 'd')
-    ->fields('d')
-    ->condition('wid', $wid, '=')
-    ->execute()
-    ->fetchObject();
+// function noahs_page_builder_load_widget($wid) {
+//     $result = \Drupal::database()->select('{noahs_page_builder_widget}', 'd')
+//     ->fields('d')
+//     ->condition('wid', $wid, '=')
+//     ->execute()
+//     ->fetchObject();
 
-  return $result;
-}
+//   return $result;
+// }
 
 function noahs_page_builder_load_blocks() {
-    $theme = \Drupal::theme()->getActiveTheme();
 
-    // Obtener los bloques activos en el tema.
-    $block_list = [];
-    foreach (Block::loadMultiple() as $block_id => $block) {
-        if ($block->getTheme() === $theme->getName()) {
-            $block_list[$block_id] = $block->label();
-        }
-    }
+  $block_manager = \Drupal::service('plugin.manager.block');
 
-    return $block_list;
+  $definitions = $block_manager->getDefinitionsForContexts();
+
+  $block_options = [];
+
+  foreach ($definitions as $plugin_id => $definition) {
+    $block_label = $definition['admin_label'] ?? $plugin_id;
+    $block_options[$plugin_id] = $block_label;
+  }
+
+  return $block_options;
 }
 
 function noahs_page_builder_load_views() {
@@ -518,27 +673,30 @@ function noahs_page_builder_library_info_alter(&$libraries, $extension) {
     if ($extension != 'noahs_page_builder') {
         return;
     }
-    $css_suffix = \Drupal::state()->get('noahs_page_builder_suffix') ?: NULL;
-    $name = Drupal::state()->get('css_name') ?: NULL;
-    $active_theme = \Drupal::theme()->getActiveTheme()->getName();
-    $defaultThemeName = \Drupal::config('system.theme')->get('default');    
 
-    if($active_theme === $defaultThemeName){
-        if ($css_suffix) {
-            $cssfile = NOAHS_PAGE_BUILDER_CSS_PATH . '/'.$name . $css_suffix . '.css';
+
+        $css_suffix = \Drupal::state()->get('noahs_page_builder_suffix') ?: NULL;
+        $name = Drupal::state()->get('css_name') ?: NULL;
+        $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');    
+
+        if($active_theme === $defaultThemeName){
+            if ($css_suffix) {
+                $cssfile = NOAHS_PAGE_BUILDER_CSS_PATH . '/'.$name . $css_suffix . '.css';
+                
+            }
+            else {
+                $cssfile = NOAHS_PAGE_BUILDER_CSS_PATH . '/'.$name.'.css';
+            }
+
+            if (file_exists($cssfile)) {
+
+                $css_path = \Drupal::service('file_url_generator')->generateAbsoluteString($cssfile);
             
+                $libraries['noahs_page_builder_custom_styles']['css']['theme'][$css_path]['weight'] = 9999;
+            }
         }
-        else {
-            $cssfile = NOAHS_PAGE_BUILDER_CSS_PATH . '/'.$name.'.css';
-        }
-
-        if (file_exists($cssfile)) {
-
-            $css_path = \Drupal::service('file_url_generator')->generateAbsoluteString($cssfile);
-          
-            $libraries['noahs_page_builder_custom_styles']['css']['theme'][$css_path]['weight'] = 9999;
-        }
-    }
+    
 }
 
 function noahs_page_builder_page_attachments(array &$page) {
@@ -548,42 +706,135 @@ function noahs_page_builder_page_attachments(array &$page) {
     $node = \Drupal::routeMatch()->getParameter('node');
     $current_uri = \Drupal::request()->getRequestUri();
     if($node){
-    
         if($active_theme === $defaultThemeName && $current_uri != '/node/'.$node->id().'/noahs_page_builder'){
-
-            $page['#attached']['library'][] = 'noahs_page_builder/noahs_page_builder_custom_styles';
+            $route = \Drupal::routeMatch()->getRouteName();
+            if (
+                $route === 'noahs_page_builder.preview' 
+                || $route === 'entity.node.canonical'
+                || $route === 'noahs_page_builder.product_preview'
+                ) {
+                $page['#attached']['library'][] = 'noahs_page_builder/noahs_page_builder_custom_styles';
+            }
         }else{
             \Drupal::state()->get('css_file_name') ?: NULL;
             $page['#attached']['drupalSettings']['noahs_page_builder']['load_c_styles'] = \Drupal::state()->get('css_file_name') ?: NULL;
         }
     }
 }
+
 function noahs_page_builder_page_attachments_alter(array &$attachments) {
     $route_match = \Drupal::routeMatch();
     $route = \Drupal::routeMatch()->getRouteName();
 
-    $css_element = noahs_page_builder_add_node_css($route_match);
 
-    if ($route === 'noahs_page_builder.preview' || $route === 'entity.node.canonical') {
-      $attachments['#attached']['html_head'][] = [$css_element, 'noahs_page_builder_node_css'];
+    $header_element = noahs_page_builder_add_node_css('header');
+    $footer_element = noahs_page_builder_add_node_css('footer'); 
+    $fonts_css = noahs_page_builder_add_font_css();
+
+    if(!empty($header_element)){
+        $attachments['#attached']['html_head'][] = [$header_element, 'noahs_page_builder_header_css'];
     }
+    if(!empty($footer_element)){
+        $attachments['#attached']['html_head'][] = [$footer_element, 'noahs_page_builder_footer_css'];
+    }
+    if(!empty($fonts_css['primary'])){
+        $attachments['#attached']['html_head'][] = [$fonts_css['primary'], 'noahs_page_builder_font_primary_css'];
+    }
+    if(!empty($fonts_css['secondary'])){
+        $attachments['#attached']['html_head'][] = [$fonts_css['secondary'], 'noahs_page_builder_font_general_css'];
+    }
+
+    if (
+        $route === 'noahs_page_builder.preview' 
+        || $route === 'entity.node.canonical'
+        || $route === 'noahs_page_builder_pro.iframe'
+        || $route === 'noahs_page_builder.product_preview'
+        ) {
+            
+        $node = $route_match->getParameter('node');
+        if(!empty($node)){
+            $css_element = noahs_page_builder_add_node_css($node->id());
+            $attachments['#attached']['html_head'][] = [$css_element, 'noahs_page_builder_node_css'];
+        }
+
+        if(!empty($route_match->getParameter('type')) || !empty($node)){
+            $type = $route_match->getParameter('type') ?? $node->bundle();
+            $page_element = noahs_page_builder_add_node_css($type);
+            if(!empty($page_element)){
+                $attachments['#attached']['html_head'][] = [$page_element, 'noahs_page_builder_'.$type.'_css'];
+            }
+        }
+ 
+    }
+
   }
  
 
 
-function noahs_page_builder_add_node_css(RouteMatchInterface $route_match) {
-    $node = $route_match->getParameter('node');
-    if(!empty($node)){
-        $nid = $node->id();
-      $css_file_name = 'noahs_page_builder_' . $nid . '.css';
+function noahs_page_builder_add_font_css() {
 
+    $noahs_page_builder_config = \Drupal::config('noahs_page_builder.settings');
+
+    $primaryFont = $noahs_page_builder_config->get('heading_font');
+    $secondaryFont = $noahs_page_builder_config->get('general_font');
+
+
+    $primary_folder = NOAHS_PAGE_BUILDER_PATH . '/assets/css/noahs-fonts/' . str_replace(' ', '_', strtolower($primaryFont)) . '.css';
+    $secondary_folder = NOAHS_PAGE_BUILDER_PATH . '/assets/css/noahs-fonts/' . str_replace(' ', '_', strtolower($secondaryFont)) . '.css';
+
+    $primary_file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($primary_folder);
+    $secondary_file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($secondary_folder);
+    $element = [];
+    if($primaryFont === $secondaryFont){
+        $element['secondary'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'link',
+            '#attributes' => [
+            'rel' => 'stylesheet',
+            'href' => $primary_file_url,
+            ],
+        ];
+    }else{
+        $element['primary'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'link',
+            '#attributes' => [
+            'rel' => 'stylesheet',
+            'href' => $primary_file_url,
+            ],
+        ];
+        $element['secondary'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'link',
+            '#attributes' => [
+            'rel' => 'stylesheet',
+            'href' => $primary_file_url,
+            ],
+        ];
+    }
+
+    
+    return $element;
+
+    
+  }
+function noahs_page_builder_add_node_css($type) {
+
+
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+    if(!empty($type)){
+
+      $css_file_name = 'noahs_page_builder_' . $type . '_' . $langcode . '.css';
+    
       if (file_exists('public://noahs_page_builder/' . $css_file_name)) {
+
         $file_uri = 'public://noahs_page_builder/' . $css_file_name;
 
         $file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+  
 
 
-        
         $element = [
           '#type' => 'html_tag',
           '#tag' => 'link',
@@ -592,7 +843,7 @@ function noahs_page_builder_add_node_css(RouteMatchInterface $route_match) {
             'href' => $file_url,
           ],
         ];
-        
+
         return $element;
       }
     }

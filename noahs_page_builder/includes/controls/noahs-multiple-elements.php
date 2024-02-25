@@ -21,11 +21,14 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 
 	public function content_template($data, $name, $values) {
 
+		$default_items = !empty($data['item']['default_items']) ? $data['item']['default_items'] : 3;
+		$default_items_array = array_fill(0, $default_items, null);
+
 		$fields = $data['item']['fields'];
 		$subfields = $fields[$data['item_id']];
-		$values = ($values) ? $values : array();
+		$values = ($values) ? $values : $default_items_array;
 		$parent = $data['item_id'];
-	
+		
 
 		$html = '
 			<div class="accordion-item">
@@ -71,10 +74,10 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 						<div class="accordion-actions btn-group">
 							<button class="btn btn-light noahs_page_builder-remove-item area_tooltip" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
 							<button class="btn btn-light noahs_page_builder-duplicate-item area_tooltip" title="Clone"><i class="fa-regular fa-copy"></i></button>
-							<button class="btn btn-light noahs_page_builder-move-item area_tooltip" title="Clone"><i class="fa-solid fa-up-down-left-right"></i></button>
+							<button class="btn btn-light noahs_page_builder-move-item area_tooltip" title="Move"><i class="fa-solid fa-up-down-left-right"></i></button>
 						</div>
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideshow_<?php echo $i; ?>" aria-expanded="false" aria-controls="slideshow_<?php echo $i; ?>">
-							Slideshow Item #<?php echo $i; ?>
+							 Item #<?php echo $i; ?>
 						</button>
 						</h2>
 						<div id="slideshow_<?php echo $i; ?>" class="accordion-collapse collapse" aria-labelledby="header_<?php echo $i; ?>" data-bs-parent="#<?php echo $data['item_id']; ?>">

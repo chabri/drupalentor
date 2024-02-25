@@ -1,0 +1,117 @@
+<?php
+use Drupal\Core\Field\BaseFieldDefinition;
+
+function noahs_page_builder_pro_schema() {
+  
+  $schema['noahs_page_builder_pro_global_widget'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "Creator user's {users}.uid",
+      ],
+      'langcode' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Language',
+      ],
+      'settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'wid' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'type' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  
+  $schema['noahs_page_builder_pro_themes'] = [
+    'description' => 'Stores example person entries for demonstration purposes.',
+    'fields' => [
+      'theme_id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'type' => [
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'page_settings' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['theme_id'],
+  ];
+
+
+  return $schema;
+}
+
+/**
+ * Add new field to field data and revision tables.
+ */
+function noahs_page_builder_pro_update_9008() {
+  $noahs_override_default = BaseFieldDefinition::create('boolean')
+  ->setLabel(t('Override Default Theme'))
+  ->setRevisionable(TRUE)
+  ->setTranslatable(TRUE)
+  ->setDefaultValue('') 
+  ->setDisplayOptions('form', [
+    'type' => 'boolean',
+    'weight' => 0,
+  ])
+  ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('noahs_override_default', 'node', 'node', $noahs_override_default);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('noahs_override_default', 'commerce_product', 'commerce_product', $noahs_override_default);
+
+  $noahs_dontuse = BaseFieldDefinition::create('boolean')
+  ->setLabel(t('Don`t Use Noahs in this node'))
+  ->setRevisionable(TRUE)
+  ->setTranslatable(TRUE)
+  ->setDefaultValue('') 
+  ->setDisplayOptions('form', [
+    'type' => 'boolean',
+    'weight' => 0,
+  ])
+  ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('noahs_dontuse', 'node', 'node', $noahs_dontuse);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('noahs_dontuse', 'commerce_product', 'commerce_product', $noahs_dontuse);
+}

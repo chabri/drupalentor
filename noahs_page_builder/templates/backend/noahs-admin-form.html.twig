@@ -14,7 +14,7 @@
 
     <div class="noahs_page_builder-preview-content">
         <iframe
-            src="https://page-builder.ddev.site/preview/2/noahs_page_builder"
+            src="{{iframe_url}}"
             id="noahs_page_builder-preview"></iframe>
         <div class="l ui-resizable-handle ui-resizable-w resizable-wrapper" id="w"></div>
         <div class="r ui-resizable-handle ui-resizable-e resizable-wrapper" id="e"></div>
@@ -54,18 +54,18 @@
 
                     <div class="mb-3 field__color">
                         <label for="background_color" class="form-label">Background Color</label>
-                        <input class="form-control-color" id="background_color" name="page[background_color]" value="{{page_settings.background_color}}"></textarea>
+                        <input class="form-control-color" id="background_color" name="page[background_color]" value="{{page_settings.background_color}}">
                     </div>
                     <div class="mb-3">
-                        <label for="pageContainer" class="form-label">Background Color</label>
+                        <label for="pageContainer" class="form-label">Page Container</label>
                         <select class="form-control" id="pageContainer" name="page[container]">
-                        <option value="full-width" {% if page_settings.container == 'full-width' %}selected{% endif %}>Full Width</option>
-                        <option value="container" {% if page_settings.container == 'container' %}selected{% endif %}>Container</option>
+                            <option value="full-width" {% if page_settings.container == 'full-width' %}selected{% endif %}>Full Width</option>
+                            <option value="container" {% if page_settings.container == 'container' %}selected{% endif %}>Container</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="containerWidth" class="form-label">Custom Container Width</label>
-                        <input class="form-control" id="containerWidth" name="page[container_width]" value="{{page_settings.container_width}}"></textarea>
+                        <input class="form-control" id="containerWidth" name="page[container_width]" value="{{page_settings.container_width}}">
                     </div>
                     <div class="btn-group d-flex justify-content-end">
                         <button type="submit" id="savenoahs_page_builderPageSettings" class="btn btn-success bt">{{ 'Save settings' |t }}</button>

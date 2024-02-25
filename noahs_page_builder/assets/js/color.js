@@ -2,7 +2,7 @@
 
     'use strict';
 
-    Drupal.behaviors.color_field_drupalenetor = {
+    Drupal.behaviors.color_field_noahs = {
         attach: function (context, settings) {
             colorSpectrum(context);
             $(document).on('myAjaxFinished', function(event) {
@@ -18,7 +18,8 @@
             const $element = $(element);
             $element.spectrum({
                 type: "color",
-                preferredFormat: "hex",
+              
+                preferredFormat: "rgb",
                 showInput: true,
                 showInitial: true,
                 showAlpha: false,
@@ -38,12 +39,12 @@
 
             $element.spectrum({
                 type: "color",
+                preferredFormat: "rgb",
                 showInput: true,
                 showInitial: true,
                 showAlpha: true,
                 showPalette: true,
                 showSelectionPalette: true,
-                palette: [ ],
                 appendTo: $element.parent(),
                 localStorageKey: "spectrum.overlay",
             });

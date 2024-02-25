@@ -1,0 +1,12 @@
+
+.noahs-divider-svg{
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+   &.after{
+    top: auto;
+    bottom: 0;
+   }
+}

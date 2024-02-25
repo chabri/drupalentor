@@ -5,6 +5,7 @@ namespace Drupal\noahs_page_builder\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\noahs_page_builder\Fonts;
+use Drupal\node\Entity\NodeType;
 /**
  * Defines a form that configures noahs_page_builder settings.
  */
@@ -42,17 +43,46 @@ class NoahsSettingsForm extends ConfigFormBase {
 
         $form['#attached']['drupalSettings']['noahs_page_builder']['pallete_color'] = $pallete_color;
 
-        $node_types = \Drupal\node\Entity\NodeType::loadMultiple();
+        $node_types = \Drupal\node\Entity\NodeType::loadMultiple(); 
         $node_types_options = [];
 
         foreach ($node_types as $node_type) {
             $node_types_options[$node_type->id()] = $node_type->label();
         }
-       
+
+
+        $commerce_types = \Drupal\commerce_product\Entity\ProductType::loadMultiple();
+        $commerce_options = [];
+
+        foreach ($commerce_types as $product_type) {
+            $commerce_options[$product_type->id()] = $product_type->label();
+        }
+        // dump( $settings->get('use_in_ctype'));
         $form['tabs'] = [
             '#type' => 'horizontal_tabs',
         ];
 
+        /* =========================   General  ========================= */
+
+        $form['general'] = [
+            '#type' => 'details',
+            '#title' => t('General'),
+            '#group' => 'tabs',
+        ];
+        $form['general']['use_in_ctype'] = [
+            '#type' => 'checkboxes',
+            '#title' => t('Use in content type'),
+            '#group' => 'general',
+            '#options' => $node_types_options,
+            '#default_value' =>$settings->get('use_in_ctype') ?? [],
+        ];
+        $form['general']['use_in_products'] = [
+            '#type' => 'checkboxes',
+            '#title' => t('Use in Products type'),
+            '#group' => 'general',
+            '#options' => $commerce_options,
+            '#default_value' =>$settings->get('use_in_products') ?? [],
+        ];
         /* =========================   Styles  ========================= */
 
         $form['style'] = [
@@ -283,7 +313,6 @@ class NoahsSettingsForm extends ConfigFormBase {
                   'solid' => 'Solid',
                   'dotted' => 'Dotted',
                   'dashed' => 'Dashed',
-                  // Agrega más opciones según sea necesario
                 ],
               ],
             ],
@@ -298,9 +327,7 @@ class NoahsSettingsForm extends ConfigFormBase {
               'padding_right' => 'Padding Right',
               'padding_bottom' => 'Padding Bottom',
               'padding_left' => 'Padding Left',
-    
             ],
-            // ... Otros campos ...
           ];
     
           foreach ($fields_button as $group_key => $group_fields) {
@@ -358,8 +385,121 @@ class NoahsSettingsForm extends ConfigFormBase {
 
             ];
           }
-        
-        /* =========================   Custom Css  ========================= */
+    
+
+        /* =========================   Forms  ========================= */
+
+        $form['forms'] = [
+            '#type' => 'details',
+            '#title' => t('Forms'),
+            '#group' => 'tabs',
+        ];
+        $fields_forms = [
+            'font' => [
+                'forms_font-size' => 'Font Size',
+                'forms_line_height' => 'Line Height',
+                'forms_letter_space' => 'Letter Space',
+                'forms_word_space' => 'Word Space',
+                'forms_font_wight' => [
+                    'title' => 'Font Weight',
+                    'options' =>  Fonts::getFontsWeights(),
+                    ],
+                'form_text_transform' => [
+                    'title' => 'Text Transform',
+                    'options' => [
+                        '' => 'Default',
+                        'uppercase' => 'Uppercase',
+                        'lowercase' => 'Lowecase',
+                        'capitalize' => 'Capitalize',
+                        'none' => 'Normal',
+                    ],
+                ],
+            ],
+            'Border Inputs' => [
+              'form_border_top' => 'Border Top',
+              'form_border_right' => 'Border Right',
+              'form_border_bottom' => 'Border Bottom',
+              'form_border_left' => 'Border Left',
+              'form_border_type' => [
+                'title' => 'Border Type',
+                'options' => [
+                  'none' => 'None',
+                  'solid' => 'Solid',
+                  'dotted' => 'Dotted',
+                  'dashed' => 'Dashed',
+                ],
+              ],
+            ],
+            'Border Radius' => [
+              'form_border_radius_top' => 'Border Radius Top',
+              'form_border_radius_right' => 'Border Radius Right',
+              'form_border_radius_bottom' => 'Border Radius Bottom',
+              'form_border_radius_left' => 'Border Radius Left',
+            ],
+            'padding' => [
+              'form_padding_top' => 'Padding Top',
+              'form_padding_right' => 'Padding Right',
+              'form_padding_bottom' => 'Padding Bottom',
+              'form_padding_left' => 'Padding Left',
+            ],
+          ];
+          foreach ($fields_forms as $group_key => $group_fields) {
+
+            $form['forms'][$group_key] = [
+                '#type' => 'fieldset',
+                '#title' => $group_key,
+                '#attributes' => [
+                  'class' => ['noahs-group-settings-fileds'],  // Añade aquí tus clases
+                ],
+              ];
+            foreach ($group_fields as $field_key => $field_config) {
+                if(empty($field_config['options'])){
+                    $form['forms'][$group_key][$field_key] = [
+                    '#type' => is_array($field_config) ? 'select' : 'textfield',
+                    '#title' => is_array($field_config) ? $field_config['title'] : $field_config,
+                    '#default_value' => is_array($field_config) ? $settings->get($field_key) ?? '' : $settings->get($field_key) ?? '',
+                    ];
+                }else{
+                    $form['forms'][$group_key][$field_key] = [
+                    '#title' => is_array($field_config) ? $field_config['title'] : $field_config,
+                    '#default_value' => is_array($field_config) ? $settings->get($field_key) ?? '' : $settings->get($field_key) ?? '',
+                    '#type' => 'select',
+                    '#options' =>$field_config['options'],
+                    ];
+                }
+                $form['forms']['input_color'] = array(
+                    '#type' => 'textfield',
+                    '#title' => 'Text Color',
+                    '#default_value' => $settings->get('input_color') ? $settings->get('input_color') : '',
+                    '#description' => t("Set text color"),
+                    '#attributes' => array('class' => array('form-control-color')),
+                );
+                $form['forms']['input_bgcolor'] = array(
+                    '#type' => 'textfield',
+                    '#title' => 'Inputs Background Color',
+                    '#default_value' => $settings->get('input_bgcolor') ? $settings->get('input_bgcolor') : '',
+                    '#description' => t("Set background color"),
+                    '#attributes' => array('class' => array('form-control-color')),
+                );
+                $form['forms']['input_border_color'] = array(
+                    '#type' => 'textfield',
+                    '#title' => 'Inputs Border Color',
+                    '#default_value' => $settings->get('input_bgcolor') ? $settings->get('input_border_color') : '',
+                    '#description' => t("Set background color"),
+                    '#attributes' => array('class' => array('form-control-color')),
+                );
+                $form['forms']['checkbox_style'] = array(
+                    '#type' => 'checkbox',
+                    '#title' => 'Show Checkbox as Switch style',
+                    '#default_value' => $settings->get('checkbox_style') ? $settings->get('checkbox_style') : '',
+                    '#description' => t("Style Switch on/off"),
+                );
+
+              
+            }
+          }
+
+                  /* =========================   Custom Css  ========================= */
         
         $form['custom_css'] = [
             '#type' => 'fieldset',
@@ -376,8 +516,6 @@ class NoahsSettingsForm extends ConfigFormBase {
             '#attributes' => array('class' => array('codemirror-texarea')),
 //            '#group' => 'custom_css',
         ];
-
-
         return parent::buildForm($form, $form_state);
     }
 
@@ -482,6 +620,36 @@ class NoahsSettingsForm extends ConfigFormBase {
             if(!empty($form_state->getValue('border_color_hover'))){$styles .= 'border-color:'.$form_state->getValue('border_color_hover').';';}
         $styles .= '}';
         
+        $styles .= 'input, select, textarea, .form-control{';
+            if(!empty($form_state->getValue('input_color'))){ $styles .= 'color:'.$form_state->getValue('input_color').';';}
+            if(!empty($form_state->getValue('input_bgcolor'))){ $styles .= 'background-color:'.$form_state->getValue('input_bgcolor').';';}
+            if(!empty($form_state->getValue('form_border_type'))){ $styles .= 'border-style:'.$form_state->getValue('form_border_type').';' ?? "none" .';';}
+            if(!empty($form_state->getValue('input_border_color'))){ $styles .= 'border-color:'.$form_state->getValue('input_border_color').';' ?? 'transparent'.';';}
+
+            if(!empty($form_state->getValue('form_padding_top'))){  $styles .= 'fpadding-top:'.$ptop.';';}
+            if(!empty($form_state->getValue('form_padding_right'))){  $styles .= 'padding-right:'.$pright.';';}
+            if(!empty($form_state->getValue('form_padding_bottom'))){  $styles .= 'padding-bottom:'.$pbottom.';';}
+            if(!empty($form_state->getValue('form_padding_left'))){  $styles .= 'padding-left:'.$pleft.';';}
+            
+            if(!empty($form_state->getValue('form_border_top'))){  $styles .= 'border-top-width:'.$bbtop.';';}
+            if(!empty($form_state->getValue('form_border_right'))){  $styles .= 'border-right-width:'.$bbright.';';}
+            if(!empty($form_state->getValue('form_border_bottom'))){  $styles .= 'border-bottom-width:'.$bbbottom.';';}
+            if(!empty($form_state->getValue('form_border_left'))){  $styles .= 'border-left-width:'.$bbleft.';';}
+
+            if(!empty($form_state->getValue('form_border_radius_top'))){  $styles .= 'border-top-left-radius:'.$brtop.';';}
+            if(!empty($form_state->getValue('form_border_radius_right'))){  $styles .= 'border-top-right-radius:'.$brright.';';}
+            if(!empty($form_state->getValue('form_border_radius_bottom'))){  $styles .= 'border-bottom-right-radius:'.$brbottom.';';}
+            if(!empty($form_state->getValue('form_border_radius_bottom'))){  $styles .= 'border-bottom-left-radius:'.$brleft.';';}
+        $styles .= '}';
+        $styles .= 'label{';
+            if(!empty($form_state->getValue('form_font_size'))){ $styles .= 'font-size:'.$form_state->getValue('form_font_size').';';}
+            if(!empty($form_state->getValue('form_line_height'))){ $styles .= 'line-height:'.$form_state->getValue('form_line_height').';';}
+            if(!empty($form_state->getValue('form_letter_space'))){ $styles .= 'letter-spacing:'.$form_state->getValue('form_letter_space').';';}
+            if(!empty($form_state->getValue('form_word_space'))){ $styles .= 'word-spacing:'.$form_state->getValue('form_word_space').';';}
+            if(!empty($form_state->getValue('form_font_wight'))){ $styles .= 'font-weight:'.$form_state->getValue('form_font_wight').';';}
+            if(!empty($form_state->getValue('form_text_transform' ))){ $styles .= 'text-transform:'.$form_state->getValue('form_text_transform').';';}
+        $styles .= '}';
+
         $styles .= $form_state->getValue('noahs_page_builder_custom_css');
         
         

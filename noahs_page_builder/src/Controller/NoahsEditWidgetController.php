@@ -50,13 +50,7 @@ class NoahsEditWidgetController extends ControllerBase {
     $page['#attached']['drupalSettings']['noahs_page_builder']['pallete_color'] = $pallete_color;
     $fields = noahs_page_builder_get_widget_fields($widget);
 
-    if(noahs_page_builder_load_widget($widget_id)){
- 
-      $settings = json_decode(noahs_page_builder_load_widget($widget_id)->settings, true);
 
-    }else{
-      $settings = null;
-    }
     $page['#attached']['drupalSettings']['noahs_page_builder']['field_settings'] = $settings;
 
     $jsonData = json_encode($settings);
@@ -97,61 +91,5 @@ class NoahsEditWidgetController extends ControllerBase {
   
 
   }
-    public function save(){
-        header('Content-type: application/json');
-        $data = \Drupal::request()->request->get('data');
-        $id = \Drupal::request()->request->get('nid');
-        $node = Node::load($id);
-        $lang = $node->get('langcode')->value;
-        
-        $builder = \Drupal::database()->select('{noahs_page_builder}', 'd')
-          ->fields('d', array('nid', 'html', 'lang'))
-          ->condition('nid', $id)
-          ->execute()
-          ->fetchAssoc();
-        
-        if($builder != NULL){
-            $schema = \Drupal::database()->update("noahs_page_builder")
-            ->fields(array(
-                'html' => $data,
-            ))
-            ->condition('nid', $id)
-            ->execute();
-        }else{
-            $builder = \Drupal::database()->insert("noahs_page_builder")
-              ->fields(array(
-                  'html' => $data,
-                  'nid' => $id,
-                  'lang' => $lang,
-              ))
-            ->execute();
-        }
 
-        $result = array(
-          'data' => 'update  - saved',
-          'html' => $data,
-          'lang' => $node->get('langcode')->value,
-          'nid' => $id,
-        );
- 
-        print json_encode($result);
-        exit(0);
-    }
-    public function getImageStyle(){
-        header('Content-type: application/json');
-        $img = \Drupal::request()->request->get('img');
-        $image_Style = \Drupal::request()->request->get('image_style');
-        $styleMedia = ImageStyle::load($image_Style);
-        $image_path = $styleMedia->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
-         $style = \Drupal::entityTypeManager()->getStorage('image_style')->load($image_Style);
-         $url = $style->buildUrl(str_replace('/sites/default/files/', 'public://', $img));
-        
-        $result = array(
-          'data' => 'update  - generated',
-          'image_path' => $image_path,
-        );
- 
-        print json_encode($result);
-        exit(0);
-    }
 }

@@ -141,10 +141,6 @@ class element_noahs_column extends WidgetBase{
 			$array_style = array();
 			$array_class_inner = array();
 			$array_class_inner_inner = array();
-			$id_column = '';
-
-//            $column_class = implode($array_class, ' ');
-            $column_class = implode(' ',$array_class);
 //			$column_class_inner = implode($array_class_inner, ' ');
             $column_class_inner = implode(' ',$array_class_inner);
             $array_class_inner_inner = implode(' ',$array_class_inner_inner);
@@ -163,6 +159,6 @@ class element_noahs_column extends WidgetBase{
 	}
 	
 	public function render_content($element, $content = null) {
-		return $this->wrapper($element, $this->template($element->settings, $content));
+		return $this->wrapper($element, $this->template($element, $content), $element);
 	}
 }

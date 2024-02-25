@@ -1,3 +1,7 @@
+:root {
+  --noahs_page_builder-principal-color: #b558fe;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -104,6 +108,7 @@
 .noahs_page_builder-widget {
   position: relative;
   min-height: 50px;
+  display: flex;
 }
 
 .widget-noahs-row,
@@ -158,13 +163,13 @@ h2.accordion-header {
 .noahs_page_builder-tabs li {
   width: 100%;
 }
-.noahs_page_builder-tabs li a {
+.noahs_page_builder-tabs li a, .noahs_page_builder-tabs li button {
   text-align: center;
   font-size: 1rem;
   color: #4a4a4a;
   border-bottom: 2px solid transparent;
 }
-.noahs_page_builder-tabs li a.active {
+.noahs_page_builder-tabs li a.active, .noahs_page_builder-tabs li button.active {
   border-bottom-color: #08CCB2;
 }
 .field__noahs_page_builder_multiple_elements .noahs_page_builder-tabs {
@@ -273,6 +278,7 @@ h2.accordion-header {
   text-decoration: none;
   text-transform: uppercase;
   font-size: .8rem;
+  background-color: #f2f2f2;
 }
 .hover_tabs a.active, .responsive__tabs a.active {
   background-color: #08CCB2;
@@ -315,11 +321,19 @@ h2.accordion-header {
 }
 .noahs_page_builder-modal .noahs_page_builder-modal_container {
   width: 100%;
-  background-color: #fff;
+  background-color: #f1f1f1;
   height: 100%;
-  overflow: auto;
 }
 .noahs_page_builder-modal .form-widget {
+  height: 100%;
+  padding-bottom: 55px;
+}
+.noahs_page_builder-modal .form-widget .form-wrapper {
+  height: calc(100% - 75px);
+}
+.noahs_page_builder-modal .form-widget .tab-content {
+  overflow: auto;
+  height: calc(100% - 30px);
   padding: 15px;
 }
 
@@ -555,7 +569,7 @@ form {
 .noahs_page_builder_field {
   margin-bottom: 15px;
   padding: 15px;
-  background: #f3f3f3;
+  background: #ffffff;
 }
 .noahs_page_builder_field .noahs_page_builder_field {
   margin-bottom: 15px;
@@ -677,7 +691,6 @@ form {
   display: inline-block;
   margin-top: -15px;
   margin-left: -15px;
-  background: url('../img/icons/preloader.svg') scroll no-repeat center center;
   -webkit-animation: spin 1s linear infinite;
   -moz-animation: spin 1s linear infinite;
   animation: spin 1s linear infinite;

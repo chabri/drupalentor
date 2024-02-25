@@ -1,0 +1,5 @@
+noahs_page_builder_pro.assets.frontend:
+  version: 1.x
+  js:
+    assets/js/header.js: {scope: footer}
+    assets/js/menu.js: {scope: footer}

@@ -20,13 +20,21 @@
     }
     .noahs_page_builder-modal_container{
         width: 100%;
-        background-color: #fff;
-        height: 100%;
-        overflow: auto;
+        background-color: #f1f1f1;
+        height: 100%; 
 
     }
     .form-widget{
-        padding: 15px;
+    height: 100%;
+    padding-bottom: 55px;
+        .form-wrapper{
+        height: calc(100% - 75px);
+        }
+        .tab-content{
+            overflow: auto;
+            height: calc(100% - 30px);
+            padding: 15px;
+        }
     }
 }
 

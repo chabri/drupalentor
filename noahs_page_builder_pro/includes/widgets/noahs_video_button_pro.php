@@ -51,9 +51,25 @@ use Drupal\noahs_page_builder\WidgetBase;
             'title'       => t('Font'),
             'tab'     => 'section_style',
             'style_type' => 'style',
-            'style_selector' => 'widget', 
+            'style_selector' => '.noahs--video-button h5', 
             'responsive' => true,
            ];
+           $form['color_icon'] = [
+            'type'     => 'noahs_color',
+            'title'    => ('Icon Color'),
+            'tab'     => 'section_style',
+            'style_type' => 'style',
+            'style_css' => 'color', 
+            'style_selector' => '.play-video', 
+         ];
+           $form['bg_color'] = [
+            'type'     => 'noahs_color',
+            'title'    => ('Button Color'),
+            'tab'     => 'section_style',
+            'style_type' => 'style',
+            'style_css' => 'background-color', 
+            'style_selector' => '.play-video', 
+         ];
          return $form;
       }
 
@@ -62,24 +78,22 @@ use Drupal\noahs_page_builder\WidgetBase;
 
          ?>
          <?php ob_start() ?>
-   
 
-               <div class="noahs--video-button play-button-left">
-                  <a data-fancybox="video" href="https://www.youtube.com/embed/fystY7WFkHc" class="">
-                     <span class="play-video">
-                        <span class="fas fa-play"></span>
-                     </span>
-                  </a>
-                  <h5>Watch how it works</h5>
-               </div>
-
+            <div class="noahs--video-button play-button-left">
+               <a data-fancybox="video" href="https://www.youtube.com/embed/fystY7WFkHc" class="">
+                  <span class="play-video">
+                     <span class="fas fa-play"></span>
+                  </span>
+               </a>
+               <h5>Watch how it works</h5>
+            </div>
    
          <?php return ob_get_clean();
       }
 
       public function render_content($element) {
 
-         return $this->wrapper($element, $this->template($element->settings));
+         return $this->wrapper($element, $this->template($element));
       }
    }
 

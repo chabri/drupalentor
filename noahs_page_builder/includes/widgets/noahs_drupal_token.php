@@ -32,7 +32,7 @@ use Drupal\Core\Render\Markup;
          
          $form['token_button'] = [
             'type'    => 'html',
-            'value'   => '<a class="btn btn-info noahs_page_builder-modal-tokens" href="#">Select Token</a>',
+            'value'   => '<a class="btn btn-s btn-info noahs_page_builder-modal-tokens mb-4" href="#">Select Token</a>',
             'tab' => 'section_content'
          ];
 
@@ -41,11 +41,11 @@ use Drupal\Core\Render\Markup;
 
       public function template( $settings ){
 
-         $settings = $settings['element'];
+         $settings = $settings->element;
          $token_service = \Drupal::token();
 
          // Token que deseas renderizar.
-         $token = $settings['token'];
+         $token = $settings->token;
          
          // Renderiza el token.
          $rendered_token = $token_service->replace($token);
@@ -53,15 +53,14 @@ use Drupal\Core\Render\Markup;
          ?>
          <?php ob_start() ?>
                <div class="widget-content">
-                  <?php echo Markup::create($rendered_token)->__toString(); ?>
+                  <?php echo Markup::create($rendered_token); ?>
                </div>
 
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

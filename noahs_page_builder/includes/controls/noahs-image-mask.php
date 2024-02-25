@@ -43,12 +43,15 @@ class Control_Noahs_Image_Mask{
 					</div>
 				<?php }?>
 			</div>
+			<div class="btn-group position-absolute d-flex justify-content-between w-100">
+				<button class="btn btn-danger media-remove_mask_image area_tooltip" title=""><i class="fa-solid fa-trash"></i></button>
+			</div>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Mask Size (usep px, %, rem, wv...)</label>
 			<select name="<?php echo $name; ?>[mask_size]"  class="form-control" field-setting>
 				<?php foreach ($options as $key => $label) { ?>
-					<option value="<?php echo $key; ?>" <?php echo ($value === $selectedValue) ? 'selected' : ''; ?>>
+					<option value="<?php echo $key; ?>" <?php echo ($value['mask_size'] === $key) ? 'selected' : ''; ?>>
             			<?php echo $label; ?>
         			</option>				
 				<?php } ?>

@@ -1,5 +1,11 @@
+
+:root{
+    --noahs_page_builder-principal-color:#b558fe;
+}
+
+
 $purple-tab: #c2b4f4;
-$primary: #00293D;
+$primary: var(--noahs_page_builder-principal-color);
 $secondary: #4a4a4a;
 $green:#08CCB2;
 $blue: #86C1DA;
@@ -7,7 +13,7 @@ $darkblue: #00293D;
 $orange: #F9AC1B; 
 $violet: #291C59;  
 $yellow: #FACB38;
-$gold:#A28940;
+$gold:#A28940; 
 $red: #DD0029;  
 
 $borderLight: #eaeaea;

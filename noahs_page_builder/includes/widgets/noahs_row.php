@@ -135,7 +135,7 @@ class element_noahs_row extends WidgetBase{
 			'title'   => t('Column position'),
 			'tab' => 'section_content',
 			'style_type' => 'style',
-			'style_selector' => '.noahs_page_builder-row-wrapper', 
+			'style_selector' => '.widget', 
 			'style_css' => 'align-items', 
 			'responsive' => true,
 			'options' => [
@@ -172,7 +172,6 @@ class element_noahs_row extends WidgetBase{
 			'style_type' => 'style',
 			'style_selector' => 'widget', 
 			'responsive' => true,
-	
 		];
 
 		// Section Styles
@@ -206,12 +205,13 @@ class element_noahs_row extends WidgetBase{
 			'style_selector' => 'widget', 
 			'responsive' => true,
 		];
+		
 		$form['bg_divider'] = [
 			'type'     => 'noahs_divider',
 			'title'    => ('Divider Gradient'),
 			'tab'     => 'section_styles',
-			'style_type' => 'style',
 		];
+
 		$form['video_background'] = [
 			'type'     => 'noahs_video_background',
 			'title'    => ('Video Background'),
@@ -244,7 +244,6 @@ class element_noahs_row extends WidgetBase{
 	}
 
 	public function render_content($element, $content = null) {
-		
-		return $this->wrapper($element, $this->template($element->settings, $content));
+		return $this->wrapper($element, $this->template($element->settings, $content), $element);
 	}
 }

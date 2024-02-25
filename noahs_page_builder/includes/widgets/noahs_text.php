@@ -40,23 +40,24 @@ use Drupal\noahs_page_builder\WidgetBase;
             'title'       => t('Font'),
             'tab'     => 'section_style',
             'style_type' => 'style',
-            'style_selector' => 'widget', 
+            'style_selector' => '.widget-content *', 
             'responsive' => true,
            ];
+           
+   
          return $form;
       }
 
       public static function template( $settings ){
 
-         $ouput = '';
-         $ouput .= '<div class="widget-content">';
-         $ouput .=  isset($settings->element->text) ? $settings->element->text : '<h2>Your Text Here</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mollis consequat dui in ultricies. Maecenas iaculis aliquet iaculis. Maecenas magna mi, pulvinar sed malesuada nec, convallis euismod libero.</p>';
+
+         $ouput = '<div class="widget-content">';
+         $ouput .=  !empty($settings->element->text) ? $settings->element->text : '<h2>Your Text Here</h2><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mollis consequat dui in ultricies. Maecenas iaculis aliquet iaculis. Maecenas magna mi, pulvinar sed malesuada nec, convallis euismod libero.</p>';
          $ouput .= '</div>';
          return $ouput;
       }
 
       public function render_content($element) {
-
          return $this->wrapper($element, $this->template($element->settings));
       }
    }

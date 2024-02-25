@@ -22,18 +22,20 @@ class Control_Select extends Controls_Base {
 
 				$output .= '<optgroup label="'.$groupItems[0]['master'].'">';
 				foreach ($groupItems as $item) {
-					$output .= "<option value='{$item['block_id']}'>{$item['text']}</option>";
+					$selected = ( $value == $key) ? 'selected="selected"' : '';
+					$output .= "<option value='{$item['block_id']}' {$selected}>{$item['text']}</option>";
 				}
 				$output .= '</optgroup>';
 			}
 		}else if(!empty($data['item']['select_group'])){
 	
 			foreach ($data['item']['options'] as $groupName => $groupItems) {
-// dump($groupName);
 
 				$output .= '<optgroup label="'.$groupItems['text'].'">';
 				foreach ($groupItems['options'] as $key => $item) {
-					$output .= "<option value='{$key}'>{$item}</option>";
+					$selected = ( $value == $key) ? 'selected="selected"' : '';
+
+					$output .= "<option value='{$key}' {$selected}>{$item}</option>";
 				}
 				$output .= '</optgroup>';
 			}

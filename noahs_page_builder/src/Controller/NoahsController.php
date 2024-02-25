@@ -34,62 +34,46 @@ class NoahsController extends ControllerBase{
 
    
 
-    public function editor(Request $request) {
+    public function editor() {
 
       require_once NOAHS_PAGE_BUILDER_PATH . '/includes/controls.php';
-      
+
       $node = \Drupal::routeMatch()->getParameter('node');
+
       $nid = $node->id();
+
+      $page_id = $nid;
+      $iframe_url = "/preview/{$nid}/noahs_page_builder";
+      if($node->getEntityTypeId() === 'commerce_product'){
+        $page_id  = 'product_' . $nid;
+        $iframe_url = "/product_preview/{$nid}/noahs_page_builder";
+      }
       $widgets = noahs_page_builder_get_widgets();
-
-      $data = noahs_page_builder_load($nid) ?? NULL;
-      $page_settings = !empty($data->page_settings) ? json_decode($data->page_settings, true) : [];
-
-      $sections = noahs_page_builder_get_sections($data->html);
+      $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     
-      $getSaveUrl =  Url::fromRoute('noahs_page_builder.save_widget', [],  ['absolute' => TRUE])->toString();
       $getPageUrl =  Url::fromRoute('noahs_page_builder.save_page', [],  ['absolute' => TRUE])->toString();
-      $getImageStyle =  Url::fromRoute('noahs_page_builder.get_image_style', [],  ['absolute' => TRUE])->toString();
-      // $getWidget =  Url::fromRoute('noahs_page_builder.widget', [],  ['absolute' => TRUE])->toString();
-      $page['#attached']['drupalSettings']['saveWidget'] = $getSaveUrl;
       $page['#attached']['drupalSettings']['savePage'] = $getPageUrl;
-      $page['#attached']['drupalSettings']['getImageStyleURL'] = $getImageStyle;
-      $page['#attached']['drupalSettings']['html_noahs_page_builder'] = $data->html;
-      // $page['#attached']['drupalSettings']['widget'] = $getWidget;
-      // $page['#attached']['drupalSettings']['noahs_page_builder']['element_fields'] = $el_fields;
-      $page['#attached']['drupalSettings']['noahs_page_builder']['base_path'] = base_path();
-      $page['#attached']['drupalSettings']['noahs_page_builder']['load_widgets'] = noahs_page_builder_get_widgets();
-      $noahs_page_builder_config = \Drupal::config('noahs_page_builder.settings');
-      $pallete_color = [];
-  
-      $pallete_color[] = !empty($noahs_page_builder_config->get('principal_color')) ? $noahs_page_builder_config->get('principal_color') : '#2389ab';
-      $pallete_color[] = !empty($noahs_page_builder_config->get('secondary_color')) ? $noahs_page_builder_config->get('principal_color') : '#4a4a4a';
-      $pallete_color[] = !empty($noahs_page_builder_config->get('heading_color')) ? $noahs_page_builder_config->get('heading_color') : '#4a4a4a';
-      $pallete_color[] = !empty($noahs_page_builder_config->get('text_color')) ? $noahs_page_builder_config->get('text_color') : '#000000';
-  
-      $page['#attached']['drupalSettings']['noahs_page_builder']['pallete_color'] = $pallete_color;
-
-      $module_url =  '/'.\Drupal::service('extension.list.module')->getPath('noahs_page_builder');
-
-      $page['#attached']['drupalSettings']['module_url'] = $module_url;
-      $page['#attached']['drupalSettings']['nid'] = $nid;
-      $page['#attached']['drupalSettings']['did'] = $nid;
+      $page['#attached']['drupalSettings']['nid'] = $page_id;
+      $page['#attached']['drupalSettings']['did'] = $page_id;
       $page['#attached']['drupalSettings']['uid'] = \Drupal::currentUser()->id();
-      $page['#attached']['drupalSettings']['langcode'] = \Drupal::languageManager()->getCurrentLanguage()->getId();
+      $page['#attached']['drupalSettings']['langcode'] = $langcode;
 
       $page['#attached']['library'][] = 'noahs_page_builder/noahs_page_builder.assets.preview';
 
-      $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/'.$nid);
+
 
       $page['noahs-admin-form'] = array(
         '#theme' => 'noahs-admin-form',
-        '#url' => $alias,
+        '#url' => $node->toUrl()->toString(),
         '#content' => '',
+        '#did' => $nid,
         '#widgets' => $widgets,
+        '#iframe_url' => $iframe_url,
         // '#field' => $el_fields
       );
       return $page;
     }
+
     private function getAllIds($array, &$ids) {
 
       foreach ($array as $key => $value) {
@@ -106,82 +90,117 @@ class NoahsController extends ControllerBase{
       return $ids;
   }
 
-  public function removeWidget($id) {
+  // public function removeWidget($id) {
 
-    // Verificar si se recibieron IDs válidos
-      if (empty($id)) {
-          return new JsonResponse('No se han proporcionado IDs válidos para eliminar');
-      }
-    // Recorrer los IDs y ejecutar la eliminación
+  //   // Verificar si se recibieron IDs válidos
+  //     if (empty($id)) {
+  //         return new JsonResponse('No se han proporcionado IDs válidos para eliminar');
+  //     }
+  //   // Recorrer los IDs y ejecutar la eliminación
 
-      $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
-      ->fields('d', array('wid'))
-      ->condition('wid', $id)
-      ->execute()
-      ->fetchAssoc();
+  //     $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
+  //     ->fields('d', array('wid'))
+  //     ->condition('wid', $id)
+  //     ->execute()
+  //     ->fetchAssoc();
     
-      if($builder != NULL){
-        \Drupal::database()->delete('noahs_page_builder_widget')
-        ->condition('wid', $id)
-        ->execute();
-        return new JsonResponse('Widget eliminado correctamente');
-      }
+  //     if($builder != NULL){
+  //       \Drupal::database()->delete('noahs_page_builder_widget')
+  //       ->condition('wid', $id)
+  //       ->execute();
+  //       return new JsonResponse('Widget eliminado correctamente');
+  //     }
 
-  }
+  // }
+
+
+    // public function saveWidget(){
+
+    //     $wid = \Drupal::request()->request->get('wid');
+    //     $uid = \Drupal::request()->request->get('uid');
+    //     $did = \Drupal::request()->request->get('did');
+    //     $type = \Drupal::request()->request->get('type');
+    //     $settings = \Drupal::request()->request->get('settings');
+    //     $langcode = \Drupal::request()->request->get('langcode');
+
+    //     $classes = [];
+    //     $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
+    //       ->fields('d', array('wid'))
+    //       ->condition('wid', $wid)
+    //       ->execute()
+    //       ->fetchAssoc();
+        
+    //     if($builder != NULL){
+    //         $schema = \Drupal::database()->update("noahs_page_builder_widget")
+    //         ->fields(array(
+    //             'settings' => $settings,
+    //             'did' => $did,
+    //         ))
+    //         ->condition('wid', $wid)
+    //         ->execute();
+    //         $result = 'Widget Actualizado correctamente';
+    //     }else{
+    //         $builder = \Drupal::database()->insert("noahs_page_builder_widget")
+    //           ->fields(array(
+    //               'wid' => $wid,
+    //               'did' => $did,
+    //               'uid' => $uid,
+    //               'type' => $type,
+    //               'langcode' => $langcode,
+    //               'settings' => $settings
+    //           ))
+    //         ->execute();
+    //         $result = 'Widget añadido correctamente';
+    //     }
+    //     $fields = noahs_page_builder_get_widget_fields($type);
+    //     $tabs_class = new Controls_Manager();
+
+    //     $settings = json_decode($settings, true);
+
+    //     if (!empty($settings['element']['class'])) {
+
+    //       $data_controls = $tabs_class->getClasses($fields, $settings['element']['class'], $wid);
+
+    //       if($data_controls){
+    //           $classes[] = $data_controls;
+    //       }
+    //     }
+
+    //   return new JsonResponse(['result' => $result, 'classes' =>  $classes]); 
+    // }
+
+    
+    public function clonePage($did, $new_did, $original_langcode, $new_langcode){
+
 
   
-    public function saveWidget(){
-
-        $wid = \Drupal::request()->request->get('wid');
-        $uid = \Drupal::request()->request->get('uid');
-        $did = \Drupal::request()->request->get('did');
-        $type = \Drupal::request()->request->get('type');
-        $settings = \Drupal::request()->request->get('settings');
-        $langcode = \Drupal::request()->request->get('langcode');
-
-        $classes = [];
-        $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
-          ->fields('d', array('wid'))
-          ->condition('wid', $wid)
-          ->execute()
-          ->fetchAssoc();
+        $result = '';
+        $original = \Drupal::database()->select('noahs_page_builder_page', 'd')
+        ->fields('d') // Seleccionar todas las columnas
+        ->condition('did', $did)
+        ->condition('langcode', $original_langcode)
+        ->execute()
+        ->fetchAssoc();
         
-        if($builder != NULL){
-            $schema = \Drupal::database()->update("noahs_page_builder_widget")
-            ->fields(array(
-                'settings' => $settings,
-            ))
-            ->condition('wid', $wid)
-            ->execute();
-            $result = 'Widget Actualizado correctamente';
-        }else{
-            $builder = \Drupal::database()->insert("noahs_page_builder_widget")
-              ->fields(array(
-                  'wid' => $wid,
-                  'did' => $did,
-                  'uid' => $uid,
-                  'type' => $type,
-                  'langcode' => $langcode,
-                  'settings' => $settings
-              ))
-            ->execute();
-            $result = 'Widget añadido correctamente';
-        }
-        $fields = noahs_page_builder_get_widget_fields($type);
-        $tabs_class = new Controls_Manager();
-        $settings = json_decode($settings, true);
-        if (!empty($settings['element']['class'])) {
-
-          $data_controls = $tabs_class->getClasses($fields, $settings['element']['class'], $wid);
-
-          if($data_controls){
-              $classes[] = $data_controls;
-          }
+    
+        if($original != NULL){
+          if($new_did != NULL){
+              $builder = \Drupal::database()->insert("noahs_page_builder_page")
+                ->fields(array(
+                    'did' => $new_did,
+                    'uid' => $original['uid'],
+                    'nid' => $new_did,
+                    'langcode' => $new_langcode,
+                    'settings' => $original['settings'],
+                    'page_settings' => $original['page_settings']
+                ))
+              ->execute();
+              $result = 'Página clonada correctamente';
+            }
         }
 
-      return new JsonResponse(['result' => $result, 'classes' =>  $classes]); 
+      return $result; 
     }
-
     
     public function savePage(){
 
@@ -189,13 +208,14 @@ class NoahsController extends ControllerBase{
         $did = \Drupal::request()->request->get('did');
         $nid = \Drupal::request()->request->get('nid');
         $settings = \Drupal::request()->request->get('settings');
-        $langcode = \Drupal::request()->request->get('langcode');
+        $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
         $page_settings = \Drupal::request()->request->get('page_settings');
 
         
         $builder = \Drupal::database()->select('noahs_page_builder_page', 'd')
           ->fields('d', array('did'))
           ->condition('did', $did)
+          ->condition('langcode', $langcode)
           ->execute()
           ->fetchAssoc();
         
@@ -206,6 +226,7 @@ class NoahsController extends ControllerBase{
                 'page_settings' => $page_settings,
             ))
             ->condition('did', $did)
+            ->condition('langcode', $langcode)
             ->execute();
             $result = 'Página Actualizada correctamente';
         }else{
@@ -222,7 +243,7 @@ class NoahsController extends ControllerBase{
             $result = 'Página añadida correctamente';
         }
 
-      return new JsonResponse($result); 
+      return new JsonResponse($did); 
     }
 
     
@@ -269,41 +290,29 @@ class NoahsController extends ControllerBase{
           $new_style->addImageEffect($effect->getConfiguration());
           $new_style->save();
         }
-
-        // if (!ImageStyle::load($k)) {
-        //   // Crea un nuevo objeto de estilo de imagen.
-        //   $style = ImageStyle::create([
-        //     'name' => $k,
-        //     'label' => $k,
-        //     'id' => $style['type'],
-        //     'data' => [
-        //       'width' => $style['width'],
-        //       'height' => $style['height'],
-        //     ],
-        //   ]);
-        
-        //   // Guarda el nuevo estilo de imagen.
-        //   $style->save();
-        // }
       }
 
       
 
 
+      $miObjeto = array('' => 'Original');
 
       $image_styles = \Drupal::entityQuery('image_style')->execute();
+    
 
-      return $image_styles;
+      return   $miObjeto + $image_styles;
     }
     
 
 
     // Get rendered widget
-    public function renderWidget($widget_id, $did, $langcode){
+    public function renderWidget(Request $request){
+
+      $data = json_decode($request->getContent(), TRUE);
       $obj = new \stdClass();
-      $obj->type = $widget_id;
-      $obj->did = $did;
-      $obj->langcode = $langcode;
+      $obj->type = $data['widget_id'];
+      $obj->wid =  uniqid();
+      $obj->did =  $data['nid'];
 
       $widget = noahs_page_builder_render_element($obj, null);
 
@@ -315,13 +324,20 @@ class NoahsController extends ControllerBase{
     public function preview($node){
 
      
-      $page_settings = !empty($data->page_settings) ? json_decode($data->page_settings, true) : [];
+
       $nid = $node->id();
+
+      $page_id = $nid;
+      if($node->getEntityTypeId() === 'commerce_product'){
+        $page_id  = 'product_' . $nid;
+      }
       $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-      $nodeUrl = Url::fromRoute('entity.node.canonical', ['node' => $nid])->toString();
+
       $widgets = noahs_page_builder_get_widgets();
 
-      $data = noahs_page_builder_load($nid) ?? NULL;
+      $data = noahs_page_builder_load($page_id) ?? NULL;
+   
+      $page_settings = !empty($data->page_settings) ? json_decode($data->page_settings, true) : [];
       $classes = $this->getClasses($data, 'class');
       $data_attributes = $this->getClasses($data, 'attributes');
 
@@ -332,13 +348,11 @@ class NoahsController extends ControllerBase{
       $pallete_color[] = !empty($noahs_page_builder_config->get('secondary_color')) ? $noahs_page_builder_config->get('principal_color') : '#4a4a4a';
       $pallete_color[] = !empty($noahs_page_builder_config->get('heading_color')) ? $noahs_page_builder_config->get('heading_color') : '#4a4a4a';
       $pallete_color[] = !empty($noahs_page_builder_config->get('text_color')) ? $noahs_page_builder_config->get('text_color') : '#000000';
-      $sections = noahs_page_builder_get_sections($data->html);
+      $sections = noahs_page_builder_get_sections($data->settings);
     
-      $getSaveUrl =  Url::fromRoute('noahs_page_builder.save_widget', [],  ['absolute' => TRUE])->toString();
       $getPageUrl =  Url::fromRoute('noahs_page_builder.save_page', [],  ['absolute' => TRUE])->toString();
       $getImageStyle =  Url::fromRoute('noahs_page_builder.get_image_style', [],  ['absolute' => TRUE])->toString();
 
-      $page['#attached']['drupalSettings']['saveWidget'] = $getSaveUrl;
       $page['#attached']['drupalSettings']['savePage'] = $getPageUrl;
       $page['#attached']['drupalSettings']['getImageStyleURL'] = $getImageStyle;
 
@@ -350,8 +364,8 @@ class NoahsController extends ControllerBase{
       $module_url =  '/'.\Drupal::service('extension.list.module')->getPath('noahs_page_builder');
 
       $page['#attached']['drupalSettings']['module_url'] = $module_url;
-      $page['#attached']['drupalSettings']['nid'] = $nid;
-      $page['#attached']['drupalSettings']['did'] = $nid;
+      $page['#attached']['drupalSettings']['nid'] = $page_id;
+      $page['#attached']['drupalSettings']['did'] = $page_id;
       $page['#attached']['drupalSettings']['uid'] = \Drupal::currentUser()->id();
       $page['#attached']['drupalSettings']['langcode'] = $langcode;
 
@@ -376,24 +390,24 @@ class NoahsController extends ControllerBase{
 
     public function getClasses($data, $type){
       require_once NOAHS_PAGE_BUILDER_PATH . '/includes/controls.php';
-      $page_settings = !empty($data->html) ? json_decode($data->html, true) : [];
+      $page_settings = !empty($data->settings) ? json_decode($data->settings, true) : [];
 
       $ids = [];
       $classes = [];
 
-      foreach ($this->getAllIds($page_settings, $ids) as $id) {
-      
-          $fields = noahs_page_builder_get_widget_fields($id['type']);
+      foreach($page_settings as $item) {
 
-          $widget_settings_data = noahs_page_builder_load_widget($id['id']);
+          $fields = noahs_page_builder_get_widget_fields($item['type']);
+
       
-          if (!empty($widget_settings_data->settings)) {
-              $widget_settings = json_decode($widget_settings_data->settings, true);
+          if (!empty($item['settings'])) {
+
+              $widget_settings =  $item['settings'];
 
               $tabs_class = new Controls_Manager();
               if ($type === 'class' && !empty($widget_settings['element']['class'])) {
         
-                  $data_controls = $tabs_class->getClasses($fields, $widget_settings['element']['class'], $id['id']);
+                  $data_controls = $tabs_class->getClasses($fields, $widget_settings['element']['class'], $item['wid']);
                   if($data_controls){
                       $classes[] = $data_controls;
                   }
@@ -401,7 +415,7 @@ class NoahsController extends ControllerBase{
              
               if ($type === 'attributes' && !empty($widget_settings['element']['attribute'])) {
            
-                  $data_controls = $tabs_class->getAttributes($fields, $widget_settings['element']['attribute'], $id['id']);
+                  $data_controls = $tabs_class->getAttributes($fields, $widget_settings['element']['attribute'], $item['wid']);
            
                   
                   if($data_controls){

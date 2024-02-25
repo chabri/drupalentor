@@ -14,7 +14,7 @@ class Control_Noahs_Margin extends Controls_Base{
 		?>
 		<?php ob_start() ?>
 		
-			<div class="field_description">Use your property as px, em, rem, %, ...</div>
+			<div class="fs-6 fst-italic">Use your property as px, em, rem, %, ...</div>
 			<ul class="field-element-list-horizontal">
 				<li>
 					<input type="text" name="<?php echo $name; ?>[margin_left]" value="<?php echo !empty($value['margin_left']) ? $value['margin_left'] : null; ?>" class="form-control" field-settings>

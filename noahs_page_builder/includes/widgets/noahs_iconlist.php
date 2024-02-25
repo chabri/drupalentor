@@ -21,6 +21,7 @@ use Drupal\noahs_page_builder\WidgetBase;
             'type' => 'tab',
             'title' =>  t('Content')
          ];
+
          $form['icon_list'] = [
             'type'    => 'noahs_multiple_elements',
             'title'   => t('Icon List'),
@@ -36,47 +37,112 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'placeholder' => 'This is a h2',
                   'tab' => 'icon_content'
                ],
+               'icon_text' => [
+                  'title' => 'Text',
+                  'type' => 'text',
+                  'placeholder' => 'This is a p',
+                  'tab' => 'icon_content'
+               ],
                'icon' => [
                   'type'    => 'noahs_icon',
                   'title'   => t('Icon'),
                   'tab' => 'icon_content',
                ],
 
-
             ],
          ];
+
+         $form['section_styles'] = [
+            'type' => 'tab',
+            'title' => t('Styles')
+         ];
+
+         $form['icon_size'] = [
+            'type'    => 'text',
+            'title'   => t('Icon Size'),
+            'placeholder'   => t('20px, 2rem, etc...'),
+            'tab' => 'section_styles',
+            'responsive' => true,
+            'style_type' => 'style',
+            'style_css' => 'font-size',
+            'style_selector' => '.noahs-list-group i', 
+         ];
+         $form['icon_color'] = [
+            'type'     => 'noahs_color',
+            'title'    => ('Icon Color'),
+            'tab'     => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.noahs-list-group i', 
+            'style_css' => 'color',
+            'style_hover' => true,
+         ];
+
+         $form['font_title'] = [
+            'type' => 'noahs_font',
+            'title' => t('Title'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.noahs-list-group h5', 
+            'responsive' => true,
+         ];
+
+         $form['font_text'] = [
+            'type' => 'noahs_font',
+            'title' => t('Text'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.noahs-list-group p', 
+            'responsive' => true,
+         ];
+
          return $form;
       }
 
       public function template( $settings ){
 
-         $settings = $settings['element'];
-         $elements = !empty($settings['icon_list']) ? $settings['icon_list'] : [];
+         $settings = $settings->element;
+         $elements = !empty($settings->icon_list) ? $settings->icon_list : [];
 
          ?>
          <?php ob_start() ?>
             <div class="widget-content">
                <?php if (!empty($elements)) { ?>
-                  <ul class="list-group">
+                  <div class="noahs-list-group">
                      <?php foreach($elements as $index => $element){ ?>
-                        <li class="list-group-item"><i class="<?php echo $element['icon']['class']; ?> mx-2"></i><?php echo $element['icon_title']; ?></li>
+                        <div class="noahs-list-group--item mb-3">
+                           <i class="<?php echo $element->icon->class; ?>"></i>
+                           <div class="noahs-list-group--item-content">
+                              <?php if(isset($element->icon_title)){ ?><h5><?php echo $element->icon_title; ?></h5><?php } ?>
+                              <?php if(isset($element->icon_text)){ ?><p><?php echo $element->icon_text; ?></p><?php } ?>
+                           </div>
+                        </div>
                      <?php } ?>
-                  </ul>
+                  </div>
                <?php }else{ ?>
             
-               <ul class="list-group">
-                     <li class="list-group-item"><i class="fas fa-male mx-2"></i>David Copperfield</li>
-                     <li class="list-group-item"><i class="fas fa-venus mx-2"></i>The Portrait of a Lady</li>
-                     <li class="list-group-item"><i class="fas fa-gavel mx-2"></i> The Trial</li>
-                  </ul>
+               <div class="noahs-list-group">
+                  <div class="noahs-list-group--item mb-3">
+                     <i class="fas fa-male"></i>
+                     <div class="noahs-list-group--item-content">
+                        <h5>Noah's Drupal Page Editor</h5>
+                        <p>Nibh mauris cursus mattis molestie a iaculis at erat pellentesque.</p>
+                     </div>
+                  </div>
+                  <div class="noahs-list-group--item mb-3">
+                     <i class="fas fa-male"></i>
+                     <div class="noahs-list-group--item-content">
+                        <h5>Noah's Drupal Page Editor</h5>
+                        <p>Nibh mauris cursus mattis molestie a iaculis at erat pellentesque.</p>
+                     </div>
+                  </div>
+               </div>
                <?php } ?>
             </div>
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

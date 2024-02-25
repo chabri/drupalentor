@@ -43,6 +43,24 @@ use Drupal\noahs_page_builder\WidgetBase;
             ],
          ];
 
+         $form['horizontal_align'] = [
+            'type'    => 'select',
+            'title'   => t('Horizontal Align'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => '.widget-content', 
+            'style_css' => 'justify-content',
+            'responsive' => true,
+            'options' => [
+               '' => 'Por defecto',
+               'flex-start' => 'Start',
+               'center' => 'Center',
+               'flex-end' => 'End',
+               'space-between' => 'Space Betwenn',
+               'space-around' => 'Space Around',
+               'space-evenly' => 'Space Evenly'
+            ]
+         ];
          $form['separator_width'] =[
             'type'    => 'text',
             'title'   => ('Separator Width'),
@@ -152,20 +170,21 @@ use Drupal\noahs_page_builder\WidgetBase;
       }
 
       public static function template( $settings ){
-         $settings = $settings['element'];
-         $class = !empty($settings['separator_type']) ? $settings['separator_type'] : 'line';
+
+         $settings = $settings->element;
+         $class = !empty($settings->separator_type) ? $settings->separator_type : 'line';
          $style = '';
-         $icon = !empty($settings['icon']['class']) ? '<i class="'. $settings['icon']['class'] .'"></i>' : ''; 
-         $title = !empty($settings['separator_text']) ? $settings['separator_text'] : ''; 
-         $weight = !empty($settings['separator_weight']) ? $settings['separator_weight'] : '1'; 
+         $icon = !empty($settings->icon->class) ? '<i class="'. $settings->icon->class .'"></i>' : ''; 
+         $title = !empty($settings->separator_text) ? $settings->separator_text : ''; 
+         $weight = !empty($settings->separator_weight) ? $settings->separator_weight : '1'; 
 
          $class .= !empty($icon) ? ' icon' : '';
          $class .= !empty($title) ? ' title' : '';
 
-         $ouput = '<div class="widget-content">';
 
-          if(!empty($settings['separator_type'])){
-               switch($settings['separator_type']){
+
+          if(!empty($settings->separator_type)){
+               switch($settings->separator_type){
                   case 'double_line':
                      // $class .= ' double_line';
                      break;
@@ -199,18 +218,25 @@ use Drupal\noahs_page_builder\WidgetBase;
                }
    
           }
+          ?>
+          <?php ob_start() ?>
+          <div class="widget-content d-flex">
+            <div class="noahs_page_builder-separator-item <?php echo $class; ?>" style="<?php echo $style; ?>">
+               <span>
+                  <?php if (isset($icon)) {
+                     echo $icon;
+                  } ?>
+                  <h4><?php echo $title; ?></h4>
+               </span>
+            </div>
 
-          $ouput .= '<div class="noahs_page_builder-separator-item '.$class.'" style="'.$style.'"><span>' .$icon . '<h4>' .$title .'</h4></span></div>';
-
-
-         $ouput .= '</div>';
-         return $ouput;
+         </div>
+         <?php return ob_get_clean() ?>  
+         <?php   
       }
 
-      public function render_content( $settings = null, $content = null) {
-       
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 
