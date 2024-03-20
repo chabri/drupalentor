@@ -34,6 +34,7 @@ use Drupal\noahs_page_builder\WidgetBase;
             'type' => 'tab',
             'title' =>  t('Content')
          ];
+
          $entityType = \Drupal::entityTypeManager();
 
          if ($entityType->hasDefinition('contact_form')) {
@@ -60,6 +61,20 @@ use Drupal\noahs_page_builder\WidgetBase;
                'title'     => ('Install contact form module'),
             ];
          }
+         $form['menu_horizontal_align'] = [
+            'type'    => 'select',
+            'title'   => t('Horizontal Align'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => 'widget', 
+            'style_css' => 'justify-content',
+            'responsive' => true,
+            'options' => [
+               'center' => 'Center',
+               'flex-start' => 'Start',
+               'flex-end' => 'End',
+            ]
+         ];
          $form['section_styles'] = [
             'type' => 'tab',
             'title' => t('Styles')

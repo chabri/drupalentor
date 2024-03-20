@@ -1,0 +1,10 @@
+.noahs_product_teaser{
+display: flex;
+flex-direction: column;
+gap:10px;
+width: 100%;
+    img{
+    height: auto;
+    max-width: 100%;
+    }
+}

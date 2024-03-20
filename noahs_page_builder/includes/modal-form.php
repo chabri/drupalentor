@@ -59,7 +59,7 @@
 		}
 
 		$tabs_class = new Controls_Manager();
-	
+
 		$data_controls = $tabs_class->render_tabs($tabs, $values, 'multiple', $delta, $parent);
 	
 		return $data_controls['form'];

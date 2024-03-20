@@ -28,7 +28,7 @@ class Control_Number extends Controls_Base{
 		$selector = !empty($data['item']['update_selector']) ? 'data-update-selector="#widget-id-' .$data['wid'] . ' ' .$data['item']['update_selector'].'"' : null;
 
 		$output = '<div class="field_item form-floating">';
-		$output .= '<input type="number" '.$attributes.' name="' . $name .'" id="' . $data['item_id'] . '" title="' . $data['item']['title'] .'" class="form-control" placeholder="'. $placeholder .'" value="'.$value.'" '.$selector.' field-settings/>';
+		$output .= '<input type="number" '.$attributes.' name="' . $name .':string" id="' . $data['item_id'] . '" title="' . $data['item']['title'] .'" class="form-control" placeholder="'. $placeholder .'" value="'.$value.'" '.$selector.' field-settings/>';
 		$output .= '<label for="' . $data['item_id'] .'">' . $placeholder .'</label>';
 		$output .= '</div>';
 

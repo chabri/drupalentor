@@ -3,7 +3,7 @@
 
 
     const menu = document.querySelector(".noahs-menu");
-    const menuInner = menu.querySelector(".menu__inner");
+    const menuInner = menu.querySelector(".menu__inner i");
     const menuArrow = menu.querySelector(".menu__arrow");
     const menuTitle = menu.querySelector(".menu__title");
     const burger = document.querySelector(".burger");
@@ -17,13 +17,13 @@
 
     // Show Mobile Submenu Function
     function showSubMenu(children) {
-    subMenu = children.querySelector(".submenu");
-    subMenu.classList.add("is-active");
-    subMenu.style.animation = "slideLeft 0.35s ease forwards";
-    const menuTitle = children.querySelector("i").parentNode.childNodes[0]
-        .textContent;
-    menu.querySelector(".menu__title").textContent = menuTitle;
-    menu.querySelector(".menu__header").classList.add("is-active");
+        subMenu = children.querySelector(".submenu");
+        subMenu.classList.add("is-active");
+        subMenu.style.animation = "slideLeft 0.35s ease forwards";
+        const menuTitle = children.querySelector("i").parentNode.childNodes[0]
+            .textContent;
+        menu.querySelector(".menu__title").textContent = menuTitle;
+        menu.querySelector(".menu__header").classList.add("is-active");
     }
 
     // Hide Mobile Submenu Function
@@ -39,13 +39,14 @@
 
     // Toggle Mobile Submenu Function
     function toggleSubMenu(e) {
-    if (!menu.classList.contains("is-active")) {
-        return;
-    }
-    if (e.target.closest(".menu__dropdown")) {
-        const children = e.target.closest(".menu__dropdown");
-        showSubMenu(children);
-    }
+        e.preventDefault();
+        if (!menu.classList.contains("is-active")) {
+            return;
+        }
+        if (e.target.closest(".menu__dropdown")) {
+            const children = e.target.closest(".menu__dropdown");
+            showSubMenu(children);
+        }
     }
 
     // Fixed Navbar Menu on Window Resize

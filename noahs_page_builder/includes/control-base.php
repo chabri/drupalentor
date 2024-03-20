@@ -3,15 +3,26 @@
 
    class Controls_Base{
 
-	private function getContent($data, $name, $value, $delta = null){
+	private function getContent($data, $name, $value, $delta = null, $mediaquery =  null, $hover = null){
+
 		$control_id = $data['item']['type'];
 		$class_name = $this->getControlClassName($control_id);
 		$control = new $class_name();
 
 
 		$value = (empty($value) && !empty($data['item']['default_value'])) ? $data['item']['default_value'] : $value;
-
-		$content = $control->content_template($data, $name, $value, $delta);
+		$attributes = [];
+		$attributes[] = !empty($data['item']['type']) ? 'data-control-type="' . $data['item']['type']. '"' : '';
+		$attributes[] = !empty($data['item']['style_type']) ? 'data-style-type="' . $data['item']['style_type']. '"' : '';
+		$attributes[] = !empty($data['item']['style_selector']) ? 'data-style-selector="' . $data['item']['style_selector']. '"' : '';
+		$attributes[] = !empty($data['item']['style_css']) ? 'data-style-css="' . $data['item']['style_css']. '"' : '';
+		$attributes[] = !empty($data['item']['attribute_type']) ? 'data-attribute-type="' . $data['item']['attribute_type']. '"' : '';
+		$attributes[] = !empty($hover) ? 'data-style-hover="' . $hover. '"' : '';
+		$attributes[] = !empty($mediaquery) ? 'data-responsive="' . $mediaquery. '"' : '';
+		$attributes = implode(" ", $attributes);
+		$content = '<div class="noahs-input--control-css" '.$attributes.'>';
+		$content .= $control->content_template($data, $name, $value, $data['delta']);
+		$content .= '</div>';
 	
 		return $content;
 	}
@@ -43,6 +54,9 @@
 				
 					<?php echo $content; ?>
 				</div>
+				<?php if(!empty($data['item']['description'])){ ?>
+					<div class="nohas-field-description"><?php echo $data['item']['description']; ?></div>
+				<?php } ?>
 			</div>
 			
 		<?php return ob_get_clean();
@@ -82,13 +96,15 @@
             if(!empty($data['item']['responsive'])){
                 $name = 'element[css][desktop]['.$key_status.']['.$data['item_id'].']';
                 $value = isset($values['css']['desktop'][$key_status][$data['item_id']]) ? $values['css']['desktop'][$key_status][$data['item_id']] : '';
-                $content = $control->content_template($data, $name, $value);
+                // $content = $this->getContent($data, $name, $value);
+				$content = $this->getContent($data, $name, $value, '', 'desktop', $key_status);
                 $html_hover .= $this->responsiveHTML($data, $content, $key_status, $values, false, $wrapper);
             } else {
 
                 $name = 'element[css][desktop]['.$key_status.']['.$data['item_id'].']';
                 $value = isset($values['css']['desktop'][$key_status][$data['item_id']]) ? $values['css']['desktop'][$key_status][$data['item_id']] : '';
-                $content = $control->content_template($data, $name, $value);
+                // $content = $this->getContent($data, $name, $value);
+				$content = $this->getContent($data, $name, $value, '', 'desktop', $key_status);
                 $html_hover .= $content;
             }
             $html_hover .= '</div>';
@@ -151,7 +167,7 @@
 				$value = (!empty($values['css'][$k][$hover_status][$data['item_id']]) ? $values['css'][$k][$hover_status][$data['item_id']] : '');
 			}
 			// dump($name);
-			$content = $control->content_template($data, $name, $value);
+			$content = $this->getContent($data, $name, $value, '', $k, $hover_status);
 		
 			$responsive .=  
 				'<div class="field-wrapper" data-mediaquery="'.$k.'" id="responsive_tab_'.$k.'" data-responsive-status="'.$k.'">
@@ -237,7 +253,7 @@
 			$html = $this->generateHtml($data, $values, $name, $value, $wrapper, $delta);
 
 		}
-		$content = $this->getContent($data, $name, $value);
+		$content = $this->getContent($data, $name, $value, $delta);
 		if (!empty($data['item']['responsive'])) {
 			if (!empty($data['item']['style_hover'])) {
 				return $this->hoverHTML($data, $content, $values, $wrapper);
@@ -280,7 +296,7 @@
 
 		$form['group_extra'] = [
 			'type' => 'group',
-			'title' => t('Space'),
+			'title' => t('Space & Custom Class'),
 		];
 		$form['margin'] = [
 			'type'     => 'noahs_margin',
@@ -318,7 +334,7 @@
 			'type'    => 'text',
 			'title'   => ('Custom for element inner CSS classes'),
 			'style_type' => 'class',
-			'style_selector' => '.column-inner', 
+			'style_selector' => '.widget-wrapper', 
 			'placeholder'    => ('Multiple classes should be separated with SPACE.'),
 			'tab' => 'section_extras',
 			'group' => 'group_extra'

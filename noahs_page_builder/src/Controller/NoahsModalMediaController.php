@@ -18,6 +18,7 @@ class NoahsModalMediaController extends ControllerBase {
 
     $data = json_decode($request->getContent(), TRUE);
     $element_id = $data['element_id'];
+    $wid = $data['wid'];
     $files = \Drupal::entityTypeManager()->getStorage('file')
     ->loadByProperties([
       'filemime' => [
@@ -47,7 +48,7 @@ class NoahsModalMediaController extends ControllerBase {
     $html .= '<div class="modal-messages"></div>';
     $html .= '<div class="d-flex justify-content-between mt-4 bg-white pt-2 pb-2">
     <button class="btn btn-danger btn-labeled close-media-modal"><span class="btn-label"><i class="fa-solid fa-xmark"></i></span>Close</button>
-    <button type="button" class="btn btn-success btn-labeled insert-media-modal" data-element-id="'.$element_id.'" data-thumbnail=""><span class="btn-label"><i class="fa-solid fa-check"></i></span>'.t("Insert selected").'</button>';
+    <button type="button" class="btn btn-success btn-labeled insert-media-modal" data-wid="'.$wid.'" data-element-id="'.$element_id.'" data-thumbnail=""><span class="btn-label"><i class="fa-solid fa-check"></i></span>'.t("Insert selected").'</button>';
     $html .= '</div>';
     $html .= '</div>';
 
@@ -74,7 +75,7 @@ class NoahsModalMediaController extends ControllerBase {
         $file = File::create([
             'uri' => $uploaded_file,
         ]);
-
+        $file->setPermanent();
         $file->save();
 
         $image = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());

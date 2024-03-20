@@ -14,6 +14,12 @@ class Control_Textarea extends Controls_Base{
 		$value = isset($value) ? $value : $data['item']['default_value'];
 		$placeholder = !empty($data['item']['placeholder']) ? $data['item']['placeholder']  : '';
 		$selector = !empty($data['item']['update_selector']) ? 'data-update-selector="'.str_replace('[index]', $delta, $data['item']['update_selector']).'"' : null;
+				
+		// if(isset($data['delta'])){
+		// 	if (strpos($selector, '[index]') !== false) {
+		// 		$selector = str_replace('[index]', $data['delta'], $selector);
+		// 	} 
+		// }
 		$output = '<div class="field field__textarea">';
 		$output .= '<label for="' . $data['item_id'] .'">' . $data['item']['title'] .'</label>';
 		$output .= '<textarea 

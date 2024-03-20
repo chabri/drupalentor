@@ -44,10 +44,12 @@ class NoahsController extends ControllerBase{
 
       $page_id = $nid;
       $iframe_url = "/preview/{$nid}/noahs_page_builder";
+
       if($node->getEntityTypeId() === 'commerce_product'){
         $page_id  = 'product_' . $nid;
         $iframe_url = "/product_preview/{$nid}/noahs_page_builder";
       }
+
       $widgets = noahs_page_builder_get_widgets();
       $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     
@@ -90,84 +92,6 @@ class NoahsController extends ControllerBase{
       return $ids;
   }
 
-  // public function removeWidget($id) {
-
-  //   // Verificar si se recibieron IDs válidos
-  //     if (empty($id)) {
-  //         return new JsonResponse('No se han proporcionado IDs válidos para eliminar');
-  //     }
-  //   // Recorrer los IDs y ejecutar la eliminación
-
-  //     $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
-  //     ->fields('d', array('wid'))
-  //     ->condition('wid', $id)
-  //     ->execute()
-  //     ->fetchAssoc();
-    
-  //     if($builder != NULL){
-  //       \Drupal::database()->delete('noahs_page_builder_widget')
-  //       ->condition('wid', $id)
-  //       ->execute();
-  //       return new JsonResponse('Widget eliminado correctamente');
-  //     }
-
-  // }
-
-
-    // public function saveWidget(){
-
-    //     $wid = \Drupal::request()->request->get('wid');
-    //     $uid = \Drupal::request()->request->get('uid');
-    //     $did = \Drupal::request()->request->get('did');
-    //     $type = \Drupal::request()->request->get('type');
-    //     $settings = \Drupal::request()->request->get('settings');
-    //     $langcode = \Drupal::request()->request->get('langcode');
-
-    //     $classes = [];
-    //     $builder = \Drupal::database()->select('noahs_page_builder_widget', 'd')
-    //       ->fields('d', array('wid'))
-    //       ->condition('wid', $wid)
-    //       ->execute()
-    //       ->fetchAssoc();
-        
-    //     if($builder != NULL){
-    //         $schema = \Drupal::database()->update("noahs_page_builder_widget")
-    //         ->fields(array(
-    //             'settings' => $settings,
-    //             'did' => $did,
-    //         ))
-    //         ->condition('wid', $wid)
-    //         ->execute();
-    //         $result = 'Widget Actualizado correctamente';
-    //     }else{
-    //         $builder = \Drupal::database()->insert("noahs_page_builder_widget")
-    //           ->fields(array(
-    //               'wid' => $wid,
-    //               'did' => $did,
-    //               'uid' => $uid,
-    //               'type' => $type,
-    //               'langcode' => $langcode,
-    //               'settings' => $settings
-    //           ))
-    //         ->execute();
-    //         $result = 'Widget añadido correctamente';
-    //     }
-    //     $fields = noahs_page_builder_get_widget_fields($type);
-    //     $tabs_class = new Controls_Manager();
-
-    //     $settings = json_decode($settings, true);
-
-    //     if (!empty($settings['element']['class'])) {
-
-    //       $data_controls = $tabs_class->getClasses($fields, $settings['element']['class'], $wid);
-
-    //       if($data_controls){
-    //           $classes[] = $data_controls;
-    //       }
-    //     }
-
-    //   return new JsonResponse(['result' => $result, 'classes' =>  $classes]); 
-    // }
 
     
     public function clonePage($did, $new_did, $original_langcode, $new_langcode){
@@ -292,15 +216,11 @@ class NoahsController extends ControllerBase{
         }
       }
 
-      
-
-
       $miObjeto = array('' => 'Original');
 
       $image_styles = \Drupal::entityQuery('image_style')->execute();
     
-
-      return   $miObjeto + $image_styles;
+      return  $miObjeto + $image_styles;
     }
     
 
@@ -315,6 +235,18 @@ class NoahsController extends ControllerBase{
       $obj->did =  $data['nid'];
 
       $widget = noahs_page_builder_render_element($obj, null);
+
+      $html_sin_tabs = preg_replace('/\t/', '', $widget);
+
+      return new JsonResponse(['html' => $widget]);
+    }
+
+    // Get rendered widget
+    public function renderDefaultTemplateWidget($type){
+
+
+
+      $widget = noahs_page_builder_render_default_template($type);
 
       $html_sin_tabs = preg_replace('/\t/', '', $widget);
 
@@ -338,6 +270,7 @@ class NoahsController extends ControllerBase{
       $data = noahs_page_builder_load($page_id) ?? NULL;
    
       $page_settings = !empty($data->page_settings) ? json_decode($data->page_settings, true) : [];
+
       $classes = $this->getClasses($data, 'class');
       $data_attributes = $this->getClasses($data, 'attributes');
 
@@ -388,44 +321,50 @@ class NoahsController extends ControllerBase{
    
     }
 
-    public function getClasses($data, $type){
+    public function getClasses($data, $type) {
       require_once NOAHS_PAGE_BUILDER_PATH . '/includes/controls.php';
       $page_settings = !empty($data->settings) ? json_decode($data->settings, true) : [];
-
-      $ids = [];
       $classes = [];
-
-      foreach($page_settings as $item) {
-
+  
+      foreach ($page_settings as $item) {
+          $classes = array_merge($classes, $this->extractClasses($item, $type));
+      }
+  
+      return $classes;
+  }
+  
+  private function extractClasses($item, $type) {
+      $classes = [];
+      $obj_class = new Controls_Manager();
+       
+      if (!empty($item['settings'])) {
+          $widget_settings = $item['settings'];
           $fields = noahs_page_builder_get_widget_fields($item['type']);
-
-      
-          if (!empty($item['settings'])) {
-
-              $widget_settings =  $item['settings'];
-
-              $tabs_class = new Controls_Manager();
-              if ($type === 'class' && !empty($widget_settings['element']['class'])) {
-        
-                  $data_controls = $tabs_class->getClasses($fields, $widget_settings['element']['class'], $item['wid']);
-                  if($data_controls){
-                      $classes[] = $data_controls;
-                  }
-              }
-             
-              if ($type === 'attributes' && !empty($widget_settings['element']['attribute'])) {
-           
-                  $data_controls = $tabs_class->getAttributes($fields, $widget_settings['element']['attribute'], $item['wid']);
-           
-                  
-                  if($data_controls){
-
-                      $classes[] = $data_controls;
-                  }
+          if ($type === 'class' && !empty($widget_settings['element']['class'])) {
+              $data_classes = $obj_class->getClasses($fields, $widget_settings['element']['class'], $item['wid']);
+              $classes[] = $data_classes;
+              // $classes = array_merge($classes, $widget_settings['element']['class']);
+          }
+          if ($type === 'attributes' && !empty($widget_settings['element']['attribute'])) {
+            $data_attributes = $obj_class->getAttributes($fields, $widget_settings['element']['attribute'], $item['wid']);
+            if($data_attributes){
+                $classes[] = $data_attributes;
+            }
+        }
+        if (!empty($item['columns'])) {
+          foreach ($item['columns'] as $element) {
+              $classes = array_merge($classes, $this->extractClasses($element, $type));
+          }
+      }
+  
+          if (!empty($item['elements'])) {
+              foreach ($item['elements'] as $element) {
+                  $classes = array_merge($classes, $this->extractClasses($element, $type));
               }
           }
       }
+  
       return $classes;
-    }
+  }
 
 }

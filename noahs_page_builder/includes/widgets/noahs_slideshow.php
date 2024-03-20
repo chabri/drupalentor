@@ -36,12 +36,14 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'type' => 'text',
                   'placeholder' => 'This is a h2',
                   'tab' => 'slideshow_content',
+                  'default_value' => 'This is a h2',
                ],
                'slideshow_text' => [
                   'title' => 'Text',
                   'type' => 'textarea',
                   'tab' => 'slideshow_content',
-                  'update_selector' => '.swiper-slide_[index] .noahs_page_builder-slideshow--text'
+                  'update_selector' => '.swiper-slide_[index] .noahs_page_builder-slideshow--text',
+                  'default_value' => 'In dignissim eget mauris ac consectetur. Fusce at auctor urna. Mauris in ex porta, blandit felis id, blandit diam.'
                ],
                'slideshow_image' => [
                   'title' => 'Image',
@@ -60,11 +62,16 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'title' => 'Link Title',
                   'type' => 'text',
                   'tab' => 'slideshow_content',
+                  'default_value' => 'My button',
                ],
                'slideshow_url' => [
                   'title' => 'Url',
-                  'type' => 'text',
+                  'type' => 'noahs_url',
                   'tab' => 'slideshow_content',
+                  'autocomplete' => 'url_autocomplete',
+                  'tab' => 'slideshow_content',
+                  'placeholder' => t('Intertal/External URL'),
+                  'description' => t('If external use https://'),
                ],
                'content_text_align' => [
                   'type'    => 'select',
@@ -84,7 +91,7 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'title'   => t('Horizontal Align'),
                   'tab' => 'slideshow_content',
                   'style_type' => 'style',
-                  'style_selector' => '.swiper-slide_[index] .noahs_page_builder-slideshow--wrapper', 
+                  'style_selector' => '.swiper-slide_[index] .noahs_page_builder-slideshow--container', 
                   'style_css' => 'justify-content',
                   'options' => [
                      'center' => 'Center',
@@ -116,10 +123,59 @@ use Drupal\noahs_page_builder\WidgetBase;
               ],
             ],
          ];
+
+         $form['slideshow_height'] = [
+            'type'    => 'text',
+            'title'   => t('Height'),
+            'tab' => 'section_content',
+            'placeholder'     => t('Height'),
+            'style_type' => 'style',
+            'style_selector' => '.swiper-slide', 
+            'style_css' => 'min-height', 
+            'default_value' => '450px'
+         ];
+
+         $form['slideshow_container'] = [
+            'type'    => 'text',
+            'title'   => t('Container Width'),
+            'tab' => 'section_content',
+            'placeholder'     => t('Width'),
+            'style_type' => 'style',
+            'style_selector' => '.noahs_page_builder-slideshow--container', 
+            'style_css' => 'max-width', 
+            'default_value' => '650px'
+         ];
+         $form['slideshow_content_width'] = [
+            'type'    => 'text',
+            'title'   => t('Content Width'),
+            'tab' => 'section_content',
+            'placeholder'     => t('Width'),
+            'style_type' => 'style',
+            'style_selector' => '.noahs_page_builder-slideshow--content', 
+            'style_css' => 'max-width', 
+            'default_value' => '650px'
+         ];
+         
+         $form['horizontal_align'] = [
+            'type'    => 'select',
+            'title'   => t('Horizontal Align'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => '.noahs_page_builder-slideshow--container', 
+            'style_css' => 'justify-content',
+            'responsive' => true,
+            'options' => [
+               'center' => 'Center',
+               'flex-start' => 'Start',
+               'flex-end' => 'End',
+            ]
+         ];
+
          $form['section_styles'] = [
             'type' => 'tab',
             'title' =>  t('Styles')
          ];
+
          $form['heading_font'] = [
             'type'        => 'noahs_font',
             'title'       => t('Heading Font'),
@@ -128,19 +184,52 @@ use Drupal\noahs_page_builder\WidgetBase;
             'style_selector' => '.noahs_page_builder-slideshow--title', 
             'responsive' => true,
          ];
-        $form['text_font'] = [
+
+         $form['text_font'] = [
             'type'        => 'noahs_font',
             'title'       => t('Text Font'),
             'tab'     => 'section_styles',
             'style_type' => 'style',
             'style_selector' => '.noahs_page_builder-slideshow--text', 
             'responsive' => true,
-        ];
+         ];
+
+         $form['group_bullet'] = [
+            'type' => 'group',
+            'tab'     => 'section_styles',
+            'title' =>  t('Pagination')
+         ];
+         
+         $form['pagination_background_color'] = [
+            'type' => 'noahs_color',
+            'title' => t('Background Color'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.swiper-pagination-bullet', 
+            'style_css' => 'background-color', 
+            'style_hover' => true,
+            'responsive' => true,
+            'group' => 'group_bullet'
+         ];
+
+         $form['pagination_active_background_color'] = [
+            'type' => 'noahs_color',
+            'title' => t('Active Background Color'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.swiper-pagination-bullet.swiper-pagination-bullet-active', 
+            'style_css' => 'background-color', 
+            'style_hover' => true,
+            'responsive' => true,
+            'group' => 'group_bullet'
+         ];
+
          return $form;
       }
 
       public function template( $settings ){
-        $elements = !empty($settings['element']['slideshow_items']) ? $settings['element']['slideshow_items'] : [];
+        $elements = !empty($settings->element->slideshow_items) ? $settings->element->slideshow_items : [];
+
          ?>
          <?php ob_start() ?>
          <div class="swiper noahs_page_builder-slideshow">
@@ -151,24 +240,32 @@ use Drupal\noahs_page_builder\WidgetBase;
                <?php foreach($elements as $index => $element){
                    $image = null;
 
-                  if(!empty($element['slideshow_image']['fid'])){
+                  if(!empty($element->slideshow_image->fid)){
                
-                     $file = File::load($element['slideshow_image']['fid']);
+                     $file = File::load($element->slideshow_image->fid);
                      $file_uri = $file->getFileUri();
                      
-                     $image = ImageStyle::load($element['slideshow_image']['image_style'])->buildUrl($file_uri);
+                     $image = ImageStyle::load($element->slideshow_image->image_style)->buildUrl($file_uri);
                   }   
+                  $url = '';
+
+                  if(!empty($element->slideshow_url->url)){
+                     $url = $element->slideshow_url->url;
+                  }
+                  if(!empty($element->slideshow_url->text) && filter_var($element->slideshow_url->text, FILTER_VALIDATE_URL)){
+                     $url = $element->slideshow_url->text;
+                  }
                ?>
                <div class="swiper-slide swiper-slide_<?php echo $index; ?>">
-                  <?php if(isset($image)){ ?><img class="object-fit-cover" src="<?php echo $image; ?>"><?php } ?>
+                  <?php if(!empty($image)){ ?><img class="object-fit-cover" src="<?php echo $image; ?>"><?php } ?>
                   <div class="noahs_page_builder-slideshow--wrapper">
-                     <div class="container">
+                     <div class="noahs_page_builder-slideshow--container">
                         <div class="noahs_page_builder-slideshow--content">
-                           <?php if(isset($element['slideshow_title'])){ ?> <h2 class="noahs_page_builder-slideshow--title"><?php echo $element['slideshow_title']; ?></h2> <?php } ?>
-                           <?php if(isset($element['slideshow_text'])){ ?> <div class="noahs_page_builder-slideshow--text"><?php echo $element['slideshow_text']; ?></div> <?php } ?>
-                           <?php if(isset($element['slideshow_url'])){ ?>
+                           <?php if(!empty($element->slideshow_title->text)){ ?> <h2 class="noahs_page_builder-slideshow--title"><?php echo $element->slideshow_title->text; ?></h2> <?php } ?>
+                           <?php if(!empty($element->slideshow_text)){ ?> <div class="noahs_page_builder-slideshow--text"><?php echo $element->slideshow_text; ?></div> <?php } ?>
+                           <?php if(!empty($element->slideshow_url->text)){ ?>
                               <div class="noahs_page_builder-slideshow--button mt-5">
-                                 <a class="btn" href="<?php echo $element['slideshow_url']; ?>" role="button"><?php echo $element['slideshow_link_text'] ?? 'Button Title'; ?></a>
+                                 <a class="btn" href="<?php echo $url; ?>" role="button"><?php echo $element->slideshow_link_text->text ?? 'Button Title'; ?></a>
                               </div>
                               <?php } ?>
                         </div>
@@ -212,9 +309,8 @@ use Drupal\noahs_page_builder\WidgetBase;
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

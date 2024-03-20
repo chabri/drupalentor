@@ -112,7 +112,7 @@ class element_noahs_row extends WidgetBase{
 			'tab' => 'section_content',
 			'placeholder'     => t('Min height'),
 			'style_type' => 'style',
-			'style_selector' => 'widget', 
+			'style_selector' => '.row-elements', 
 			'style_css' => 'min-height', 
 			'state' => [
 				'visible' => [

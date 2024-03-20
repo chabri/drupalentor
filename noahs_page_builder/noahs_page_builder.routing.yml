@@ -81,7 +81,7 @@ noahs_page_builder.product_preview:
     _permission: 'administer noahs_page_builder'
 
 noahs_page_builder.widget:
-  path: '/admin/noahs_page_builder/widget/{widget_id}'
+  path: '/noahs-admin/noahs_page_builder/widget/{widget_id}'
   defaults:
     _title: 'Edit noahs_page_builder'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::renderWidget'
@@ -91,16 +91,29 @@ noahs_page_builder.widget:
   requirements:
     _permission: 'administer noahs_page_builder'
 
+noahs_page_builder.default_widget_template:
+  path: '/noahs-admin/noahs_page_builder/default_widget_template/{type}'
+  defaults:
+    _title: 'Edit noahs_page_builder'
+    _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::renderDefaultTemplateWidget'
+  _format: 'html'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer noahs_page_builder'
+
 noahs_page_builder.modal:
-  path: '/admin/modal-form/{nid}/{widget}/{widget_id}'
+  path: '/noahs-admin/modal-form/{nid}/{widget}/{widget_id}'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsModalController::modal'
     _title: 'Modal Form'
+  options:
+    no_cache: 'TRUE'
   requirements:
     _permission: 'open modal form'
 
 noahs_page_builder.edit_widget:
-  path: '/admin/edit-widget/{nid}/{widget}/{widget_id}'
+  path: '/noahs-admin/edit-widget/{nid}/{widget}/{widget_id}'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsEditWidgetController::edit'
     _title: 'Edit Widget Form'
@@ -108,15 +121,23 @@ noahs_page_builder.edit_widget:
     _permission: 'open modal form'
 
 noahs_page_builder.save_page_styles:
-  path: '/admin/save-styles/{nid}'
+  path: '/noahs-admin/save-styles/{nid}'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsSaveStylesController::save'
     _title: 'Save Styles Controller'
   requirements:
     _permission: 'open modal form'
+
+noahs_page_builder.update_live_styles:
+  path: '/noahs-admin/update_live_styles'
+  defaults:
+    _controller: '\Drupal\noahs_page_builder\Controller\NoahsSaveStylesController::update'
+    _title: 'Save Styles Controller'
+  requirements:
+    _permission: 'open modal form'
     
 noahs_page_builder.widget_clone:
-  path: '/admin/widget-clone/{old_id}/{new_id}'
+  path: '/noahs-admin/widget-clone/{old_id}/{new_id}'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsCloneWidgetController::clone'
     _title: 'Save Styles Controller'
@@ -125,7 +146,7 @@ noahs_page_builder.widget_clone:
 
 
 noahs_page_builder.final_widget:
-  path: '/admin/final-widget/{nid}/{widget}/{widget_id}'
+  path: '/noahs-admin/final-widget/{nid}/{widget}/{widget_id}'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsFinalWidgetController::load'
     _title: 'Edit Widget Form'
@@ -133,7 +154,7 @@ noahs_page_builder.final_widget:
     _permission: 'open modal form'
 
 noahs_page_builder.media_modal:
-  path: '/admin/noahs_page_builder/media-modal'
+  path: '/noahs-admin/noahs_page_builder/media-modal'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsModalMediaController::mediaModal'
     _title: 'noahs_page_builder Media Modal'
@@ -141,7 +162,7 @@ noahs_page_builder.media_modal:
     _permission: 'open modal form'
 
 noahs_page_builder.upload_media_modal:
-  path: '/admin/noahs_page_builder/upload_file'
+  path: '/noahs-admin/noahs_page_builder/upload_file'
   defaults:
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsModalMediaController::uploadMediaModal'
     _title: 'noahs_page_builder Media Modal'
@@ -157,7 +178,7 @@ noahs_page_builder.save_page:
     _permission: 'administer noahs_page_builder'    
     
 noahs_page_builder.get_icons_list:
-  path: '/admin/structure/noahs_page_builder/icons'
+  path: '/nadmin/structure/noahs_page_builder/icons'
   defaults:
     _title: 'Available Icons'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsIconsController::listOfIcons'
@@ -165,7 +186,7 @@ noahs_page_builder.get_icons_list:
     _permission: 'administer noahs_page_builder'
 
 noahs_page_builder.get_icons_list_modal:
-  path: '/admin/structure/noahs_page_builder/icons/modal'
+  path: '/noahs-admin/structure/noahs_page_builder/icons/modal'
   defaults:
     _title: 'Available Icons'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsIconsController::modal'
@@ -173,7 +194,7 @@ noahs_page_builder.get_icons_list_modal:
     _permission: 'administer noahs_page_builder'
     
 noahs_page_builder.get_image_style:
-  path: '/admin/structure/noahs_page_builder/get_image_style'
+  path: '/noahs-admin/structure/noahs_page_builder/get_image_style'
   defaults:
     _title: 'Get Image Style'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsController::getImageStyle'
@@ -181,9 +202,16 @@ noahs_page_builder.get_image_style:
     _permission: 'administer noahs_page_builder'
 
 noahs_page_builder.get_tokens:
-  path: '/admin/get_token'
+  path: '/noahs-admin/get_token'
   defaults:
     _title: 'Get Tokens'
     _controller: '\Drupal\noahs_page_builder\Controller\NoahsModalTokensController::outputTree'
+  requirements:
+    _permission: 'administer noahs_page_builder'
+
+noahs_page_builder.url_autocomplete:
+  path: '/noahs-admin/nohas-url-autocomplete'
+  defaults:
+    _controller: '\Drupal\noahs_page_builder\Controller\NoahsUrlAutocompleteController::autocomplete'
   requirements:
     _permission: 'administer noahs_page_builder'

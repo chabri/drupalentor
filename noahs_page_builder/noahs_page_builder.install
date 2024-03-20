@@ -54,3 +54,4 @@ function noahs_page_builder_schema() {
 
   return $schema;
 }
+

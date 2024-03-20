@@ -50,13 +50,15 @@
 
     // }
         
-    $('#noahs_page_builder-preview').on('load', function() {
+    $('#noahs_page_builder_preview').on('load', function() {
         // Inyectar la función en el iframe
         this.contentWindow.noahs_page_builderOpenModal = noahs_page_builderOpenModal;
         this.contentWindow.noahs_page_builderAddColum = noahs_page_builderAddColum;
         this.contentWindow.addElementWidgetModal = addElementWidgetModal;
         this.contentWindow.removeWidgets = removeWidgets;
         this.contentWindow.addWidget = addWidget;
+        this.contentWindow.noahs_page_builderSavePage = noahs_page_builderSavePage;
+        this.contentWindow.getWidgetStructure = getWidgetStructure;
     });
  
     $(document).keydown(function (e) {
@@ -95,7 +97,7 @@
         e.preventDefault();
 
         $(this).closest('.media-preview-actions').find('input').val('');
-        $(this).closest('.media-preview-actions').find('.icon-empty').removeClass('fa-solid fa-cube');
+        $(this).closest('.media-preview-actions').find('span').attr('class', '');
     })
     
     $(document).on("click", '.noahs_page_builder-modal-tokens', function(e){
@@ -108,13 +110,14 @@
     $(document).on("keyup", '[data-update-selector]', function(e){
         e.preventDefault();
         var selector = $(this).data('update-selector');
-        var contenidoIframe = $('#noahs_page_builder-preview').contents().find(selector);
+        var contenidoIframe = $('#noahs_page_builder_preview').contents().find(selector);
         $(contenidoIframe).text($(this).val());
+        $('.update_reload_form').trigger('change');
     })
 
     $(document).on("change", '[data-update-selectorhtml]', function(e){
         e.preventDefault();
-        var contenidoIframe = $('#noahs_page_builder-preview').contents();
+        var contenidoIframe = $('#noahs_page_builder_preview').contents();
         var selectedValue = $(this).val();
         var selector = $(this).data('update-selectorhtml');
         var html = contenidoIframe.find(selector).html();
@@ -135,11 +138,13 @@
     $(document).on("click", '.media-remove_mask_image', function(e){
         e.preventDefault();
         $(this).closest('.media-preview-actions--mask').find('input').prop('checked', false);
+        $(this).closest('.media-preview-actions--mask').find('input[checked]').trigger('change');
+
     })
     $(document).on("keyup", '[name="element[separator_weight]"]', function(e){
 
         e.preventDefault();
-        var contenidoIframe = $('#noahs_page_builder-preview').contents();
+        var contenidoIframe = $('#noahs_page_builder_preview').contents();
         var weight = $(this).val(); 
         var selector = $(this).data('selector'); 
         var currentStyle = contenidoIframe.find(selector).attr('style');
@@ -164,12 +169,13 @@
         $(clonedItem).find('.accordion-collapse').attr('aria-labelledby', 'header_' + (count + 1));
     })
 
+
     $(document).ready(function() {
         // console.log(JSON.parse(getWidgetStructure()));
         $('[data-bs-toggle="tooltip"]').tooltip();
-        var contenidoIframe = $('#noahs_page_builder-preview').contents().find('#noahs_page_builder').html();
+        var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#noahs_page_builder').html();
 
-        $('.noahs_page_builder-preview-content').resizable({
+        $('.noahs_page_builder_preview-content').resizable({
             handles: {
               'e': '.r',
               'w': '.l'
@@ -177,17 +183,17 @@
         });
 
         $("#btn-desktop").on("click", function() {
-            $(".noahs_page_builder-preview-content").css({
+            $(".noahs_page_builder_preview-content").css({
                 "width": "100%",
             });
         });
         $("#btn-tablet").on("click", function() {
-            $(".noahs_page_builder-preview-content").css({
+            $(".noahs_page_builder_preview-content").css({
                 "width": "840px",
             });
         });
         $("#btn-mobile").on("click", function() {
-            $(".noahs_page_builder-preview-content").css({
+            $(".noahs_page_builder_preview-content").css({
                 "width": "460px",
             });
         });
@@ -198,53 +204,22 @@
 
         $('#noahs_page_builder_form_builder').on("submit", function(e){
             e.preventDefault();
-
             noahs_page_builderSavePage();
-            // var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
-           
-            // if(deletedIds){
-            //     JSON.parse(deletedIds).forEach(element => {
-            //         // removeWidgetsDataBase(element);
-            //     });
-               
-            // }
-            document.getElementById('noahs_page_builder-preview').contentWindow.location.reload(true);
-
+            document.getElementById('noahs_page_builder_preview').contentWindow.location.reload(true);
             return false;
-          })
-
+        })
 
         $('#noahs_page_builder_sttings_page_form').on("submit", function(e){
-
             e.preventDefault();
-
-  
             noahs_page_builderSavePage();
-          
-            // var deletedIds = $('#widgets_to_remove').attr('data-remove-widgets')
-           
-            // if(deletedIds){
-            //     JSON.parse(deletedIds).forEach(element => {
-            //         // removeWidgetsDataBase(element);
-            //     });
-               
-            // }
-           
             return false;
           })
-        $('[data-bs-toggle]').on('click', function () {
-            var id = $(this).attr('href');
-            $('.tab-content .tab-pane').removeClass('active');
-            $('body').find(id).addClass('active');
-            $(this).closest('.nav-tabs').find('.nav-link').removeClass('active');
-            $(this).addClass('active');
-
-        });
     });
     
+
     function addClasses(classes){
 
-        var iframeContent = $('#noahs_page_builder-preview').contents();
+        var iframeContent = $('#noahs_page_builder_preview').contents();
 
         // Iterar sobre las clases y aplicarlas al contenido del iframe
         $.each(classes, function (index, values) {
@@ -253,16 +228,24 @@
             });
         });
     }
+
     // se obteiene la estructura de datos de la página
-    function getWidgetStructure(){
-        var contenidoIframe = $('#noahs_page_builder-preview').contents().find('#noahs_page_builder').html();
-        var iframeContent = $('#noahs_page_builder-preview').contents();
+    function getWidgetStructure(html){
+
+        if(html){
+            var contenidoIframe = html;
+        }else{
+            var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#noahs_page_builder').html();
+        }
+
+        var iframeContent = $('#noahs_page_builder_preview').contents();
         var did = $(iframeContent).find('#noahs_page_builder').data('did');
         var langcode = $(iframeContent).find('#noahs_page_builder').data('langcode');
         // Crear un objeto para almacenar la estructura serializada
         var estructuraSerializada = [];
 
         // Iterar sobre cada elemento con la clase "section"
+
         $(contenidoIframe).find('section[data-widget-type="section"]').each(function(index, section) {
 
 
@@ -305,6 +288,7 @@
                     var type = $(widget).data('type'); // Obtener el ID de la columna
                     var widget_type = $(widget).data('widget-type'); // Obtener el ID de la columna
                     var settings = $(widget).data('settings'); // Obtener el ID de la columna
+                    var global = $(widget).data('widget-global'); // Obtener el ID de la columna
 
                     var elementsData = {
                         wid: widgetId,
@@ -312,6 +296,7 @@
                         did: did,
                         widget_type: widget_type,
                         settings: settings,
+                        global: global,
                         // Otra información relevante del widget si es necesario
                     };
 
@@ -336,24 +321,41 @@
         // });
         // Convertir la estructura serializada a JSON
         var estructuraSerializadaJSON = JSON.stringify(estructuraSerializada);
+
         return estructuraSerializadaJSON;
 
     }
-
+    function actualizarPropiedad(objeto, partes, nuevoValor) {
+        // Verificar si hemos llegado al final de las partes
+        if (partes.length === 0) {
+            // Actualizar el valor de la propiedad
+            return nuevoValor;
+        }
+    
+        // Acceder a la próxima parte
+        var siguienteParte = partes.shift();
+    
+        // Verificar si la parte actual existe en el objeto
+        if (objeto.hasOwnProperty(siguienteParte)) {
+            // Recursivamente buscar la siguiente parte en el objeto
+            objeto[siguienteParte] = actualizarPropiedad(objeto[siguienteParte], partes, nuevoValor);
+        } else {
+            console.error("No se encontró el camino en el objeto settings");
+        }
+    
+        return objeto;
+    }
 
     // formulario de edicion modal
     function noahs_page_builderOpenModal(form){
         $('.noahs_page_builder-modal').remove();
         $('body').append(form);
         $(document).trigger('myAjaxFinished');
-
+        const widget_id = $(form).find('input[name="wid"]').val();
 
         var settings = $(form).find('.form-data-settings').data('settings') ?? $(form).serializeJSON();
-
-        
         const formElement = $('.noahs_page_builder-modal form');
-
-        ckeditor(settings.wid);
+        ckeditor(widget_id);
 
         $('.background-image-field').each(function(index) {
             var bg_fid = $(this).find('.background-fid');
@@ -361,22 +363,93 @@
             if(bg_thumb){
                 $(this).find('.background-thumbnail-image').attr('src',bg_thumb).show();
             }
-            $(this).find('.media-uploadbg_image').attr('data-element-id', bg_fid.attr('id'));
+            // $(this).find('.media-uploadbg_image').attr('data-element-id', bg_fid.attr('id'));
          });
 
         $('.media-uploadbg_image').on('click', function (e) {
             e.preventDefault();
             var element_id = $(this).data('element-id');
             var name = $(this).data('element-id');
-            openMediaModal(element_id, 'single');
+            openMediaModal(element_id, 'single', null, widget_id);
         });
+
         $('#add_multiple_images_field').on('click', function (e) {
             e.preventDefault();
 
             var element_id = $(this).data('element-id');
             var elements =  $('.noahs_page_builder_gallery_field').find('.image-box').length;
-            openMediaModal(element_id, 'multiple', elements);
+            openMediaModal(element_id, 'multiple', elements, widget_id);
         });
+
+
+        // $('.noahs-input--control-css input, .noahs-input--control-css select').on('change', function() {
+        //     const widget_id = $(this).closest('form').find('input[name="wid"]').val();
+        //     modificarJson(this, widget_id);
+        // });
+        
+        $(".noahs-input--control-css").each(function(index) {
+            const widget_id = $(this).closest('form').find('input[name="wid"]').val();
+      
+            $(this).find('input, select, :checkbox, :radio').on('change', function() {
+                modificarJson(this, widget_id);
+
+            });
+
+        });
+
+        $(".noahs-input--control-css").each(function(index) {
+            const widget_id = $(this).closest('form').find('input[name="wid"]').val();
+            var styleStype = $(this).data('style-type');
+            var styleSelector = $(this).attr('data-style-selector');
+            var attributeType = $(this).data('attribute-type');
+        
+            if (styleSelector != undefined) {
+                $(this).find('input, select, :checkbox, :radio').each(function(index) {
+                    var localStyleSelector = styleSelector; // Captura el valor actual del estilo
+        
+                    if (localStyleSelector === 'widget') {
+                        localStyleSelector = '#widget-id-' + widget_id;
+                    } else if (!localStyleSelector.includes('#widget-id-' + widget_id)) {
+                        localStyleSelector = '#widget-id-' + widget_id + ' ' + localStyleSelector;
+                    }
+                    var targetElement = $('#noahs_page_builder_preview').contents().find(localStyleSelector);
+                    var stringClass = targetElement.attr('class');
+        
+                    $(this).on('change keyup', function() {
+                        if (styleStype == 'style' && styleStype !== false) {
+                            modificarEstilo(this, widget_id);
+                        } else if (styleStype == 'class' && styleStype !== false) {
+                            var targetElement = $('#noahs_page_builder_preview').contents().find(localStyleSelector);
+                            if($(this).attr('type') === 'checkbox'){
+                                if ($(this).is(':checked')) {
+                                    targetElement.addClass($(this).val());
+                                }else{
+                                    targetElement.removeClass($(this).val());
+                                }
+                            }else{
+                                if (stringClass != '') {
+                                    var newClass = stringClass + ' ' + $(this).val();
+                                    targetElement.attr('class', newClass);
+                                }
+                            }
+                            if($(this).is("[name='element[class][gallery_type_columns]']")){
+                                targetElement.attr('class', 'row ' + $(this).val());
+                            }
+                           
+                 
+                        } else if (styleStype == 'attribute' && styleStype !== false) {
+                            var targetElement = $('#noahs_page_builder_preview').contents().find(localStyleSelector);
+                            var attributeValue = $(this).val();
+                            if (attributeValue) {
+                                targetElement.attr(attributeType, attributeValue);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+        
+        
 
         formElement.on("submit", function(e){
             e.preventDefault();
@@ -388,10 +461,10 @@
 
             const widget_id = $('input[name="wid"]').val();
 
-            $('#noahs_page_builder-preview').contents().find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
+            $('#noahs_page_builder_preview').contents().find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
             noahs_page_builderSavePage();
-      
-            document.getElementById('noahs_page_builder-preview').contentWindow.location.reload(true);
+            reloadIframeAndCheckForErrors();
+            // document.getElementById('noahs_page_builder_preview').contentWindow.location.reload(true);
             return false;
         })
 
@@ -405,25 +478,26 @@
             $(this).closest('.background-image-field').find('input').val('');
             $(this).closest('.background-image-field').find('.background-thumbnail-image').attr('src', '').hide();;
         })
+
         $('.noahs_page_builder-edit-grid-item').on("click", function(e){
             e.preventDefault();
         })
+
         $('.noahs_page_builder-remove-grid-item').on("click", function(e){
             e.preventDefault();
             $(this).closest('.image-box').remove();
         })
 
-
         $('.noahs_page_builder-add-item').on("click", function(e){
             e.preventDefault();
             
             var htmlData = $(this).data('html');
-           
-            
-            var count = $(this).closest('.noahs_page_builder_multiple_field').find('.accordion-item').length;
+            var count = $(this).closest('.noahs_page_builder_multiple_elements').find('.accordion-item').length;
             var newHtml = htmlData.replace(/replace_it/g, (count + 1));
             var $tempDiv = $('<div>').html(newHtml);
-            $tempDiv.find('.accordion-button').text('Accordion Item #' + (count + 1));
+            const widget_id = $(this).closest('form').find('input[name="wid"]').val();
+            const type = $(this).closest('form').find('input[name="type"]').val();
+            $tempDiv.find('.accordion-button').text('Item #' + (count + 1));
             $tempDiv.find('.accordion-header').attr('id', 'header_' + (count + 1));
             $tempDiv.find('.accordion-button').attr('data-bs-target', '#slideshow_' + (count + 1));
             $tempDiv.find('.accordion-button').attr('aria-controls', 'slideshow_' + (count + 1));
@@ -433,13 +507,37 @@
             var updatedHtml = $tempDiv.html();
 
             $(this).closest('.noahs_page_builder_multiple_elements').find('.accordion').append(updatedHtml);
-          
+            ckeditor(widget_id);
+
+            if(type === 'noahs_accordion'){
+                var accordion_html = getDefaultTemplate(type);
+                var $accordion_html = $(accordion_html); // Almacenar una referencia al elemento en una variable
+                count = (count + 1);
+                $accordion_html.addClass('accordion-item_' + count);
+                $accordion_html.find('.accordion-header').attr('id', 'flush-heading_' + count);
+                $accordion_html.find('.accordion-button').attr('data-bs-target', '#flush-collapse-' + count);
+                $accordion_html.find('.accordion-button').attr('aria-controls', 'flush-collapse-' + count);
+                $accordion_html.find('.accordion-button').addClass('accordion-button_' + count);
+                $accordion_html.find('.accordion-collapse').attr('id', 'flush-collapse-' + count);
+                $accordion_html.find('.accordion-collapse').attr('aria-labelledby', 'flush-collapse-' + count);
+                $accordion_html.find('.accordion-collapse').attr('data-bs-parent', '#accordion_' + widget_id);
+                
+                $('#noahs_page_builder_preview').contents().find('#widget-id-' + widget_id + ' .multipart-item').append($accordion_html); // Agregar el elemento modificado al contenedor
+                $('.update_reload_form').trigger('change');
+
+            }else{
+                $('#noahs_page_builder_preview').contents().find('#widget-id-' + widget_id + ' .multipart-item').append(getDefaultTemplate(type));
+
+            }
+
 
         })
+
         $('.noahs_page_builder-close-modal').on("click", function(e){
             e.preventDefault();
             $('.noahs_page_builder-modal').remove();
         })
+
         $(".noahs_page_builder_gallery_field .gallery-images-wrapper").sortable({
             items: '.image-box',
             handle: ".noahs_page_builder-move-grid-item",
@@ -448,23 +546,20 @@
             
             stop: function(event, ui) {
                 var newIndex = ui.item.index();
-                // Actualiza los atributos y valores para cada elemento de la galería.
                 $(".gallery-images-wrapper .image-box").each(function(index) {
-                    // Actualiza el atributo 'data-delta'.
                     $(this).attr('data-delta', index);
 
-                    // Actualiza el ID del elemento hover-modal.
                     var hoverModalId = 'edit-gallery-image-' + index;
-                    $(this).find('.noahs_page_builder-hover-modal').attr('id', hoverModalId);
 
-                    // Actualiza el atributo 'data-show-click' en el botón de editar.
+                    $(this).find('.noahs_page_builder-hover-modal').attr('id', hoverModalId);
                     $(this).find('.noahs_page_builder-edit-grid-item').attr('data-show-click', '#' + hoverModalId);
 
-                    // Actualiza los atributos 'name' de los inputs dentro del hover-modal.
                     $(this).find('.noahs_page_builder-hover-modal input[name^="element[gallery_items]"]').each(function() {
-                    var currentName = $(this).attr('name');
-                    var newName = currentName.replace(/\[\d+\]/, '[' + index + ']');
-                    $(this).attr('name', newName);
+
+                        var currentName = $(this).attr('name');
+                        var newName = currentName.replace(/\[\d+\]/, '[' + index + ']');
+                        $(this).attr('name', newName);
+
                     });
                 });
             }
@@ -472,10 +567,65 @@
 
         fieldStates();
     }
+    function modificarEstilo($this, widget_id) {
+        var iframe = $('#noahs_page_builder_preview').contents();
+        var formData = $($this).closest('form').find(':input').filter(function () {
+            return $.trim(this.value).length > 0
+        }).serializeJSON();
+        
+        iframe.find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
+
+        var data = {
+            formData: formData,
+        };
+        $.ajax({
+            url: '/noahs-admin/update_live_styles',
+            type: 'POST',
+            data: JSON.stringify(data),
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                var contenidoCSS = iframe.find('#w_style_' + widget_id);
+                contenidoCSS.html(data.styles);
+                // $('#noahs_page_builder_preview').contents().find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
+
+    function modificarJson($this, widget_id) {
+
+        var iframe = $('#noahs_page_builder_preview').contents();
+        var formData = $($this).closest('form').find(':input').filter(function () {
+            return $.trim(this.value).length > 0
+        }).serializeJSON();
+        
+        iframe.find('#widget-id-' + widget_id).attr('data-settings', JSON.stringify(formData));
+
+
+    }
+    function reloadIframeAndCheckForErrors() {
+        var iframe = document.getElementById('noahs_page_builder_preview');
+        
+        iframe.onload = function() {
+            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+            var headContent = iframeDocument.head.innerHTML.trim();
+
+            if (headContent === '') {
+                console.log('El iframe se recargó pero el <head> está vacío. Puede haber ocurrido un error.');
+                $('.noahs_page_builder-modal').addClass('error');
+            }
+        };
+
+        iframe.contentWindow.location.reload(true);
+    }
 
     function openDialogToken(){
         var ajaxSettings = {
-            url: '/admin/get_token',
+            url: '/noahs-admin/get_token',
             dialogType: 'modal',
             dialog: { width: 800 },
           };
@@ -484,15 +634,16 @@
     }
 
     // Media modal
-    function openMediaModal(element_id, type, total){
+    function openMediaModal(element_id, type, total, wid){
 
         var data = {
             element_id: element_id,
             type: type,
+            wid: wid,
         };
 
         $.ajax({
-        url: '/admin/noahs_page_builder/media-modal', 
+        url: '/noahs-admin/noahs_page_builder/media-modal', 
         method: 'POST',
         data: JSON.stringify(data),
         success:function(data) {
@@ -508,7 +659,7 @@
                   });
                 $('.insert-media-modal').on('click', function() {
                     var selectedData = [];
-
+             
                     // Iterar sobre las cajas seleccionadas.
                     $('.image-box.selected').each(function() {
                       // Obtener los valores de los atributos 'data-fileid' y 'data-thumbnail'.
@@ -525,14 +676,17 @@
                     // Realizar la acción deseada con los datos seleccionados.
                     var timestamp = $.now();
                     var selectedHtml = '';
+                    var newItems = '';
                     
                     for (var i = 0; i < selectedData.length; i++) {
                     var index = (total + i);
-                      selectedHtml += '<div class="col-3 image-box mb-2">';
+                      selectedHtml += '<div class="col-3 image-box mb-2 position-relative" data-delta="'+ index +'">';
+                      selectedHtml += '<div class="noahs_gallery_field_actions">';
                       selectedHtml += '<div class="noahs_page_builder-edit-grid-item btn btn-sm btn-info position-absolute top-50 start-50 translate-middle rounded-circle" data-show-click="#edit-gallery-image-'+index+'"><i class="fa-solid fa-pen-to-square"></i></div>';
                       selectedHtml += '<div class="noahs_page_builder-move-grid-item btn btn-sm btn-info position-absolute top-0 start-0 rounded-circle"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>';
                       selectedHtml += '<div class="noahs_page_builder-remove-grid-item btn btn-sm btn-danger position-absolute bottom-0 end-0 rounded-circle"><i class="fa-solid fa-trash"></i></div>';
-                      selectedHtml += '<img src="' + selectedData[i].thumbnail + '" data-fid="' + selectedData[i].fileid + '">';
+                      selectedHtml += '</div>';
+                      selectedHtml += '<img src="' + selectedData[i].thumbnail + '" data-fid="' + selectedData[i].fileid + '" style="width:100%; height:auto;">';
 
                       selectedHtml += '<div id="edit-gallery-image-'+index+'" class="noahs_page_builder-hover-modal bg-light p-3 position-absolute top-50 start-0 translate-middle-y shadow-lg hidden w-100">';
                       selectedHtml += '<div class="btn btn-sm btn-danger position-absolute top-0 start-50 translate-middle rounded-circle" data-show-click="#edit-gallery-image-'+index+'"><i class="fa-regular fa-circle-xmark"></i></div>';
@@ -541,10 +695,16 @@
                       selectedHtml += '</div>';
                       
                       selectedHtml += '</div>';
+                      newItems += '<div class="gallery-item col"><div class="noahs_page_builder-carousel--actions"><a data-fancybox="gallery" href="' + selectedData[i].thumbnail + '"><i class="fa-solid fa-magnifying-glass"></i></a></div><img class="gallery-image-src" src="' + selectedData[i].thumbnail + '"></div>'
                     }
-                
+                   
+
                     // Agregar el HTML al contenedor.
                     $('#' + element_id).append(selectedHtml);
+                    $('.update_reload_form').trigger('change');
+                    var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#widget-id-' + wid + ' .row').append(newItems);
+
+                    $('.noahs_page_builder-media-modal').remove();
                 });
             }else{
                 $('.image-box').on('click', function(e){
@@ -557,14 +717,19 @@
                 })
                 $('.insert-media-modal').on("click", function(e){
                     e.preventDefault();
+
                     var fid = $(this).data('fileid');
                     var thumbnail = $(this).data('thumbnail');
                     var element_id = $(this).data('element-id');
+                    var wid = $(this).data('wid');
 
                     $('#' + element_id).val(fid);
-                    $('#' + element_id).prev().find('.background-thumbnail-image').attr('src', thumbnail).show();
-                    $('#' + element_id).next().val(thumbnail);
+                    $('#' + element_id).parent().find('.background-thumbnail-image').attr('src', thumbnail).show();
+                    $('#' + element_id).parent().find('.background-thumbnail').val(thumbnail);
                     $('.noahs_page_builder-media-modal').remove();
+                    var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#widget-id-' + wid);
+                    contenidoIframe.find('.widget-image-src').attr('src', thumbnail)
+                    $('#' + element_id).trigger('change');
                 })
             }
 
@@ -593,7 +758,7 @@
                 }
 
                 $.ajax({
-                    url: '/admin/noahs_page_builder/upload_file',
+                    url: '/noahs-admin/noahs_page_builder/upload_file',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -635,13 +800,13 @@
 
     // Icon modal
     function openIconModal(element_id, delta){
-
+      
         var data = {
             element_id: element_id,
         };
 
         $.ajax({
-        url: '/admin/structure/noahs_page_builder/icons/modal', // Reemplaza con la URL de tu ruta de Ajax.
+        url: '/noahs-admin/structure/noahs_page_builder/icons/modal', // Reemplaza con la URL de tu ruta de Ajax.
         method: 'POST',
         data: JSON.stringify(data),
         success:function(data) {
@@ -656,7 +821,21 @@
                     // var thumbnail = $(this).data('thumbnail');
                     $('.insert-media-modal').attr('data-icon-class', iconClass);
                 })
-
+                $('[data-bs-toggle="tooltip"]').tooltip();
+                // Manejar el evento de entrada en el campo de búsqueda
+                $('#iconSearch').on('input', function() {
+                    // Obtener el valor del campo de búsqueda
+                    var searchText = $(this).val().toLowerCase();
+            
+                    // Filtrar los elementos según el valor del campo de búsqueda
+                    $('[data-icon]').each(function() {
+                        var iconData = $(this).data('icon').toString().toLowerCase();
+                        var matchesSearch = iconData.includes(searchText);
+            
+                        // Mostrar u ocultar el elemento según si coincide con la búsqueda
+                        $(this).toggle(matchesSearch);
+                    });
+                });
                 $('.insert-media-modal').on("click", function(e){
                     e.preventDefault();
                     var iconClass = $(this).data('icon-class');
@@ -700,7 +879,7 @@
                 }
 
                 $.ajax({
-                    url: '/admin/noahs_page_builder/upload_file',
+                    url: '/noahs-admin/noahs_page_builder/upload_file',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -732,6 +911,7 @@
                     }
                 });
             });
+      
         }, error: function (jqXHR, textStatus, errorThrown) {
             alert(textStatus + ":" + jqXHR.responseText);
             }
@@ -750,9 +930,27 @@
 
         var result="";
         $.ajax({
-        url: '/admin/noahs_page_builder/widget/' + widget_id,
+        url: '/noahs-admin/noahs_page_builder/widget/' + widget_id,
         method: 'POST',
         data: JSON.stringify(data),
+        async: false,  
+        success:function(data) {
+
+            result =  data.html;
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert(textStatus + ":" + jqXHR.responseText);
+        }
+        });
+     return result;  
+    }
+
+    //Get Default Template widget
+    function getDefaultTemplate(type){
+        var result="";
+        $.ajax({
+        url: '/noahs-admin/noahs_page_builder/default_widget_template/' + type,
+        method: 'POST',
         async: false,  
         success:function(data) {
             result =  data.html;
@@ -761,6 +959,7 @@
             alert(textStatus + ":" + jqXHR.responseText);
         }
         });
+
      return result;  
     }
 
@@ -790,77 +989,13 @@
      return result;  
     }
 
-    // Guardar Widget 1
-    function noahs_page_builderSaveWidgetfromStruture(settings) {
-
-        var result = settings;
-        var data = {
-            wid: result['wid'],
-            did: result['did'],
-            uid: result['uid'],
-            langcode: result['langcode'],
-            type: result['type'],
-            settings: JSON.stringify(settings),
-        };
-
-
-        $.ajax({
-            url: drupalSettings.saveWidget,
-            type: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function (data) {
-
-                addClasses(data.classes);
-                // Ejecutar el segundo AJAX después de que el primero termine
-                $.ajax({
-                    url: '/admin/save-styles/' + result['did'],
-                    type: 'POST',
-                    data: data,
-                    dataType: 'json',
-                    success: function (data) {
-
-                        var contenidoIframe = $('#noahs_page_builder-preview').contents().find('head');
-                        // var stylesContainer = contenidoIframe.find('[data-noahs_page_builder="' + drupalSettings.did + '"]');
-                        // if (stylesContainer.length) {
-                        //     // stylesContainer.text(data.styles);
-                        // } else {
-                           
-                        //     // contenidoIframe.append('<style type="text/css" data-noahs_page_builder="' + drupalSettings.did + '">' + data.styles + '</style>');
-                        // }
-                        // createAlert('','Styles Saved or updated!','everything went well.','info',true,true,'pageMessages');                
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
-                        createAlert('Opps!',textStatus + ":" +  'Something went wrong','Check your drupal Recent log messages.','danger',true,false,'pageMessages');
-                    }
-                });
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                createAlert('Opps!',textStatus + ":" +  'Something went wrong','Check your drupal Recent log messages.','danger',true,false,'pageMessages');
-            },
-            complete: function () {
-                // Este bloque se ejecutará cuando la primera solicitud AJAX haya terminado
-            }
-        });
-    }
-
-
-    // Guardar Widget
-    function noahs_page_builderSave(settings) {
-
-
-    
-
-    }
 
     // Guardar Página
     function noahs_page_builderSavePage() {
         var settings = getWidgetStructure();
 
         var pageSettings = $('#noahs_page_builder_sttings_page_form').serializeJSON();
-        console.log(pageSettings);
+
         var data_id = drupalSettings.did;
         var data = {    
             nid: data_id,
@@ -888,7 +1023,7 @@
             success: function (data) {
 
                 $.ajax({
-                    url: '/admin/save-styles/' + data_id,
+                    url: '/noahs-admin/save-styles/' + data_id,
                     type: 'POST',
                     dataType: 'json',
                     success: function (data) {
@@ -922,15 +1057,15 @@
 
 
         $.ajax({
-            url: '/admin/final-widget/'+ result['did'] +'/'+ result['type'] +'/' + result['wid'],
+            url: '/noahs-admin/final-widget/'+ result['did'] +'/'+ result['type'] +'/' + result['wid'],
             type: 'POST',
             data: data,
             dataType: 'json',
             success: function (data) {
 
-                var contenidoIframe = $('#noahs_page_builder-preview').contents().find('#widget-id-' + result['wid']);
+                var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#widget-id-' + result['wid']);
                 contenidoIframe.replaceWith(data.html)
-                var slider = $('#noahs_page_builder-preview').contents().find('#widget-id-' + result['wid'] + ' .noahs_page_builder-slideshow');
+                var slider = $('#noahs_page_builder_preview').contents().find('#widget-id-' + result['wid'] + ' .noahs_page_builder-slideshow');
                 var slide = new Swiper(slider, {
                     autoplay: {
                         delay: 5000,
@@ -956,19 +1091,18 @@
         });
 
     }
+    
     // Añadir columna
-    function noahs_page_builderAddColum(widget_id){
+    function noahs_page_builderAddColum(widget_id) {
         $('#noahsAddColumn').modal('show');
-
-        $('.noahs_page_builder-column-modal .column-box').on('click', function(){
+        $('.noahs_page_builder-column-modal .column-box').off('click');
+        $('.noahs_page_builder-column-modal .column-box').on('click', function () {
             var html = addWidget('noahs_column');
-
-            $('#noahs_page_builder-preview').contents().find('section[id="widget-id-'+widget_id+'"]').find('.row-elements').append(html);
-
-            $('#noahs_page_builder-preview').contents().find('div[id="'+$(html).attr('id')+'"]').attr('data-column-size', $(this).data('column')).addClass($(this).data('column'));
+            $('#noahs_page_builder_preview').contents().find('section[id="widget-id-' + widget_id + '"]').find('.row-elements').append(html);
+            $('#noahs_page_builder_preview').contents().find('div[id="' + $(html).attr('id') + '"]').attr('data-column-size', $(this).data('column')).addClass($(this).data('column'));
             $('#noahsAddColumn').modal('hide');
         });
-        
+
     }
 
     // Añadir Widget
@@ -979,7 +1113,7 @@
         $('.noahs_page_builder-element-widget-modal .widget-box_element').off('click').on('click', function(){
             var element = $(this).data('element');
             var html = addWidget(element);
-            $('#noahs_page_builder-preview').contents().find('div[id="widget-id-'+element_id+'"]').find('.noahs_page_builder-column--content-inner ').append(html);
+            $('#noahs_page_builder_preview').contents().find('div[id="widget-id-'+element_id+'"]').find('.noahs_page_builder-column--content-inner ').append(html);
             $('#addElementWidgetModal').modal('hide');
         });
     }
@@ -1085,6 +1219,11 @@
                                 $('[data-field-name="' + showField + '"]').show();
                             }else{
                                 $('[data-field-name="' + showField + '"]').hide();
+                                $('[data-field-name="' + showField + '"]').find('input').attr('value', '');
+                                $('[data-field-name="' + showField + '"]').find('select, input').val('')
+                                $('[data-field-name="' + showField + '"]').find('select option').removeAttr('selected')
+                                $('[data-field-name="' + showField + '"]').find('checkbox').prop('checked', false);
+                                $('[data-field-name="' + showField + '"]').find('textarea').text('');
                             }
                         });
                     }
@@ -1140,9 +1279,6 @@
     function ckeditor(wid){
         $('[noahs_page_builder-editor]').each(function (index, element) {
             $(this).attr('id', 'noahs_page_builder_editor_' + index);
-
-
-
                 const editorElement = document.querySelector('#noahs_page_builder_editor_' + index);
 
                 ClassicEditor
@@ -1150,8 +1286,13 @@
                 .then(editor => {
                     editor.model.document.on('change:data', () => {
                         var selector = $(editor.sourceElement).data('update-selector');
-                        var contenidoIframe = $('#noahs_page_builder-preview').contents().find('#widget-id-' + wid + ' ' + selector);
+                        var contenidoIframe = $('#noahs_page_builder_preview').contents().find('#widget-id-' + wid + ' ' + selector);
+                        // console.log(editor.sourceElement);
+                   
+                       
                         $(contenidoIframe).html(editor.getData());
+                        $(editorElement).html(editor.getData());
+                        modificarJson(editorElement, wid);
                     });
                 })
                 .catch(error => {
@@ -1163,13 +1304,13 @@
     function removeWidgetsDataBase(id){
        
   
-        console.log(id);
+
         $.ajax({
-            url: '/admin/remove-widgets/' + id,
+            url: '/noahs-admin/remove-widgets/' + id,
             type: 'POST',
             dataType: 'json',
             success: function (data) {
-                console.log(data);
+
                 createAlert('','Widgets removed!','','info',true,true,'pageMessages');                       },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(textStatus);

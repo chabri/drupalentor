@@ -9,13 +9,13 @@
         <i class="fa-solid fa-mobile-screen-button"></i>
     </button>
 </div>
-<div class="noahs_page_builder-preview-wrapper">
+<div class="noahs_page_builder_preview-wrapper">
     <div id="pageMessages"></div>
 
-    <div class="noahs_page_builder-preview-content">
+    <div class="noahs_page_builder_preview-content">
         <iframe
-            src="/preview_theme/{{type}}/noahs_page_theme_builder"
-            id="noahs_page_builder-preview"></iframe>
+            src="/preview_theme/{{type}}/noahs_page_theme_builder?{{ 'now'|date('U') }}"
+            id="noahs_page_builder_preview"></iframe>
         <div class="l ui-resizable-handle ui-resizable-w resizable-wrapper" id="w"></div>
         <div class="r ui-resizable-handle ui-resizable-e resizable-wrapper" id="e"></div>
     </div>
@@ -32,7 +32,7 @@
     </button>
     <button type="submit" class="btn btn-success btn-sm ms-2">{{'Save' | t}}</button>
     <a href="{{url}}" class="btn btn-outline-info btn-sm ms-2" target="_blank">{{'View page' | t}}</a>
-    <a href="/admin/content" class="btn btn-outline-primary btn-sm ms-2" target="_blank">{{'Content page' | t}}</a>
+    <a href="/noahs-admin/content" class="btn btn-outline-primary btn-sm ms-2" target="_blank">{{'Content page' | t}}</a>
 </form>
 
 <!-- Modal Page Settings-->
@@ -56,6 +56,11 @@
             <div class="modal-body">
                 <form id="noahs_page_builder_sttings_page_form">
                     {% if type == 'header'%}
+                        <h4>Header Settings</h4>
+                        <div class="mb-3 field__color">
+                            <label for="background_color" class="form-label">Background Color</label>
+                            <input class="form-control-color" type="text" id="background_color" name="page[header_background_color]" value="{{page_settings.header_background_color}}">
+                        </div>
                         <h4>On Scroll Down</h4>
                         <div class="mb-3 field__color">
                             <label for="background_color" class="form-label">Background Color</label>

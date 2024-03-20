@@ -1,0 +1,10 @@
+uuid: cc5858b6-9f61-4297-b4df-838b34810e3e
+langcode: en
+status: true
+dependencies:
+  module:
+    - profile
+id: profile.noahs_profile
+label: 'Noahs Profile'
+targetEntityType: profile
+cache: true

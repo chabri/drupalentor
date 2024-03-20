@@ -1,6 +1,7 @@
 <?php 
 
 namespace Drupal\noahs_page_builder;
+use Drupal\noahs_page_builder\Controller\NoahsSaveStylesController;
 
 class WidgetBase {
   
@@ -130,53 +131,72 @@ class WidgetBase {
 
       $element = 'div';
       $class = ['noahs_page_builder-widget', 'widget-'. str_replace('_', '-', $data->type)];
+      $subclass = ['widget-wrapper'];
       $widget_default = 'element';
       $column_size = null;
       $obj = new \stdClass();
-
+      $global_class =  !empty($data->global) ? 'widget-global' : '';
+      $tabs = "<ul class='noahs_page_builder-widget-action-tabs tab-{$data->type} $global_class'>";
       $id = !empty($data->wid) ? $data->wid : uniqid();
       $uid =\Drupal::currentUser()->id();
-      $tabs = new \DOMDocument();
-      $list = $tabs->createElement('ul');
-      $list->setAttribute('class', 'noahs_page_builder-widget-action-tabs tab-' . $data->type);
+
       $fields = noahs_page_builder_get_widget_fields($data->type);
-
-
-      $this->agregarElementoALista($tabs, $list);
-
-      $this->agreateButton($tabs, $list, 'Edit', 'noahs_page_builder-edit-widget', 0, $id, 'fa-solid fa-pen-to-square');
       
-    
+      $tabs .= "<li><div class='area_tooltip noahs_page_builder-edit-widget' title='Edit' data-widget-id='$id'><i class='fa-solid fa-pen-to-square'></i></div></li>";
+
       if($data->type === 'noahs_row'){
         $element = 'section';
         $widget_default = 'section';
-        $this->agregarElementoALista($tabs, $list);
-        $this->agreateButton($tabs, $list, 'Add Column', 'noahs_page_builder-add-column', 0, $id, 'fa-solid fa-plus');
-        $this->agreateButton($tabs, $list, 'Move', 'noahs_page_builder-move-section', 0, '', 'fa-solid fa-up-down-left-right');
+        $tabs .= "<li><div class='area_tooltip noahs_page_builder-add-column' title='Add Column' data-widget-id='$id'><i class='fa-solid fa-plus'></i></div></li>";
+        $tabs .= "<li><div class='area_tooltip noahs_page_builder-move-section' title='Move' data-widget-id='$id'><i class='fa-solid fa-up-down-left-right'></i></div></li>";
+
       }else if($data->type === 'noahs_column'){
         $widget_default = 'column';
         $column_size = $data->column_size ?? null;
         $class[] = 'col-xs-12';
   
         array_push($class, $column_size);
-        $this->agreateButton($tabs, $list, 'Add Widget', 'noahs_page_builder-add-element-widget', 0, $id, 'fa-solid fa-plus');
-        $this->agreateButton($tabs, $list, 'Move', 'noahs_page_builder-move-column', 0, '', 'fa-solid fa-up-down-left-right');
+        $tabs .= "<li><div class='area_tooltip noahs_page_builder-add-element-widget' title='Add Widget' data-widget-id='$id'><i class='fa-solid fa-plus'></i></div></li>";
+        $tabs .= "<li><div class='area_tooltip noahs_page_builder-move-column' title='Move' data-widget-id='$id'><i class='fa-solid fa-up-down-left-right'></i></div></li>";
+
       }else{
         $class[] = 'element-widget';
-        $this->agreateButton($tabs, $list, 'Move', 'noahs_page_builder-move-widget', 0, '', 'fa-solid fa-up-down-left-right');
+        $tabs .= "<li><div class='area_tooltip noahs_page_builder-move-widget' title='Move' data-widget-id='$id'><i class='fa-solid fa-up-down-left-right'></i></div></li>";
       }
-      
-      $this->agreateButton($tabs, $list, 'Remove', 'noahs_page_builder-remove-widget', 0, '', 'fa-solid fa-trash');
-     
-      $this->agreateButton($tabs, $list, 'Up', 'noahs_page_builder-up-widget', 0, '', 'fa-solid fa-arrow-up');
-      $this->agreateButton($tabs, $list, 'Down', 'noahs_page_builder-down-widget', 0, '', 'fa-solid fa-arrow-down');
-      $this->agreateButton($tabs, $list, 'Cone', 'noahs_page_builder-clone-widget', 0, $id, 'fa-solid fa-clone');
+      if(!empty($settings->elemenet_animation_active) && $settings->elemenet_animation_active === 'true'){
+        $class[] = 'scrollme';
+        $subclass[] = 'animateme';
+      }
 
+      $tabs .= "<li><div class='area_tooltip noahs_page_builder-remove-widget' title='Remove' data-widget-id='$id'><i class='fa-solid fa-trash'></i></div></li>";
+      $tabs .= "<li><div class='area_tooltip noahs_page_builder-up-widget' title='Up' data-widget-id='$id'><i class='fa-solid fa-arrow-up'></i></div></li>";
+      $tabs .= "<li><div class='area_tooltip noahs_page_builder-down-widget' title='Down' data-widget-id='$id'><i class='fa-solid fa-arrow-down'></i></div></li>";
+      $tabs .= "<li><div class='area_tooltip noahs_page_builder-clone-widget' title='Clone' data-widget-id='$id'><i class='fa-solid fa-clone'></i></div></li>";
+      $tabs .= '<li><div class="dropdown">
+      <div class="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>';
+      $tabs .= '<ul class="dropdown-menu p-0" aria-labelledby="navbarDropdown">
+        <li class="d-block"><div class="dropdown-item d-block noahs_copy_element">Copy</div></li>';
+        if($data->type != 'noahs_row' && $data->type != 'noahs_column' && empty($global_class)){
+          $tabs .= '<li class="d-block"><div class="dropdown-item d-block noahs_save_as_global">Save as Global</div></li>';
+        }
+        if(!empty($global_class)){
+          $tabs .= '<li class="d-block"><div class="dropdown-item d-block noahs_remove_as_global">Detach as Global</div></li>';
+        }
+
+        if($data->type === 'noahs_row'){
+          $tabs .= '<li class="d-block"><div class="dropdown-item d-block noahs_save_as_theme">Save as Theme</div></li>';
+        }
+        if($data->type === 'noahs_column' || $data->type === 'noahs_row'){
+          $tabs .= '<li class="d-block"><div class="dropdown-item d-block noahs_paste_element">Paste</div></li>';
+        }
+      $tabs .= '</ul>
+      </div></li>';
+      $tabs .= '</ul>';
       $widget_class = '';
-
       $class = implode(' ', $class);
-      $tabs->appendChild($list);
-
+      $subclass = implode(' ', $subclass);
       $route = \Drupal::routeMatch()->getRouteName();
 
       $obj->wid = $data->wid;
@@ -190,19 +210,33 @@ class WidgetBase {
 
       $html_tabs = '';
       $data_setting = '';
+      $widgetStyles = '';
+      $data_global = !empty($data->global) ? 'data-widget-global="true"' : null;
 
       if ($route === 'noahs_page_builder.preview' || 
           $route === 'noahs_page_builder.widget' || 
           $route === 'noahs_page_builder_pro.iframe' || 
           $route === 'noahs_page_builder.product_preview' || 
+          $route === 'noahs_page_builder_pro.get_theme' || 
           $route === 'noahs_page_builder.final_widget'
           ){
-       $html_tabs = $tabs->saveHTML();
+
        $data_setting = !empty($data->settings) ? $data->settings : $obj;
        $data_setting = ' data-settings="'.htmlspecialchars(json_encode($data_setting), ENT_QUOTES, 'UTF-8').'"';
-      }
+       
+
+       $efw = !empty($data->settings) ? json_decode(json_encode($data->settings), true) : json_decode(json_encode($obj), true);
+
+       $inlineCSS = new NoahsSaveStylesController;
+       $widgetStyles = '<style id="w_style_'.$data->wid.'">' . $inlineCSS->generateWidgetStyles($efw) . '</style>';
+      }else{
 
      
+        $tabs = '';
+      }
+
+
+
 
       return '
           <'.$element.' 
@@ -213,10 +247,14 @@ class WidgetBase {
           '.($column_size ? 'data-column-size="'.$column_size.'"' : '').'
           data-type="'.$data->type.'" 
           ' . $data_setting . '
+          ' . $data_global . '
           >
-                  ' . $html_tabs . '
-                  ' . $divider_declaration . '
+          ' . $tabs . '
+          ' . $divider_declaration . '
+          <div class="'.$subclass.'">
                   ' . $content . '
+          </div>
+          ' . $widgetStyles . '
           </'.$element.'>
       ';
     }

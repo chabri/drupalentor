@@ -1,5 +1,14 @@
 noahs_page_builder_pro.assets.frontend:
   version: 1.x
   js:
+    assets/js/libs/jquery.scrollme.min.js: {scope: footer}
     assets/js/header.js: {scope: footer}
     assets/js/menu.js: {scope: footer}
+    assets/js/commerce.js: {scope: footer}
+    assets/js/entityViews.js: {scope: footer}
+    assets/js/noahs-pro.js: {scope: footer}
+
+noahs_page_builder_pro.assets.editor:
+  version: 1.x
+  js:
+    assets/js/entityViews.js: {scope: footer}

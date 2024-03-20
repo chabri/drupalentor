@@ -45,7 +45,7 @@ use Drupal\Core\Url;
          ?>
          <?php ob_start() ?>
                <div class="widget-content">
-                  <img src="<?php echo $logo_relative_path; ?>" class="site__logo">
+                  <a href="/"><img src="<?php echo $logo_relative_path; ?>" class="site__logo"></a>
                </div>
 
          <?php return ob_get_clean() ?>  

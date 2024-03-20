@@ -264,7 +264,7 @@ class Controls_Manager {
 	/**
 	 * URL control.
 	 */
-	const URL = 'url';
+	const NOHAS_URL = 'noahs_url';
 
 	/**
 	 * Repeater control.
@@ -360,6 +360,7 @@ class Controls_Manager {
 			self::CHECKBOX,
 			self::INFO,
 			self::RADIO,
+			self::HIDDEN,
 			self::TEXTAREA,
 			self::NOAHS_BACKGROUND_IMAGE,
 			self::NOAHS_BACKGROUND_GRADIENT,
@@ -383,6 +384,7 @@ class Controls_Manager {
 			self::NOAHS_IMAGE_MASK,
 			self::NOAHS_DIVIDER,
 			self::NOAHS_CUSTOM_CSS,
+			self::NOHAS_URL,
 		];
 	}
 
@@ -483,10 +485,7 @@ class Controls_Manager {
 					$html_group = '';
 					foreach ($item['items'] as $group_item_id => $group_item) {
 
-						if($group_item['type'] === 'noahs_multiple_group_fields'){
 
-						}
-				
 						$group_items = [
 							'item' => $group_item,
 							'wid' => $values ? $values['wid'] : null,
@@ -494,7 +493,6 @@ class Controls_Manager {
 							'delta' => $delta,
 							'parent' => $parent,
 						];
-						// dump($group_items);
 						$html_group .= $this->render_controls($group_items, $values['element'], 'group', $delta);
 					}
 					$html_tab  .= $group->content_template($html_group, $item_id, $item['title']);
@@ -510,12 +508,10 @@ class Controls_Manager {
 					];
 		
 					$values_element = isset($values['element']) ? $values['element'] : [];
-					
+
 					$html_tab .= $this->render_controls($data, $values_element, '', $delta);
 				}
 			}
-
-		
 
 			$tab_titles[$tab_id] = $tab['title'];
 			$control_tab = new Control_Tab();
@@ -540,10 +536,11 @@ class Controls_Manager {
 
 		foreach($values as $item_id => $element){
 
+
 			if(!empty($element)){
-				if($items[$item_id]['style_selector'] === 'widget'){
+				if(!empty($items[$item_id]['style_selector']) && $items[$item_id]['style_selector'] === 'widget'){
 					$class['#widget-id-'.$wid ][] = $element;
-				}else{
+				}else if(!empty($items[$item_id]['style_selector'])){
 					$class['#widget-id-'.$wid .' '. $items[$item_id]['style_selector']][] =  $element;
 				}
 			}
@@ -559,19 +556,20 @@ class Controls_Manager {
 		$class = [];
 
 		foreach($values as $item_id => $element){
-	
-			if(!empty($element)){
-				
+		
+			if(isset($element)){
 				if($items[$item_id]['style_type'] === 'attribute'){
-
+				
 					if($items[$item_id]['style_selector'] === 'widget'){
 						$class['#widget-id-'.$wid ][$items[$item_id]['attribute_type']] = $element;
 					}else{
 						$class[ '#widget-id-'.$wid .' '. $items[$item_id]['style_selector']][$items[$item_id]['attribute_type']] =  $element;
 					}
+				
 				}
 			}
 		}
+	
 		return $class;
 
 	}
@@ -683,19 +681,25 @@ class Controls_Manager {
 		// }
 		
 		
-		if(isset($value['background_image']['fid'])){
+		if(!empty($value['background_image']['fid'])){
 	
 			$file = File::load($value['background_image']['fid']);
-			$file_uri = $file->getFileUri();
-			
-			$background_image = ImageStyle::load($value['image_style'])->buildUrl($file_uri);
-			$css .= 'background-image:' .'url(' . $background_image . ');';
+			if (!empty($file) && $file != NULL && !is_null($file->getFileUri())) {
+				$file_uri = $file->getFileUri();
+				
+				if(!empty($value['image_style'])){
+					$background_image = ImageStyle::load($value['image_style'])->buildUrl($file_uri);
+				}else{
+					$background_image =  \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+				}
+				
+				$css .= 'background-image:' .'url(' . $background_image . ');';
 
-			$css .= 'background-repeat:' . ($value['background_image']['background_repeat'] ?? 'no-repeat') . ';';
-			$css .= 'background-position:' . ($value['background_image']['background_position'] ?? 'center center'). ';';
-			$css .= 'background-attachment:' . ($value['background_image']['background_attachment'] ?? 'initial'). ';';
-			$css .= 'background-size:' .  ($value['background_image']['background_size'] ?? 'cover'). ';';
-
+				$css .= 'background-repeat:' . ($value['background_image']['background_repeat'] ?? 'no-repeat') . ';';
+				$css .= 'background-position:' . ($value['background_image']['background_position'] ?? 'center center'). ';';
+				$css .= 'background-attachment:' . ($value['background_image']['background_attachment'] ?? 'initial'). ';';
+				$css .= 'background-size:' .  ($value['background_image']['background_size'] ?? 'cover'). ';';
+			}
 		}
 
 
@@ -741,7 +745,7 @@ class Controls_Manager {
 			
 	
 				if (!empty($element)) {
-					foreach($element as $k => $declaration){
+					foreach($element as $k => $style_css){
 						$k_sin_numeros = preg_replace('/_\d+$/', '', $k);
 						$numero = null;
 						if (preg_match('/_(\d+)$/', $k, $matches)) {
@@ -772,12 +776,16 @@ class Controls_Manager {
 						}
 				
 					}
-	
+			
 					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'select' ||
-						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'text' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_color' ||
 						$items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_width') {
-						$declaration .= $items[$item_id]['fields'][$k_sin_numeros]['style_css'] . ':' . $declaration . ';';
+
+						$declaration .= $items[$item_id]['fields'][$k_sin_numeros]['style_css'] . ':' . $style_css . ';';
+					}
+					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'text') {
+						
+						$declaration .= $items[$item_id]['fields'][$k_sin_numeros]['style_css']['text'] . ':' . $style_css . ';';
 					}
 	
 					if ($items[$item_id]['fields'][$k_sin_numeros]['type'] === 'noahs_background_image') {
@@ -817,14 +825,27 @@ class Controls_Manager {
 					$selector = ($items[$item_id]['style_selector'] === 'widget')
 					 ? '#widget-id-' . $wid 
 					 : '#widget-id-' . $wid .' '.$items[$item_id]['style_selector'];
-					$selector .= ($state != 'hover') ? '' : ':hover';
+
+					if ($state === 'hover') {
+
+						$selector_parts = explode(',', $selector); 
+						$hover_selector_parts = array_map(function($part) {
+
+							return $part . ':hover';
+						}, $selector_parts);
+
+						$selector = implode(', ', $hover_selector_parts);
+					}
+					if (!empty($items[$item_id]['style_selector_hover'])) {
+						$selector = '#widget-id-' . $wid .' '. $items[$item_id]['style_selector_hover'] . ',' . $selector;
+					}
 
 					if ($items[$item_id]['type'] === 'noahs_font' ||
 						$items[$item_id]['type'] === 'noahs_margin' ||
 						$items[$item_id]['type'] === 'noahs_padding' ||
 						$items[$item_id]['type'] === 'noahs_radius' ||
 						$items[$item_id]['type'] === 'noahs_border') {
-	
+							
 						foreach ($element as $property => $value) {
 							$property = str_replace('_', '-', $property);
 							if (!empty($value)) {
@@ -856,7 +877,6 @@ class Controls_Manager {
 					}
 					
 					if ($items[$item_id]['type'] === 'select' ||
-						$items[$item_id]['type'] === 'text' ||
 						$items[$item_id]['type'] === 'noahs_color' ||
 						$items[$item_id]['type'] === 'number' ||
 						$items[$item_id]['type'] === 'noahs_width') {
@@ -865,8 +885,12 @@ class Controls_Manager {
 
 						$declaration .= $items[$item_id]['style_css'] . ':' . $element . $style_suffix .';';
 					}
-
-					if ($items[$item_id]['type'] === 'noahs_image_mask') {
+					if ($items[$item_id]['type'] === 'text') {
+						$style_suffix = !empty($items[$item_id]['style_suffix']) ? $items[$item_id]['style_suffix'] : null;
+		
+						$declaration .= $items[$item_id]['style_css'] . ':' . $element['text'] . $style_suffix .';';
+					}
+					if ($items[$item_id]['type'] === 'noahs_image_mask' && !empty($element['mask'])) {
 
 						$declaration .= 'mask: url('.$element['mask'].') no-repeat center;';
 						$declaration .= '-webkit-mask: url('.$element['mask'].') no-repeat center;';

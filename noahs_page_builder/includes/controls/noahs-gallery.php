@@ -35,18 +35,19 @@ class Control_Noahs_Gallery extends Controls_Base{
 					}
 
 					?>
-					<div class="col-xs-3 image-box mb-2" data-delta="<?php echo $i; ?>">
-						<div class="noahs_page_builder-edit-grid-item btn btn-sm btn-info position-absolute top-50 start-50 translate-middle rounded-circle" data-show-click="#edit-gallery-image-<?php echo $i; ?>"><i class="fa-solid fa-pen-to-square"></i></div>
-						<div class="noahs_page_builder-move-grid-item btn btn-sm btn-info position-absolute top-0 start-0 rounded-circle"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
-						<div class="noahs_page_builder-remove-grid-item btn btn-sm btn-danger position-absolute bottom-0 end-0 rounded-circle"><i class="fa-solid fa-trash"></i></div>
-						<img src="<?php echo $image; ?>">
-						<div id="edit-gallery-image-<?php echo $i; ?>" class="noahs_page_builder-hover-modal bg-light p-3 position-absolute top-50 start-0 translate-middle-y shadow-lg hidden w-100">
+					<div class="col-3 image-box mb-2 position-relative" data-delta="<?php echo $i; ?>">
+						<div class="noahs_gallery_field_actions">
+							<div class="noahs_page_builder-edit-grid-item btn btn-sm btn-info position-absolute top-50 start-50 translate-middle rounded-circle" data-show-click="#edit-gallery-image-<?php echo $i; ?>"><i class="fa-solid fa-pen-to-square"></i></div>
+							<div class="noahs_page_builder-move-grid-item btn btn-sm btn-info position-absolute top-0 start-0 rounded-circle"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+							<div class="noahs_page_builder-remove-grid-item btn btn-sm btn-danger position-absolute bottom-0 end-0 rounded-circle"><i class="fa-solid fa-trash"></i></div>
+						</div>
+						<img src="<?php echo $image; ?>" style="width:100%; height:auto;">
+						<div id="edit-gallery-image-<?php echo $i; ?>" class="noahs_page_builder-hover-modal bg-light p-3 position-absolute top-100 start-50 translate-middle-x shadow-lg hidden">
 							<div class="btn btn-sm btn-danger position-absolute top-0 start-50 translate-middle rounded-circle" data-show-click="#edit-gallery-image-<?php echo $i; ?>"><i class="fa-regular fa-circle-xmark"></i></div>
 							<input class="form-control mb-3" type="hidden" name="element[gallery_items][<?php echo $i; ?>][fid]" value="<?php echo $item['fid'] ?? null; ?>">
 							<input class="form-control" type="text" name="element[gallery_items][<?php echo $i; ?>][url]" value="<?php echo $item['url'] ?? null; ?>">
 						</div>
 					</div>
-
 				<?php } ?>
 				</div>
 			</div>

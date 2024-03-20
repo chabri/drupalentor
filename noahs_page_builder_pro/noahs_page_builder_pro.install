@@ -4,17 +4,18 @@ use Drupal\Core\Field\BaseFieldDefinition;
 function noahs_page_builder_pro_schema() {
   
   $schema['noahs_page_builder_pro_global_widget'] = [
-    'description' => 'Stores example person entries for demonstration purposes.',
+    'description' => 'Global Widgets',
     'fields' => [
       'id' => [
         'type' => 'serial',
         'not null' => TRUE,
       ],
-      'uid' => [
-        'type' => 'int',
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
-        'default' => 0,
-        'description' => "Creator user's {users}.uid",
+        'default' => '',
+        'description' => 'Title',
       ],
       'langcode' => [
         'type' => 'varchar',
@@ -38,6 +39,36 @@ function noahs_page_builder_pro_schema() {
       'type' => [
         'type' => 'text',
         'not null' => TRUE,
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $schema['noahs_page_builder_pro_theme'] = [
+    'description' => 'Theme Widgets',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Title',
+      ],
+      'html' => [
+        'type' => 'text',
+        'size' => 'big',
+        'default' => '',
+        'description' => 'Save the json-html',
+      ],
+      'styles' => [
+        'type' => 'text',
+        'size' => 'big',
         'default' => '',
         'description' => 'Save the json-html',
       ],

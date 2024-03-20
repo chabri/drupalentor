@@ -10,12 +10,12 @@
     }
     a {
         text-transform: uppercase;
-        color: #4a4a4a;
+        color: #000000;
         display: block;
     }
     &.dropdown {
     position: relative;
-    display: inline-flex;
+    display: inline-flex; 
         .caption {
             padding: 11px 24px;
             border-radius: 3px;
@@ -24,6 +24,7 @@
             justify-content: space-between;
             align-items: center;
             text-transform: uppercase;
+            color: #000;
             i{
             margin-left: 15px;
             }
@@ -49,7 +50,7 @@
 
         .item:hover a,
         .caption:hover {
-            background-color: rgb(83, 161, 214);
+            background-color: var(--noahs_page_builder-principal-color);
             color: #fff;
         }
 

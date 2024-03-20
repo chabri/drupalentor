@@ -36,22 +36,37 @@ use Drupal\noahs_page_builder\WidgetBase;
          ];
 
    		$form['button_url'] = [
-            'type' => 'text',
+            'type' => 'noahs_url',
             'title' => t('URL'),
+            'autocomplete' => 'url_autocomplete',
             'tab' => 'section_content',
-            'placeholder' => t('Pase url here'),
+            'placeholder' => t('Intertal/External URL'),
+            'description' => t('If external use https://'),
+            'update_selector' => '.btn'
          ];
 
-   		$form['button_style'] = [
-            'type' => 'select',
-            'title' => t('Style'),
+         $form['button_class'] =[
+            'type'    => 'text',
+            'title'   => ('Custom CSS classes'),
+            'style_type' => 'class',
+            'style_selector' => '.btn', 
             'tab' => 'section_content',
+            'placeholder' => 'Multiple classes should be separated with SPACE.',
+         ];
+
+         $form['button_target'] = [
+            'type'    => 'select',
+            'title'   => t('Target'),
+            'tab' => 'section_content',
+            'style_type'      => 'attribute',
+            'style_selector'  => '.btn',
+            'attribute_type'  => 'target',
             'options' => [
-               '' => 'Por defecto',
-               'info' => 'Información',
-               'success' => 'Correcto',
-               'warning' => 'Advertencia',
-               'danger' => 'Peligro',
+               '' => 'Opens in the same frame as it was clicked',
+               '_blank' => 'Opens in a new window or tab',
+               '_parent' => 'Opens in the parent frame',
+               '_top' => 'Opens in the full body of the window',
+               'framename' => 'Opens in the named iframe',
             ]
          ];
 
@@ -60,7 +75,7 @@ use Drupal\noahs_page_builder\WidgetBase;
             'title'   => t('Horizontal Align'),
             'tab' => 'section_content',
             'style_type' => 'style',
-            'style_selector' => 'widget', 
+            'style_selector' => '.widget-wrapper', 
             'style_css' => 'justify-content',
             'responsive' => true,
             'options' => [
@@ -87,7 +102,6 @@ use Drupal\noahs_page_builder\WidgetBase;
             'style_selector' => '.btn', 
             'style_css' => 'background-color', 
             'style_hover' => true,
-            'responsive' => true,
          ];
 
          $form['font'] = [
@@ -137,10 +151,18 @@ use Drupal\noahs_page_builder\WidgetBase;
 
       public function template( $settings ){
 
+         $url = '';
+         if(!empty($settings->element->button_url->url)){
+            $url = $settings->element->button_url->url;
+         }
+         if(!empty($settings->element->button_url->text) && filter_var($settings->element->button_url->text, FILTER_VALIDATE_URL)){
+            $url = $settings->element->button_url->text;
+         }
+     
          ob_start();
          ?>
          <div class="btn-container">
-            <a href="<?php echo $settings->element->button_url ?? null; ?>" class="btn btn-<?php echo $settings->element->button_style ?? 'success'; ?>"><?php echo $settings->element->button_title ?? 'My button'; ?></a>
+            <a href="<?php echo $url; ?>" class="btn"><?php echo $settings->element->button_title ?? 'My button'; ?></a>
          </div>
          <?php       
          return ob_get_clean();

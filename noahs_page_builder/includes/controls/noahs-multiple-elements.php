@@ -28,7 +28,7 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 		$subfields = $fields[$data['item_id']];
 		$values = ($values) ? $values : $default_items_array;
 		$parent = $data['item_id'];
-		
+
 
 		$html = '
 			<div class="accordion-item">
@@ -36,15 +36,17 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 				<div class="accordion-actions">
 					<button class="btn btn-light noahs_page_builder-remove-item area_tooltip" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
 					<button class="btn btn-light noahs_page_builder-duplicate-item area_tooltip" title="Clone"><i class="fa-regular fa-copy"></i></i></button>
+					<button class="btn btn-light noahs_page_builder-move-item area_tooltip" title="Move"><i class="fa-solid fa-up-down-left-right"></i></button>
 				</div>
 				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#colapse_replace" aria-expanded="true" aria-controls="colapse_replace">
-					Accordion Item #1
+					Item #1
 				</button>
 			</h2>
 			<div id="colapse_replace" class="accordion-collapse collapse" aria-labelledby="header_replace" data-bs-parent="#'.$data['item_id'] .'">
 				<div class="accordion-body">';
-
-					$default_form = ModalForm::renderSubFields($fields, null, 'replace_it', $parent);
+					$newvalue['wid'] = $data['wid'];
+					$newvalue['delta'] = ($i + 1);
+					$default_form = ModalForm::renderSubFields($fields, $newvalue, 'replace_it', $parent);
 					$html .= $default_form;
 					$html .= '
 				</div>
@@ -64,9 +66,11 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 				<?php foreach(array_values($values) as $i => $value){ 
 
 					$newvalue['element'] = $value;
+					$newvalue['wid'] = $data['wid'];
+					$newvalue['delta'] = ($i + 1);
 
 
-					$form = ModalForm::renderSubFields($fields, $newvalue, $i, $parent);
+					$form = ModalForm::renderSubFields($fields, $newvalue, ($i + 1), $parent);
 
 					?>
 					<div class="accordion-item">
@@ -77,7 +81,7 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 							<button class="btn btn-light noahs_page_builder-move-item area_tooltip" title="Move"><i class="fa-solid fa-up-down-left-right"></i></button>
 						</div>
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideshow_<?php echo $i; ?>" aria-expanded="false" aria-controls="slideshow_<?php echo $i; ?>">
-							 Item #<?php echo $i; ?>
+							 Item #<?php echo ($i + 1); ?>
 						</button>
 						</h2>
 						<div id="slideshow_<?php echo $i; ?>" class="accordion-collapse collapse" aria-labelledby="header_<?php echo $i; ?>" data-bs-parent="#<?php echo $data['item_id']; ?>">
@@ -90,7 +94,8 @@ class Control_Noahs_Multiple_Elements extends Controls_Base {
 					</div>
 				<?php } ?>
 			</div>
-			<button class="btn btn-secondary btn-labeled noahs_page_builder-add-item mt-3" data-html="<?php echo $addItemHtml; ?>"><span class="btn-label"><i class="fa-solid fa-circle-plus"></i></span>Add new Item</button>
+			<input type="hidden" class="update_reload_form" name="element[multiple_items_reload]">
+			<button class="btn btn-secondary btn-labeled noahs_page_builder-add-item mt-3" data-widget-type="<?php echo $data['item_id']; ?>" data-html="<?php echo $addItemHtml; ?>"><span class="btn-label"><i class="fa-solid fa-circle-plus"></i></span><?php echo t('Add new Item'); ?></button>
 
 		</div>
 

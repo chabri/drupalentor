@@ -1,0 +1,10 @@
+uuid: 497112bc-0e1d-4b87-9b77-c54895861a0d
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product.noahs_view
+label: 'Noahs View'
+targetEntityType: commerce_product
+cache: true

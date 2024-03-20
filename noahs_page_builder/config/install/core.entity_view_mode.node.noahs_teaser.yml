@@ -1,0 +1,10 @@
+uuid: e1453670-b7ab-4876-a713-a4d4b704c8b1
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.noahs_teaser
+label: 'Noahs Teaser'
+targetEntityType: node
+cache: true

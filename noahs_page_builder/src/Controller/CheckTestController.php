@@ -16,7 +16,12 @@ class CheckTestController extends ControllerBase {
     $use_in_ctype = $noahs_page_builder_config->get('use_in_ctype');
 
     $actualNode = Node::load($node);
-    return AccessResult::allowedIf($actualNode->bundle() === $use_in_ctype[$actualNode->bundle()]);
+
+      if (array_key_exists($actualNode->bundle(), $use_in_ctype) && $actualNode->bundle() === $use_in_ctype[$actualNode->bundle()]) {
+      return AccessResult::allowedIf(true);
+    }else{
+      return AccessResult::allowedIf(false);
+    }
   }
 
 

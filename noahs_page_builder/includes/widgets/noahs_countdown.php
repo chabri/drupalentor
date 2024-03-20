@@ -45,34 +45,83 @@ use Drupal\noahs_page_builder\WidgetBase;
          $form['countdown_days'] = [
             'type'    => 'text',
             'title'   => t('Day'),
-            'default_value'   => t('Day'),
+            'default_value'   => 'Day',
             'tab' => 'section_content',
          ];
          $form['countdown_hours'] = [
             'type'    => 'text',
             'title'   => t('Hours'),
-            'default_value'   => t('Hours'),
+            'default_value'   => 'Hours',
             'tab' => 'section_content',
          ];
          $form['countdown_minutes'] = [
             'type'    => 'text',
             'title'   => t('Minutes'),
-            'default_value'   => t('Minutes'),
+            'default_value'   => 'Minutes',
             'tab' => 'section_content',
          ];
          $form['countdown_seconds'] = [
             'type'    => 'text',
             'title'   => t('Seconds'),
-            'default_value'   => t('Seconds'),
+            'default_value'   => 'Seconds',
             'tab' => 'section_content',
          ];
+         $form['element_horizontal_align'] = [
+            'type'    => 'select',
+            'title'   => t('Horizontal Align'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => '.widget-wrapper', 
+            'style_css' => 'justify-content',
+            'responsive' => true,
+            'options' => [
+               '' => 'Por defecto',
+               'flex-start' => 'Start',
+               'center' => 'Center',
+               'flex-end' => 'End',
+               'space-between' => 'Space Betwenn',
+               'space-around' => 'Space Around',
+               'space-evenly' => 'Space Evenly'
+            ]
+         ];
 
+         $form['section_styles'] = [
+            'type' => 'tab',
+            'title' => t('Styles')
+         ];
+
+         $form['background_color_top'] = [
+            'type' => 'noahs_color',
+            'title' => t('Background Color'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.flipdown.flipdown__theme-dark .rotor, .flipdown.flipdown__theme-dark .rotor-top, .flipdown.flipdown__theme-dark .rotor-leaf-front', 
+            'style_css' => 'background-color', 
+         ];
+
+         $form['background_color_bottom'] = [
+            'type' => 'noahs_color',
+            'title' => t('Background Color'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.flipdown.flipdown__theme-dark .rotor-bottom, .flipdown.flipdown__theme-dark .rotor-leaf-rear', 
+            'style_css' => 'background-color', 
+         ];
+
+         $form['font'] = [
+            'type' => 'noahs_font',
+            'title' => t('Font'),
+            'tab' => 'section_styles',
+            'style_type' => 'style',
+            'style_selector' => '.flipdown.flipdown__theme-dark .rotor-top, .flipdown.flipdown__theme-dark .rotor-bottom', 
+            'responsive' => true,
+         ];
          return $form;
       }
 
       public function template( $settings ){
 
-         $settings = $settings['element'];
+         $settings = $settings->element;
          $hoy = new DateTime();
 
          // Agregar 2 días
@@ -83,23 +132,20 @@ use Drupal\noahs_page_builder\WidgetBase;
 
          ?>
          <?php ob_start() ?>
-               <div class="widget-content">
-                  <div id="flipdown" class="flipdown noahs_page_builder-countdown" 
-                  data-countdown="<?php echo strtotime($settings['countdown_time']) ?? strtotime($fechaMasDosDias); ?>"
-                  data-days="<?php echo $settings['countdown_days'] ?? 'Days'; ?>"
-                  data-hours="<?php echo $settings['countdown_hours'] ?? 'Hours'; ?>"
-                  data-minutes="<?php echo $settings['countdown_minutes'] ?? 'Minutes'; ?>"
-                  data-seconds="<?php echo $settings['countdown_seconds'] ?? 'Seconds'; ?>"
-                  >
-               </div>
-               </div>
+            <div id="flipdown" class="flipdown noahs_page_builder-countdown" 
+            data-countdown="<?php echo !empty($settings->countdown_time) ? strtotime($settings->countdown_time) : strtotime($fechaMasDosDias); ?>"
+            data-days="<?php echo $settings->countdown_days->text ?? 'Days'; ?>"
+            data-hours="<?php echo $settings->countdown_hours->text ?? 'Hours'; ?>"
+            data-minutes="<?php echo $settings->countdown_minutes->text ?? 'Minutes'; ?>"
+            data-seconds="<?php echo $settings->countdown_seconds->text ?? 'Seconds'; ?>"
+            >
+         </div>
 
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

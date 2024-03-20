@@ -584,7 +584,7 @@ class NoahsSettingsForm extends ConfigFormBase {
         $pbottom = $form_state->getValue('padding_bottom') ?? '0';
         $pleft = $form_state->getValue('padding_left') ?? '0';
 
-        $styles .= '.btn, .btn-theme, .button{';
+        $styles .= '.btn:not(.btn-admin), .btn-theme:not(.btn-admin), .button:not(.btn-admin){';
             if(!empty($form_state->getValue('button_color'))){ $styles .= 'color:'.$form_state->getValue('button_color').';';}
             if(!empty($form_state->getValue('button_bgcolor'))){ $styles .= 'background-color:'.$form_state->getValue('button_bgcolor').';';}
             if(!empty($form_state->getValue('border_type'))){ $styles .= 'border-style:'.$form_state->getValue('border_type').';' ?? "none" .';';}
@@ -614,13 +614,13 @@ class NoahsSettingsForm extends ConfigFormBase {
 
         $styles .= '}';
 
-        $styles .= '.btn:hover, .btn-theme:hover, .button:hover{';
+        $styles .= '.btn:hover:not(.btn-admin), .btn-theme:hover:not(.btn-admin), .button:hover:not(.btn-admin){';
             if(!empty($form_state->getValue('button_color_hover'))){$styles .= 'color:'.$form_state->getValue('button_color_hover').';';}
             if(!empty($form_state->getValue('button_bgcolor_hover'))){$styles .= 'background-color:'.$form_state->getValue('button_bgcolor_hover').';';}
             if(!empty($form_state->getValue('border_color_hover'))){$styles .= 'border-color:'.$form_state->getValue('border_color_hover').';';}
         $styles .= '}';
         
-        $styles .= 'input, select, textarea, .form-control{';
+        $styles .= 'input:not(.element-admin), select:not(.element-admin), textarea:not(.element-admin), .form-control:not(.element-admin){';
             if(!empty($form_state->getValue('input_color'))){ $styles .= 'color:'.$form_state->getValue('input_color').';';}
             if(!empty($form_state->getValue('input_bgcolor'))){ $styles .= 'background-color:'.$form_state->getValue('input_bgcolor').';';}
             if(!empty($form_state->getValue('form_border_type'))){ $styles .= 'border-style:'.$form_state->getValue('form_border_type').';' ?? "none" .';';}

@@ -70,19 +70,21 @@ use Drupal\image\Entity\ImageStyle;
             'tab' => 'section_content',
             'update_selector' => '.widget-image-src',
          ];
+
          $form['mask_image'] = [
             'type'    => 'noahs_image_mask',
             'title'   => t('Mask Image'),
             'tab' => 'section_content',
             'style_type' => 'style',
-            'style_selector' => '.widget-wrapper', 
+            'style_selector' => '.widget-image-wrapper', 
          ];
+         
          $form['horizontal_align'] = [
             'type'    => 'select',
             'title'   => t('Horizontal Align'),
             'tab' => 'section_content',
             'style_type' => 'style',
-            'style_selector' => 'widget', 
+            'style_selector' => '.widget-wrapper', 
             'style_css' => 'justify-content',
             'responsive' => true,
             'options' => [
@@ -96,18 +98,7 @@ use Drupal\image\Entity\ImageStyle;
             ]
          ];
 
-         $form['hidden_image'] = [
-            'type'    => 'noahs_group_checkbox',
-            'title'   => t('Hide Image'),
-            'tab' => 'section_content',
-            'style_type' => 'class',
-            'style_selector' => 'widget', 
-            'options' => [
-               'hidden-xs' => t('Hide on mobile'),
-               'hidden-md' => t('Hide on Tablet'),
-               'hidden-lg' => t('Hide on desktop'),
-            ]
-         ];
+
 
          $form['section_styles'] = [
             'type' => 'tab',
@@ -143,15 +134,17 @@ use Drupal\image\Entity\ImageStyle;
 				$file = File::load($settings->element->image->fid);
 				$file_uri = $file->getFileUri();
 				
-				$image = ImageStyle::load($settings->element->image->image_style)->buildUrl($file_uri);
+            if(!empty($settings->element->image->image_style)){
+               $image = ImageStyle::load($settings->element->image->image_style)->buildUrl($file_uri);
+            }else{
+               $image = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+            }
          }
          ?>
          <?php ob_start() ?>
-
-               <div class="widget-wrapper">
-                  <img class="widget-image-src <?php echo !empty($settings->element->image->fid) ? '' : 'empty' ?>" src="<?php echo $image; ?>">
-               </div>
-               
+            <div class="widget-image-wrapper">
+               <img class="widget-image-src <?php echo !empty($settings->element->image->fid) ? '' : 'empty' ?>" src="<?php echo $image; ?>">
+            </div>
          <?php return ob_get_clean() ?>  
          <?php       
       }

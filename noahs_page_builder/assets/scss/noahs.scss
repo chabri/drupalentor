@@ -4,7 +4,6 @@
 
 @import "components/_variables";
 @import "components/_mixing-base";
-@import "components/_grid";
 @import "components/_element_form";
 @import "components/_widgets_base";
 @import "components/_countdown";  
@@ -27,9 +26,13 @@
 @import "components/menu";
 @import "components/header";
 @import "components/language_switcher";
- 
+@import "components/_grid";
 
+//Commerce
 
+@import "commerce/teaser";
+@import "commerce/cart";
+@import "commerce/general";
 
  .noahs_page_builder_loading{
 position: fixed;

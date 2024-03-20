@@ -56,22 +56,36 @@ use Drupal\image\Entity\ImageStyle;
             'title'   => t('Colums'),
             'tab' => 'section_content',
             'style_type' => 'class',
-            'style_selector' => '.noahs_page_builder-gallery', 
+            'style_selector' => '.noahs_page_builder-gallery > .row', 
             'options' => [
-               '' => 'Default',
-               'columns-1' => '1',
-               'columns-2' => '2',
-               'columns-3' => '3',
-               'columns-4' => '4',
-               'columns-5' => '5',
-               'columns-6' => '6',
-               'columns-7' => '7',
-               'columns-8' => '8',
-               'columns-8' => '9',
-               'columns-10' => '10',
-            ],
+               'row-cols-1 row-cols-sm-2 row-cols-md-4' => t('default'),
+               'row-cols-1 row-cols-md-2' => t('2 Columns'),
+               'row-cols-1 row-cols-md-3' => t('3 Columns'),
+               'row-cols-1 row-cols-sm-2 row-cols-md-4' => t('4 Columns'),
+               'row-cols-1 row-cols-sm-2 row-cols-md-5' => t('5 Columns'),
+               'row-cols-1 row-cols-sm-2 row-cols-md-6' => t('6 Columns'),
+            ]
          ];
-
+         $form['section_grid_gapy'] = [
+            'type'    => 'text',
+            'title'   => t('Grid gap Y'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => '.row', 
+            'style_css' => '--bs-gutter-y', 
+            'responsive' => true,
+            'default_value' => '0px'
+         ];
+         $form['section_grid_gapx'] = [
+            'type'    => 'text',
+            'title'   => t('Grid gap X'),
+            'tab' => 'section_content',
+            'style_type' => 'style',
+            'style_selector' => '.row', 
+            'style_css' => '--bs-gutter-x', 
+            'responsive' => true,
+            'default_value' => '0px'
+         ];
 
          return $form;
       }
@@ -79,84 +93,84 @@ use Drupal\image\Entity\ImageStyle;
       public function template( $settings ){
 
          $image = '/'.NOAHS_PAGE_BUILDER_PATH.'/assets/img/widget-image.jpg';
-         $items = isset($settings['element']['gallery_items'])  ? $settings['element']['gallery_items'] : [];
-         $image_style = $settings['element']['gallery_image_style'] ?? 'thumbnail';
-         $gallery_type = $settings['element']['gallery_type'] ?? 'grid';
-         $gallery_columns = $settings['element']['gallery_type_columns'] ?? '4';
+         $items = isset($settings->element->gallery_items)  ? $settings->element->gallery_items : [];
+         $image_style = $settings->element->gallery_image_style ?? 'thumbnail';
+         $gallery_type = $settings->element->gallery_type ?? 'grid';
+         $gallery_columns = $settings->element->gallery_type_columns ?? '4';
          
          ?>
          <?php ob_start() ?>
-            <div class="noahs_page_builder-gallery columns-<?php echo $gallery_columns; ?> <?php echo $gallery_type; ?>">
-            <div class="row g-3">
+            <div class="noahs_page_builder-gallery <?php echo $gallery_type; ?>">
+            <div class="row">
                <?php if (!empty($items)){ ?>
                   <?php foreach($items as $item) { 
 
-                     if(isset($item['fid'])){
-                        $file = File::load($item['fid']);
+                     if(isset($item->fid)){
+                        $file = File::load($item->fid);
                         $file_uri = $file->getFileUri();
                         $image = ImageStyle::load($image_style)->buildUrl($file_uri);
                      }
             
                      ?>
-                     <div class="gallery-item col-3">
+                     <div class="gallery-item col">
                         <div class="noahs_page_builder-carousel--actions">
-                           <?php if(isset($item['url'])) { echo '<a href="' . $item['url'] . '"><i class="fa-solid fa-link"></i></a>';} ?>
+                           <?php if(isset($item->url)) { echo '<a href="' . $item->url . '"><i class="fa-solid fa-link"></i></a>';} ?>
                            <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                         </div>
                         <img class="gallery-image-src" src="<?php echo $image; ?>">
                      </div>
                   <?php } ?>
                <?php } else{ ?>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
                      </div>
                      <img class="gallery-image-src" src="<?php echo $image; ?>">
                   </div>
-                  <div class="gallery-item col-3">
+                  <div class="gallery-item col">
                      <div class="noahs_page_builder-carousel--actions">
                         <a href="#"><i class="fa-solid fa-link"></i></a>
                         <a data-fancybox="gallery" href="<?php echo $image; ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
@@ -170,9 +184,8 @@ use Drupal\image\Entity\ImageStyle;
          <?php       
       }
       
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
-
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

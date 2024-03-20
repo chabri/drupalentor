@@ -176,7 +176,7 @@ use Drupal\noahs_page_builder\WidgetBase;
          $style = '';
          $icon = !empty($settings->icon->class) ? '<i class="'. $settings->icon->class .'"></i>' : ''; 
          $title = !empty($settings->separator_text) ? $settings->separator_text : ''; 
-         $weight = !empty($settings->separator_weight) ? $settings->separator_weight : '1'; 
+         $weight = !empty($settings->separator_weight->text) ? $settings->separator_weight->text : '1px'; 
 
          $class .= !empty($icon) ? ' icon' : '';
          $class .= !empty($title) ? ' title' : '';

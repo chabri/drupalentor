@@ -87,6 +87,8 @@ class NoahsBuildThemeProController extends ControllerBase{
       $module_url =  '/'.\Drupal::service('extension.list.module')->getPath('noahs_page_builder');
       $page['#attached']['drupalSettings']['uid'] = \Drupal::currentUser()->id();
       $page['#attached']['drupalSettings']['langcode'] = $langcode;
+      $page['#attached']['drupalSettings']['nid'] = $type;
+      
       ob_start();
       $page['#attached']['library'][] = 'noahs_page_builder/noahs_page_builder.assets.admin';
       //include drupal_get_path('module', 'noahs_page_builder') . '/includes/ModalForm.php';
@@ -144,7 +146,7 @@ class NoahsBuildThemeProController extends ControllerBase{
         ->fetchAssoc();
       
       if($builder != NULL){
-          $schema = \Drupal::database()->update("noahs_page_builder_pro_themes")
+          $builder = \Drupal::database()->update("noahs_page_builder_pro_themes")
           ->fields(array(
               'settings' => $settings,
               'page_settings' => $page_settings,

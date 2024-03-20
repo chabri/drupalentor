@@ -30,7 +30,7 @@ use Drupal\noahs_page_builder\WidgetBase;
             'update_selector' => '.noahs--video-button h5'
          ];
          $form['columns_inverted'] = [
-            'type'    => 'select',
+            'type'    => '',
             'title'   => t('Inverted Button'),
             'tab' => 'section_content',
             'options' => [

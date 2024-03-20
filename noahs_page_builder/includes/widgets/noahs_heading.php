@@ -73,7 +73,7 @@ use Drupal\noahs_page_builder\WidgetBase;
             'title'       => t('Font'),
             'tab'     => 'section_style',
             'style_type' => 'style',
-            'style_selector' => 'widget', 
+            'style_selector' => '.widget-content > *', 
             'responsive' => true,
            ];
          return $form;
@@ -83,7 +83,7 @@ use Drupal\noahs_page_builder\WidgetBase;
 
          $ouput = '<div class="widget-content d-flex w-100">';
          $ouput .=  '<' . ($settings->element->heading_type ?? 'h1') . '>';
-         $ouput .=  '<span>' . (!empty($settings->element->heading_text) ? $settings->element->heading_text : 'Your Title Here') . '</span>';
+         $ouput .=  '<span>' . (!empty($settings->element->heading_text->text) ? $settings->element->heading_text->text : 'Your Title Here') . '</span>';
          $ouput .=  '</' . ($settings->element->heading_type ?? 'h1') . '>';
          $ouput .= '</div>';
 

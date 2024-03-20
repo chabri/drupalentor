@@ -48,6 +48,8 @@ noahs_page_builder.assets.preview:
       vendor/font-awesome/css/regular.min.css: {}
       vendor/font-awesome/css/solid.min.css: {}
       assets/css/bootstrap.min.css: {}
+      assets/css/select2.min.css: {}
+      assets/css/jquery-ui.theme.min.css: {}
       assets/css/flipdown.min.css: {}
       assets/css/codemirror.css: {}
       assets/css/material-darker.css: {}
@@ -62,6 +64,8 @@ noahs_page_builder.assets.preview:
     assets/libs/builder/flipdown.min.js: {scope: footer}
     assets/js/bootstrap.bundle.min.js: {scope: footer}
     assets/libs/builder/swiper-bundle.min.js: {scope: footer}
+    assets/libs/builder/select2.min.js: {scope: footer}
+    assets/libs/builder/jquery-ui.min.js: {scope: footer}
     assets/libs/builder/codemirror.js: {scope: footer}
     assets/libs/builder/css.js: {scope: footer}
     assets/libs/builder/htmlmixed.min.js: {scope: footer}
@@ -69,6 +73,8 @@ noahs_page_builder.assets.preview:
     assets/js/tabs.js: {scope: footer}
     assets/js/color.js: {scope: footer}
     assets/js/code_mirror.js: {scope: footer}
+    assets/js/select-2-init.js: {scope: footer}
+    assets/js/noahs_url_autocomplete.js: {scope: footer}
   dependencies:
     - core/jquery
     - core/drupal

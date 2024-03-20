@@ -31,6 +31,8 @@ function noahs_page_builder_pro_form_alter(&$form, &$form_state, $form_id) {
     $form['noahs_dontuse']['#group'] = 'noahs_settings';
   }
 }
+
+
 function noahs_page_builder_pro_form_node_form_alter(&$form, \Drupal\Core\Form\FormStateInterface &$form_state, $form_id) {
   $form['noahs_settings' ] = array(
     '#type' => 'details',
@@ -41,6 +43,7 @@ function noahs_page_builder_pro_form_node_form_alter(&$form, \Drupal\Core\Form\F
   $form['noahs_override_default']['#group'] = 'noahs_settings';
   $form['noahs_dontuse']['#group'] = 'noahs_settings';
 }
+
 /**
  * Implements hook_entity_base_field_info().
  */
@@ -128,6 +131,20 @@ function noahs_page_builder_pro_theme($existing, $type, $theme, $path) {
       'template' => 'input--nohas',
       'path' => $path . '/templates/form',
     ),
+    'commerce_product__noahs_teaser' => array(
+      'template' => 'commerce-product--noahs-teaser',
+      'base hook' => 'commerce_product',
+      'path' => $path . '/templates/commerce',
+    ),
+    'commerce_product__teaser' => array(
+      'template' => 'commerce-product--noahs-teaser',
+      'base hook' => 'commerce_product',
+      'path' => $path . '/templates/commerce',
+    ),
+    'commerce_cart_block' => array(
+      'template' => 'commerce-cart-block',
+      'path' => $path . '/templates/commerce',
+    ),
   );
 }
 function noahs_page_builder_pro_preprocess_form_element(&$variables) {
@@ -168,8 +185,243 @@ function noahs_page_builder_pro_preprocess_page(&$variables) {
   $route_match = \Drupal::routeMatch();
   $node = $route_match->getParameter('node');
 
-  if($route === 'entity.node.canonical' || $route === 'noahs_page_builder_pro.iframe'){
+  if($route === 'entity.node.canonical' || $route === 'noahs_page_builder_pro.iframe' || $route === 'entity.commerce_product.canonical'){
       $variables['#attached']['library'][] = 'noahs_page_builder_pro/noahs_page_builder_pro.assets.frontend';
+  }
+  if($route === 'noahs_page_builder.editor'){
+      $variables['#attached']['library'][] = 'noahs_page_builder_pro/noahs_page_builder_pro.assets.editor';
   }
 }
 
+function noahs_page_builder_pro_load_widget($wid) {
+  $result = \Drupal::database()->select('{noahs_page_builder_pro_global_widget}', 'd')
+  ->fields('d')
+  ->condition('wid', $wid, '=')
+  ->execute()
+  ->fetchObject();
+return $result;
+}
+
+/**
+ * Hook hook_some_content_alter().
+ */
+function noahs_page_builder_pro_default_fileds_alter(&$form) {
+
+  $form['animation_extra'] = [
+      'type' => 'group',
+      'title' => t('Animation on  Vertical Scroll'),
+  ];
+
+  $form['elemenet_animation_active'] = [
+      'type'    => 'checkbox',
+      'title'   => t('Active'),
+      'value' => 'true',
+      'default_value' => 'false',
+      'tab' => 'section_extras',
+      'group' => 'animation_extra'
+  ];
+
+  $form['element_animation'] = [
+      'type'            => 'select',
+      'title'           => ('When'),
+      'options'         => [
+          ''            => 'Select',
+          'view'       => 'View',
+          'exit'        => 'Exit',
+          'span'        => 'Span',
+      ],  
+      'style_type'      => 'attribute',
+      'style_selector'  => '.widget-wrapper',
+      'attribute_type'  => 'data-when',
+      'tab'             => 'section_extras',
+      'group'           => 'animation_extra',
+  ];
+
+  $form['element_animation_transition'] = [
+      'type'            => 'select',
+      'title'           => ('Transition'),
+      'options'         => [
+          ''            => 'Select',
+          'easeout'       => 'Ease out',
+          'easein'        => 'Ease in',
+          'easeinout'        => 'Ease in out',
+          'linear'        => 'Linear',
+      ],  
+      'style_type'      => 'attribute',
+      'style_selector'  => '.widget-wrapper',
+      'attribute_type'  => 'data-easing',
+      'tab'             => 'section_extras',
+      'group'           => 'animation_extra',
+  ];
+  
+
+  $form['element_animation_from'] = [
+      'type'    => 'number',
+      'title'   => ('From'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-from', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+          'max' => '1',
+          'step' => '0.01'
+       ],
+  ];
+
+  $form['element_animation_to'] = [
+      'type'    => 'number',
+      'title'   => ('To'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-to', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+          'step' => '0.01',
+          'max' => '1',
+       ],
+  ];
+  $form['element_animation_opacity'] = [
+      'type'    => 'number',
+      'title'   => ('Opacity'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-opacity', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+          'max' => '1',
+          'step' => '0.01'
+       ],
+  ];
+
+  $form['element_animation_translatex'] = [
+      'type'    => 'number',
+      'title'   => ('Horizontal distance'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-translatex', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_translatey'] = [
+      'type'    => 'number',
+      'title'   => ('Vertical distance'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-translatey', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_translatez'] = [
+      'type'    => 'number',
+      'title'   => ('Vertical Z'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-translatez', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_rotatex'] = [
+      'type'    => 'number',
+      'title'   => ('Rotate X'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-rotatex', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_rotatey'] = [
+      'type'    => 'number',
+      'title'   => ('Rotate Y'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-rotatey', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_rotatez'] = [
+      'type'    => 'number',
+      'title'   => ('Rotate Z'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-rotatez', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+          'min' => '0',
+       ],
+  ];
+  $form['element_animation_scale'] = [
+      'type'    => 'number',
+      'title'   => ('Scale'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-scale', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+        'min' => '0',
+        'step' => '0.1'
+     ],
+  ];
+  $form['element_animation_scalex'] = [
+      'type'    => 'number',
+      'title'   => ('Scale X'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-scalex', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+        'min' => '0',
+        'step' => '0.1'
+     ],
+  ];
+  $form['element_animation_scaley'] = [
+      'type'    => 'number',
+      'title'   => ('Scale Y'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-scaley', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+        'min' => '0',
+        'step' => '0.1'
+     ],
+  ];
+  $form['element_animation_scalez'] = [
+      'type'    => 'number',
+      'title'   => ('Scale Z'),
+      'style_selector' => '.widget-wrapper', 
+      'style_type' => 'attribute',
+      'attribute_type' => 'data-scalez', 
+      'tab' => 'section_extras',
+      'group' => 'animation_extra',
+      'attributes' => [
+        'min' => '0',
+        'step' => '0.1'
+     ],
+  ];
+
+}

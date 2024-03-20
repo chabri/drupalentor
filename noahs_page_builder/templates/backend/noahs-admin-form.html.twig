@@ -9,13 +9,13 @@
         <i class="fa-solid fa-mobile-screen-button"></i>
     </button>
 </div>
-<div class="noahs_page_builder-preview-wrapper">
+<div class="noahs_page_builder_preview-wrapper">
     <div id="pageMessages"></div>
 
-    <div class="noahs_page_builder-preview-content">
+    <div class="noahs_page_builder_preview-content">
         <iframe
-            src="{{iframe_url}}"
-            id="noahs_page_builder-preview"></iframe>
+            src="{{iframe_url}}?{{ 'now'|date('U') }}"
+            id="noahs_page_builder_preview"></iframe>
         <div class="l ui-resizable-handle ui-resizable-w resizable-wrapper" id="w"></div>
         <div class="r ui-resizable-handle ui-resizable-e resizable-wrapper" id="e"></div>
     </div>
@@ -24,15 +24,15 @@
     <div id="widgets_to_remove" data-remove-widgets=""></div>
     <button
         type="button"
-        class="btn btn-link btn-sm area_tooltip"
+        class="btn btn-link btn-sm area_tooltip btn-admin"
         data-bs-toggle="modal"
         data-bs-target="#staticBackdrop"
         title="{{ 'Page settings' | t}}">
         <i class="fa-solid fa-gear"></i>
     </button>
-    <button type="submit" class="btn btn-success btn-sm ms-2">{{'Save' | t}}</button>
-    <a href="{{url}}" class="btn btn-outline-info btn-sm ms-2" target="_blank">{{'View page' | t}}</a>
-    <a href="/admin/content" class="btn btn-outline-primary btn-sm ms-2" target="_blank">{{'Content page' | t}}</a>
+    <button type="submit" class="btn btn-success btn-sm ms-2 btn-admin">{{'Save' | t}}</button>
+    <a href="{{url}}" class="btn btn-outline-info btn-sm ms-2 btn-admin" target="_blank">{{'View page' | t}}</a>
+    <a href="/noahs-admin/content" class="btn btn-outline-primary btn-sm ms-2 btn-admin" target="_blank">{{'Content page' | t}}</a>
 </form>
 
 <!-- Modal Page Settings-->
@@ -68,8 +68,8 @@
                         <input class="form-control" id="containerWidth" name="page[container_width]" value="{{page_settings.container_width}}">
                     </div>
                     <div class="btn-group d-flex justify-content-end">
-                        <button type="submit" id="savenoahs_page_builderPageSettings" class="btn btn-success bt">{{ 'Save settings' |t }}</button>
-                        <a type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Cancel' |t }}</a>
+                        <button type="submit" id="savenoahs_page_builderPageSettings" class="btn btn-success btn-admin">{{ 'Save settings' |t }}</button>
+                        <a type="button" class="btn btn-danger btn-admin" data-bs-dismiss="modal">{{ 'Cancel' |t }}</a>
                     </div>
 
                 </form>
@@ -116,7 +116,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
+                <button type="button" class="btn btn-danger btn-admin" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
             </div>
         </div>
     </div>
@@ -152,7 +152,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
+                <button type="button" class="btn btn-danger btn-admin" data-bs-dismiss="modal">{{ 'Cancel' |t }}</button>
             </div>
         </div>
     </div>

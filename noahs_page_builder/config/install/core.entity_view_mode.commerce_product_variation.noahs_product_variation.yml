@@ -1,0 +1,10 @@
+uuid: 0c4ed11d-b231-42f6-ad68-676df0945c57
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product_variation.noahs_product_variation
+label: 'Noahs Product Variation'
+targetEntityType: commerce_product_variation
+cache: true

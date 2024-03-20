@@ -1,0 +1,10 @@
+uuid: 890a2fc8-5b1f-45ff-9019-e3c6724e163a
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+id: user.noahs_user
+label: 'Noahs User'
+targetEntityType: user
+cache: true

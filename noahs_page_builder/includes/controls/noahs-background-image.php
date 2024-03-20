@@ -17,11 +17,8 @@ class Control_Noahs_Background_Image{
 		$id = $data['wid'];
 		$image_styles = NoahsController::getImageStyle();
 
-		$image = null;
+		$image = !empty($value['background_image']['thumbnail']) ? $value['background_image']['thumbnail'] : '/'.NOAHS_PAGE_BUILDER_PATH.'/assets/img/no-image-thumbnail.jpg';
 
-		if(!empty($value['background_image']['thumbnail'])){
-			$image = $value['background_image']['thumbnail'];
-		}
 		$field_names = [
 			'Background Position' => 'background_position',
 			'Background repeat' => 'background_repeat',
@@ -63,6 +60,8 @@ class Control_Noahs_Background_Image{
 		];
 
 		$nameBase = $name.'[background_image]';
+		$element_id = preg_replace('/[\[\]]+/', '_', $name);
+
 		?>
 		<?php ob_start() ?>
 		
@@ -73,11 +72,12 @@ class Control_Noahs_Background_Image{
 						<div class="mb-3 background-image-field">
 							<div class="media-preview-actions d-flex justify-content-center align-items-center mb-3">
 							
-								<?php if(!empty($image)) { ?><img class="background-thumbnail-image" src="<?php echo $image; ?>" alt="Thumbnail"><?php } ?>
-								<input type="hidden" name="<?php echo $name; ?>[background_image][fid]" id="noahs_page_builder_background_image" value="<?php echo !empty($value['background_image']['fid']) ? $value['background_image']['fid'] : null; ?>" class="form-control background-fid"  field-settings>
+								<img class="background-thumbnail-image" src="<?php echo $image; ?>" alt="Thumbnail">
+								<input type="hidden" name="<?php echo $name; ?>[background_image][fid]" id="<?php echo $element_id; ?>" value="<?php echo !empty($value['background_image']['fid']) ? $value['background_image']['fid'] : null; ?>" class="form-control background-fid"  field-settings>
 								<input type="hidden" name="<?php echo $name; ?>[background_image][thumbnail]" id="noahs_page_builder_background_thumbnail" value="<?php echo !empty($value['background_image']['thumbnail']) ? $value['background_image']['thumbnail'] : null; ?>" class="form-control  background-thumbnail"  field-settings>
+								<input type="hidden" name="<?php echo $name; ?>[background_image][original]" id="noahs_page_builder_background_original" value="<?php echo !empty($value['background_image']['original']) ? $value['background_image']['original'] : null; ?>" class="form-control  background-original"  field-settings>
 								<div class="btn-group position-absolute d-flex justify-content-between w-100">
-									<button class="btn btn-primary media-uploadbg_image area_tooltip" title="<?php t('Add/change Image'); ?>" data-element-id="noahs_page_builder_background_image"><i class="fa-solid fa-circle-plus"></i></button>
+									<button class="btn btn-primary media-uploadbg_image area_tooltip" title="<?php t('Add/change Image'); ?>" data-element-id="<?php echo $element_id; ?>"><i class="fa-solid fa-circle-plus"></i></button>
 									<button class="btn btn-danger media-removebg_image area_tooltip"  title="<?php t('Remove Image'); ?>"><i class="fa-solid fa-trash"></i></button>
 								</div>
 							</div>
@@ -97,7 +97,7 @@ class Control_Noahs_Background_Image{
 								?>
 								<div class="field_group field_item mb-3">
 									<label for="noahs_page_builder_<?php echo $field_name; ?>"><?php echo $label; ?></label>
-									<select name="<?php echo $nameBase; ?>[<?php echo $field_name; ?>]" class="form-control" field-settings>
+									<select name="<?php echo $nameBase; ?>[<?php echo $field_name; ?>]" data-style-css="<?php echo str_replace('_', '-', $field_name); ?>" class="form-control" field-settings>
 										<?php foreach ($options[$field_name] as $k => $title) { ?>
 											<option value="<?php echo $k; ?>" <?php echo !empty($value['background_image'][$field_name]) && $value['background_image'][$field_name] === $k ? ' selected' : ''; ?>>
 												<?php echo $title; ?>

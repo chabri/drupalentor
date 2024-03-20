@@ -17,6 +17,7 @@ class Control_Noahs_Icon{
 		$id = $data['wid'];
 
 		$icon = (isset($value['class']) ? $value['class'] : '');
+		$icon = (empty($icon) && !empty($data['item']['default_value'])) ? $data['item']['default_value'] : $icon;
 
 		?>
 		<?php ob_start() ?>

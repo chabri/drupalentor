@@ -5,8 +5,9 @@ namespace Drupal\noahs_page_builder\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
-use Drupal\noahs_page_builder\Autoloader;
+
 use Drupal\noahs_page_builder\Controls_Manager;
 use Drupal\noahs_page_builder\Controls_Base;
 use Drupal\Core\File\FileSystemInterface;
@@ -22,14 +23,6 @@ class NoahsSaveStylesController extends ControllerBase {
    * {@inheritdoc}
    */
 
-  private function register_autoloader() {
-    require_once NOAHS_PAGE_BUILDER_PATH . '/includes/autoloader.php';
-    Autoloader::run();
-  }
-
-  public function __construct() {
-    $this->register_autoloader();
-  }
 
 
 public function save($nid) {
@@ -135,6 +128,116 @@ public function save($nid) {
     return $ids;
   }
 
+
+  // temporal???
+  public function generateStyles($nid) {
+    require_once NOAHS_PAGE_BUILDER_PATH.'/includes/controls.php';
+    $output = '';
+
+    $page_settings_data = noahs_page_builder_load($nid);
+
+    $page_settings = json_decode($page_settings_data->settings, true);
+    $elements =  $this->obtenerElementosRecursivos($page_settings);
+    $extraFieldsClass = new Controls_Base;
+
+    foreach($elements as $item) {
+
+        $fields = noahs_page_builder_get_widget_fields($item['type']);
+
+        $extraFields = $extraFieldsClass->defaultFields();
+        $mergeField = array_merge($fields, $extraFields);
+
+
+            $tabs_class = new Controls_Manager();
+          if(!empty($item['element'])){
+            $css = $this->obtenerCSS($item['element']);
+
+            if (!empty($item['element']['css']) || !empty($css)) {
+              $arrayUnificado = array_merge_recursive($item['element']['css'], $css);
+
+                $data_controls = $tabs_class -> getStyles(
+                    $mergeField,
+                    $arrayUnificado,
+                    $item['wid']
+                );
+
+                $output .= PHP_EOL.$data_controls;
+            }
+          }
+
+      }
+
+    return $output;
+  }
+  // temporal???
+  public function generateWidgetStyles(array $item) {
+    require_once NOAHS_PAGE_BUILDER_PATH.'/includes/controls.php';
+
+        $output = '';
+        $fields = noahs_page_builder_get_widget_fields($item['type']);
+        $extraFieldsClass = new Controls_Base;
+        $extraFields = $extraFieldsClass->defaultFields();
+        $mergeField = array_merge($fields, $extraFields);
+
+
+            $tabs_class = new Controls_Manager();
+          if(!empty($item['element'])){
+            $css = $this->obtenerCSS($item['element']);
+
+            if (!empty($item['element']['css']) || !empty($css)) {
+              $arrayUnificado = array_merge_recursive($item['element']['css'], $css);
+
+                $data_controls = $tabs_class -> getStyles(
+                    $mergeField,
+                    $arrayUnificado,
+                    $item['wid']
+                );
+
+                $output .= PHP_EOL.$data_controls;
+            }
+          }
+
+
+    return $output;
+  }
+  // temporal???
+
+
+
+  public function update(Request $request) {
+    require_once NOAHS_PAGE_BUILDER_PATH.'/includes/controls.php';
+
+        $data = json_decode($request->getContent(), TRUE);
+        $item  =  $data['formData'];
+
+        $fields = noahs_page_builder_get_widget_fields($item['type']);
+        $extraFieldsClass = new Controls_Base;
+        $extraFields = $extraFieldsClass->defaultFields();
+        $mergeField = array_merge($fields, $extraFields);
+
+
+            $tabs_class = new Controls_Manager();
+          if(!empty($item['element'])){
+            $css = $this->obtenerCSS($item['element']);
+
+            if (!empty($item['element']['css']) || !empty($css)) {
+              $arrayUnificado = array_merge_recursive($item['element']['css'], $css);
+
+                $data_controls = $tabs_class -> getStyles(
+                    $mergeField,
+                    $arrayUnificado,
+                    $item['wid']
+                );
+
+                $output .= PHP_EOL.$data_controls;
+            }
+          }
+
+          return new JsonResponse([
+            'styles' =>  $output,
+          ]);
+  }
+
   public function obtenerCSS($element) {
     $cssArray = [];
 
@@ -167,6 +270,9 @@ public function save($nid) {
       }
       if(!empty($element['background_color'])){
         $css .= 'body{background-color:' . $element['background_color'] . ' !important;}';
+      }
+      if(!empty($element['header_background_color'])){
+        $css .= 'header{background-color:' . $element['header_background_color'] . ' !important;}';
       }
 
    

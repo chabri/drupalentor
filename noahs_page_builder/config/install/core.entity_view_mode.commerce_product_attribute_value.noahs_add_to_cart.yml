@@ -1,0 +1,10 @@
+uuid: 43cf2400-91bd-4cdd-a985-d1447cfa9ea2
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product_attribute_value.noahs_add_to_cart
+label: 'Noahs Add To Cart'
+targetEntityType: commerce_product_attribute_value
+cache: true

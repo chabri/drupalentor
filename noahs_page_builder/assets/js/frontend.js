@@ -3,7 +3,7 @@
  * Javascript for Color Field.
  */
 
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
 
     $(document).ready(function() {
 
@@ -66,11 +66,14 @@
                 });
             }
         });
-
-        $.each(drupalSettings.noahs_page_builder.classes, function(index, values) {
+        
+        var Noahsclasses = drupalSettings.noahs_page_builder.classes ?? [];
+      
+        $.each(Noahsclasses, function(index, values) {
             $.each(values, function(key, value) {
-     
-                $(key).addClass(value);
+                $.each(value, function(selector, $class) {
+                    $(selector).addClass($class);
+                });
             });
         });   
 
@@ -84,23 +87,7 @@
             });
         });
 
-        var today = new Date();
-
-        // Sumar dos días a la fecha actual
-        var futureDate = new Date(today);
-        futureDate.setDate(today.getDate() + 2);
-        
-        // Obtener el timestamp en segundos (Unix timestamp)
-        var timestamp = Math.floor(futureDate.getTime() / 1000);
-        
-
-        $('.noahs_page_builder-countdown').each(function (index, element) {
-            var date = !$(this).is(':empty') && $(this).data('countdown') ? $(this).data('countdown') : timestamp;
-            $(this).attr('id', 'flipdown_' + index);
-            new FlipDown(date, "flipdown_" + index, {
-                headings: [$(this).data('days'), $(this).data('hours'), $(this).data('minutes'), $(this).data('seconds')],
-              }).start();
-        });
+    
 
         // Transitions AOS
         AOS.init();
@@ -131,9 +118,26 @@
 
   
 
+    Drupal.behaviors.noahsCountDown = {
+        attach: function(context, settings) {
+            var today = new Date();
+            var futureDate = new Date(today);
+                futureDate.setDate(today.getDate() + 2);
+            
+            var timestamp = Math.floor(futureDate.getTime() / 1000);
+            $(once('noahsCountDown', '.noahs_page_builder-countdown', context)).each(function (index, element) {
+            
+                var date = !$(this).is(':empty') && $(this).data('countdown') ? $(this).data('countdown') : timestamp;
+                $(this).attr('id', 'flipdown_' + index);
+                new FlipDown(date, "flipdown_" + index, {
+                    headings: [$(this).data('days'), $(this).data('hours'), $(this).data('minutes'), $(this).data('seconds')],
+                }).start();
+            });
+        }
+    }
 
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);
 
 
 

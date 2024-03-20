@@ -10,6 +10,8 @@ class Control_Checkbox extends Controls_Base {
 	}
 
 	public function content_template($data, $name, $value) {
+
+
 		$data_value = $data['item']['value'];
 		// $value = (empty($value) && !empty($data['item']['default_value'])) ? $data['item']['default_value'] : $value;
 		?>

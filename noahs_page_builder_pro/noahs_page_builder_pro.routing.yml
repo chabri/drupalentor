@@ -17,7 +17,7 @@ noahs_page_builder_pro.themes:
     _permission: 'administer noahs_page_builder_pro'
     
 noahs_page_builder_pro.build:
-  path: '/admin/noahs_page_builder_pro/{type}/theme_builder'
+  path: '/noahs-admin/noahs_page_builder_pro/{type}/theme_builder'
   defaults:
     _title: 'Edit noahs_page_builder'
     _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController::build'
@@ -38,9 +38,92 @@ noahs_page_builder_pro.iframe:
     _permission: 'administer noahs_page_builder_pro'
 
 noahs_page_builder_pro.save_theme:
-  path: '/admin/structure/noahs_page_builder/save_theme'
+  path: '/noahs-admin/structure/noahs_page_builder/save_theme'
   defaults:
-    _title: 'Save Configuration of Gavias BlockBuilder'
+    _title: 'Save Theme'
     _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsBuildThemeProController::saveTheme'
   requirements:
     _permission: 'administer noahs_page_builder_pro'    
+
+noahs_page_builder_pro.save_widget_modal:
+  path: '/noahs-admin/noahs_page_builder/save-widget-global-modal'
+  defaults:
+    _title: 'Save Global Widget'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsWidgetSaveAsGlobalProController::saveWidgetModal'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    
+
+noahs_page_builder_pro.save_widget:
+  path: '/noahs-admin/noahs_page_builder/save-widget-global'
+  defaults:
+    _title: 'Save Global Widget'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsWidgetSaveAsGlobalProController::saveWidget'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    
+noahs_page_builder_pro.save_as_theme_modal:
+  path: '/noahs-admin/noahs_page_builder/save-section-theme-modal'
+  defaults:
+    _title: 'Save Global Widget'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::saveWidgetModal'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    
+
+noahs_page_builder_pro.save_as_theme:
+  path: '/noahs-admin/noahs_page_builder/save-section-theme'
+  defaults:
+    _title: 'Save Global Widget'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::saveWidget'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    
+noahs_page_builder_pro.themes_list:
+  path: '/noahs-admin/noahs_page_builder/themes-list'
+  defaults:
+    _title: 'Get Themes List'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::getList'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+
+noahs_page_builder_pro.themes_list_modal:
+  path: '/noahs-admin/noahs_page_builder/themes-list-modal'
+  defaults:
+    _title: 'Get Themes List'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::modalThemes'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+
+noahs_page_builder_pro.get_theme:
+  path: '/noahs-admin/noahs_page_builder/{id}/get-theme'
+  defaults:
+    _title: 'Get Theme'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::getTheme'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+
+noahs_page_builder_pro.get_entity_view_modes:
+  path: '/noahs-admin/noahs_page_builder/get-view-modes'
+  defaults:
+    _title: 'Get View Modes'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsGetModeViewsProController::getMode'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+
+noahs_page_builder_pro.themes_export:
+  path: '/noahs-admin/noahs_page_builder/{id}/theme-export'
+  defaults:
+    _title: 'Get Themes List'
+    _controller: '\Drupal\noahs_page_builder_pro\Controller\NoahsSectionSaveAsGlobalProController::export'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    
+noahs_page_builder_pro.delete_theme:
+  path: '/noahs-admin/noahs_page_builder/{id}/delete-theme'
+  defaults:
+    _title: 'Delete Themes'
+    _form: '\Drupal\noahs_page_builder_pro\Form\NohasProConfirmDeleteTheme'
+  requirements:
+    _permission: 'administer noahs_page_builder_pro'    
+    

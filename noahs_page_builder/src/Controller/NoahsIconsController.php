@@ -71,7 +71,7 @@ class NoahsIconsController extends ControllerBase{
           <form>
               <div class="mb-3">
                   <label for="iconSearch" class="form-label">Search Icon</label>
-                  <input type="email" class="form-control" id="iconSearch">
+                  <input type="text" class="form-control" id="iconSearch">
               </div>
           </form>
           <?php $firstIteration = true; ?>

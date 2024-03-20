@@ -1,0 +1,10 @@
+uuid: bab73462-1984-4437-b065-69e1e6059b6f
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product.noahs_teaser
+label: 'Noahs Teaser'
+targetEntityType: commerce_product
+cache: true

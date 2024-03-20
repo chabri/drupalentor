@@ -10,10 +10,31 @@ class Control_Select extends Controls_Base {
 	}
 
 	public function content_template($data, $name, $value) {
-
+		$attributes = '';
+		$additionalAttributes = '';
 		$selector = !empty($data['item']['update_selector_html']) ? 'data-update-selectorhtml="#widget-id-' .$data['wid'] . ' ' .$data['item']['update_selector_html'].'"' : null;
+		if(!empty($data['item']['multiple']) && $data['item']['multiple'] === true){
+			$name = $name . '[]';
+			$attributes = 'multiple="true"';
+			$additionalAttributes = 'multiple="true"';
+		}
 
-		$output = '<select name="'.$name.'" class="form-control form-select" '.$selector.' field-settings>';
+
+		
+		if(!empty($data['item']['attributes'])){
+		
+			$attributes =  implode(' ', array_map(
+				function ($key, $value) {
+					return sprintf('%s="%s"', $key, htmlspecialchars($value));
+				},
+				array_keys($data['item']['attributes']),
+				$data['item']['attributes']
+			));
+			$attributes .= $additionalAttributes;
+		}
+
+		$output = '<select name="'.$name.'" '.$attributes.'  class="form-control form-select" '.$selector.' field-settings>';
+
 
 
 		if(!empty($data['item']['select_group_views'])){
@@ -41,7 +62,11 @@ class Control_Select extends Controls_Base {
 			}
 		}else{
 			foreach($data['item']['options'] as $key => $option){
+
 				$selected = ( $value == $key) ? 'selected="selected"' : '';
+				if(!empty($data['item']['multiple']) && $data['item']['multiple'] === true){
+					$selected = (in_array($key, $value)) ? 'selected="selected"' : ''; // Verificar si $key está en $value (un array)
+				}
 				$output .= '<option value="'.$key.'" '.$selected.'>'. $option . '</option>';
 			}
 		}

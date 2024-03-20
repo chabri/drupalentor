@@ -25,28 +25,549 @@ use Drupal\noahs_page_builder\WidgetBase;
            $menus[$menu_entity->id()] = $menu_entity->label();
          }
      
-
             // Section Content
             $form['section_content'] = [
                'type' => 'tab',
                'title' =>  t('Content')
             ];
-            $form['group_menu'] = [
-               'type' => 'group',
-               'title' =>  t('Content')
-            ];
-            $form['menu'] = [
-               'type'    => 'select',
-               'title'   => t('Menu'),
-               'tab' => 'section_content',
-               'options' =>  $menus,
-               'group' => 'group_menu'
-            ];
-            $form['expand_all'] = [
+ 
+            $form['show_total'] = [
                'type'    => 'checkbox',
-               'title'   => t('Expand All'),
+               'title'   => t('Show Total'),
+               'value' => 'true',
+               'default_value' => 'false',
                'tab' => 'section_content',
-               'group' => 'group_menu'
+            ];
+
+            $form['section_styles'] = [
+               'type' => 'tab',
+               'title' => t('Styles')
+            ];
+   
+            $form['icon_group'] = [
+               'type' => 'group',
+               'title' => t('Icon'),
+               'tab' => 'section_styles',
+            ];
+            
+            $form['icon'] = [
+               'type'    => 'noahs_icon',
+               'title'   => t('Icon'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'default_value' => 'fa-solid fa-cart-shopping',
+               'style_type' => 'class',
+               'style_selector' => '.cart-block--link__expand i',
+            ];
+            $form['icon_size'] = [
+               'type'    => 'text',
+               'title'   => t('Icon Size'),
+               'placeholder'   => t('20px, 2rem, etc...'),
+               'group' => 'icon_group',
+               'tab' => 'section_styles',
+               'responsive' => true,
+               'style_type' => 'style',
+               'style_css' => 'font-size',
+               'style_selector' => '.cart-block--link__expand i', 
+            ];
+            
+            $form['icon_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Color'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'color', 
+               'style_hover' => true,
+            ];
+            $form['icon_background_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Background Color'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'background-color', 
+               'style_hover' => true,
+            ];
+   
+            $form['icon_border'] = [
+               'type' => 'noahs_border',
+               'title' => t('Border'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'border', 
+               'style_hover' => true,
+            ];
+   
+            $form['icon_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['icon_width'] = [
+               'type' => 'text',
+               'title' => t('Width'),
+               'group' => 'icon_group',
+               'tab' => 'section_styles',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'width'
+            ];
+            $form['icon_height'] = [
+               'type' => 'text',
+               'title' => t('height'),
+               'group' => 'icon_group',
+               'tab' => 'section_styles',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'heieght'
+            ];
+            $form['icon_vartical_align'] = [
+               'type' => 'text',
+               'title' => t('Position Y'),
+               'group' => 'icon_group',
+               'tab' => 'section_styles',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'top',
+               'description' => 'Example: -10px or 8px, this start from TOP position'
+            ];
+            $form['icon_horizontal_align'] = [
+               'type' => 'text',
+               'title' => t('Position X'),
+               'group' => 'icon_group',
+               'tab' => 'section_styles',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'style_css' => 'right',
+               'description' => 'Example: -10px or 8px, this start from Right position'
+            ];
+            $form['icon_shadows'] = [
+               'type'    => 'noahs_shadows',
+               'title'   => t('icon Shadow'),
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'responsive' => true, 
+               'style_hover' => true,
+            ];
+            $form['icon_border_radius'] = [
+               'type'    => 'noahs_radius',
+               'title'   => t('Border Radius'),
+               'tab' => 'section_styles',
+               'group' => 'icon_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--link__expand', 
+               'responsive' => true, 
+               'style_hover' => true,
+            ];
+
+            $form['icon_count_group'] = [
+               'type' => 'group',
+               'title' => t('Count'),
+               'tab' => 'section_styles',
+            ];
+
+            $form['count_size'] = [
+               'type'    => 'text',
+               'title'   => t('Icon Size'),
+               'placeholder'   => t('20px, 2rem, etc...'),
+               'group' => 'icon_count_group',
+               'tab' => 'section_styles',
+               'responsive' => true,
+               'style_type' => 'style',
+               'style_css' => 'font-size',
+               'style_selector' => '.cart-block--summary__count', 
+            ];
+            
+            $form['count_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Color'),
+               'tab' => 'section_styles',
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'style_css' => 'color', 
+               'style_hover' => true,
+            ];
+            $form['count_background_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Background Color'),
+               'tab' => 'section_styles',
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'style_css' => 'background-color', 
+               'style_hover' => true,
+            ];
+   
+            $form['count_border'] = [
+               'type' => 'noahs_border',
+               'title' => t('Border'),
+               'tab' => 'section_styles',
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'style_css' => 'border', 
+               'style_hover' => true,
+            ];
+   
+            $form['count_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['count_padding'] = [
+               'type' => 'noahs_padding',
+               'title' => t('Padding'),
+               'group' => 'icon_group',
+               'tab' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'style_css' => 'padding', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+            $form['count_shadows'] = [
+               'type'    => 'noahs_shadows',
+               'title'   => t('icon Shadow'),
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'responsive' => true, 
+               'style_hover' => true,
+            ];
+            $form['count_border_radius'] = [
+               'type'    => 'noahs_radius',
+               'title'   => t('Border Radius'),
+               'tab' => 'section_styles',
+               'group' => 'icon_count_group',
+               'style_type' => 'style',
+               'style_selector' => '.cart-block--summary__count', 
+               'responsive' => true, 
+               'style_hover' => true,
+            ];
+
+
+            $form['title_group'] = [
+               'type' => 'group',
+               'title' => t('Title'),
+               'tab' => 'section_styles',
+            ];
+            
+            $form['title_font'] = [
+               'type' => 'noahs_font',
+               'title' => t('Font'),
+               'group' => 'title_group',
+               'tab' => 'section_styles',
+               'style_type' => 'style',
+               'style_selector' => '.field-title', 
+               'responsive' => true,
+            ];
+            $form['title_align'] = [
+               'type'    => 'select',
+               'title'   => t('Text Align'),
+               'tab' => 'section_styles',
+               'group' => 'title_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-title', 
+               'style_css' => 'text-align',
+               'responsive' => true,
+               'options' => [
+                  '' => 'Left',
+                  'center' => 'Center',
+                  'right' => 'Right',
+               ]
+            ];
+
+            $form['title_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'title_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-title', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+
+            $form['price_group'] = [
+               'type' => 'group',
+               'title' => t('Price'),
+               'tab' => 'section_styles',
+            ];
+
+            $form['price_font'] = [
+               'type' => 'noahs_font',
+               'title' => t('Font'),
+               'tab' => 'section_styles',
+               'group' => 'price_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-price', 
+               'responsive' => true,
+            ];
+            $form['price_align'] = [
+               'type'    => 'select',
+               'title'   => t('Text Align'),
+               'tab' => 'section_styles',
+               'group' => 'price_group',
+               'style_type' => 'style',
+               'style_selector' => 'field-price', 
+               'style_css' => 'text-align',
+               'responsive' => true,
+               'options' => [
+                  '' => 'Left',
+                  'center' => 'Center',
+                  'right' => 'Right',
+               ]
+            ];
+            $form['price_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'price_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-price', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+
+            $form['list_group'] = [
+               'type' => 'group',
+               'title' => t('List Price'),
+               'tab' => 'section_styles',
+            ];
+
+            $form['list_font'] = [
+               'type' => 'noahs_font',
+               'title' => t('Font'),
+               'tab' => 'section_styles',
+               'group' => 'list_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-list-price', 
+               'responsive' => true,
+            ];
+            $form['list_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'list_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-list-price', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+
+            $form['sku_group'] = [
+               'type' => 'group',
+               'title' => t('SKU'),
+               'tab' => 'section_styles',
+            ];
+
+            $form['sku_font'] = [
+               'type' => 'noahs_font',
+               'tab' => 'section_styles',
+               'title' => t('Font'),
+               'group' => 'sku_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-sku', 
+               'responsive' => true,
+            ];
+            $form['sku_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'sku_group',
+               'style_type' => 'style',
+               'style_selector' => '.field-sku', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+
+            $form['button_group'] = [
+               'type' => 'group',
+               'title' => t('Button'),
+               'tab' => 'section_styles',
+            ];
+   
+            $form['btn_background_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Background Color'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.button', 
+               'style_css' => 'background-color', 
+               'style_hover' => true,
+               'responsive' => true,
+            ];
+   
+            $form['btn_font'] = [
+               'type' => 'noahs_font',
+               'title' => t('Font'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.button', 
+               'responsive' => true,
+            ];
+   
+            $form['btn_border'] = [
+               'type' => 'noahs_border',
+               'title' => t('Border'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.button', 
+               'style_css' => 'border', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['btn_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.button', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['btn_padding'] = [
+               'type' => 'noahs_padding',
+               'title' => t('Padding'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.button', 
+               'style_css' => 'padding', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+
+            $form['btn_align'] = [
+               'type'    => 'select',
+               'title'   => t('Horizontal Align'),
+               'tab' => 'section_styles',
+               'group' => 'button_group',
+               'style_type' => 'style',
+               'style_selector' => '.form-actions', 
+               'style_css' => 'text-align',
+               'responsive' => true,
+               'options' => [
+                  '' => 'Por defecto',
+                  'left' => 'Start',
+                  'center' => 'Center',
+                  'right' => 'End',
+               ]
+            ];
+            $form['box_group'] = [
+               'type' => 'group',
+               'title' => t('Box'),
+               'tab' => 'section_styles',
+            ];
+   
+            $form['box_background_color'] = [
+               'type' => 'noahs_color',
+               'title' => t('Background Color'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'style_css' => 'background-color', 
+               'style_hover' => true,
+               'responsive' => true,
+            ];
+   
+            $form['box_font'] = [
+               'type' => 'noahs_font',
+               'title' => t('Font'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'responsive' => true,
+            ];
+   
+            $form['box_border'] = [
+               'type' => 'noahs_border',
+               'title' => t('Border'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'style_css' => 'border', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['box_margin'] = [
+               'type' => 'noahs_margin',
+               'title' => t('Margin'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'style_css' => 'margin', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+   
+            $form['box_padding'] = [
+               'type' => 'noahs_padding',
+               'title' => t('Padding'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'style_css' => 'padding', 
+               'responsive' => true,
+               'style_hover' => true,
+            ];
+            $form['box_shadows'] = [
+               'type'    => 'noahs_shadows',
+               'title'   => t('Shadow'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'responsive' => true, 
+               'style_hover' => true,
+            ];
+            $form['box_border_radius'] = [
+               'type'    => 'noahs_radius',
+               'title'   => t('Border Radius'),
+               'tab' => 'section_styles',
+               'group' => 'box_group',
+               'style_type' => 'style',
+               'style_selector' => '.noahs_product_teaser', 
+               'responsive' => true, 
+               'style_hover' => true,
             ];
 
             return $form;
@@ -54,52 +575,31 @@ use Drupal\noahs_page_builder\WidgetBase;
       }
 
       public function template( $settings ){
-
+         $render_block = '';
          $settings = $settings->element;
-         $output = '<ul><li><a href="">Hello</a></li><ul>';
-         if(!empty($settings->menu)){
-            $output = $this->render_menu_navigation('main', $settings);
+
+
+         $block_manager = \Drupal::service('plugin.manager.block');
+         $config = [];
+         $plugin_block = $block_manager->createInstance('commerce_cart', $config);
+      
+         $render_block = '<div>Missing view, block "commerce_cart"</div>';
+         if($plugin_block){
+            $build = $plugin_block->build();
+            $render_block = \Drupal::service('renderer')->render(
+               $build
+            );
          }
-        
-         
 
+         ?>
+         <?php ob_start() ?>
+               <div class="widget-content">
+                  <?php  echo  $render_block; ?>
+               </div>
 
-       
-
-
-
-         return $output;   
+         <?php return ob_get_clean() ?>  
+         <?php       
       }
-      private function render_menu_navigation($menu_name, $settings, $theme_alter = ''){
-         //Set system menu mobile
-         $menu_tree = \Drupal::menuTree();
-         // Build the typical default set of menu tree parameters.
-         if(!empty($settings->menu)){
-            $parameters = new \Drupal\Core\Menu\MenuTreeParameters();
-         }else{
-            $parameters = $menu_tree->getCurrentRouteMenuTreeParameters($menu_name);
-         }
-
-         // Load the tree based on this set of parameters.
-         $tree = $menu_tree->load($menu_name, $parameters);
-         // Transform the tree using the manipulators you want.
-         $manipulators = array(
-             // Only show links that are accessible for the current user.
-             array('callable' => 'menu.default_tree_manipulators:checkAccess'),
-             // Use the default sorting of menu links.
-             array('callable' => 'menu.default_tree_manipulators:generateIndexAndSort'),
-         );
-         $tree = $menu_tree->transform($tree, $manipulators);
-         // Finally, build a renderable array from the transformed tree.
-         $menu = $menu_tree->build($tree);
-
-         if(!empty($theme_alter)){
-            $menu['#theme'] = $theme_alter;
-        }
-     
-         return \Drupal::service('renderer')->render($menu);
-     }
-     
       public function render_content($element) {
          return $this->wrapper($element, $this->template($element->settings));
       }

@@ -4,6 +4,11 @@ noahs_page_builder_pro.themes:
   description: 'Description'
   parent: noahs_page_builder.admin
   route_name: noahs_page_builder_pro.themes
+noahs_page_builder_pro.themes_list:
+  title: 'Noahs Pro My Themes List'
+  description: 'Description'
+  parent: noahs_page_builder.admin
+  route_name: noahs_page_builder_pro.themes_list
 # noahs_page_builder.custom_css:
 #   title: 'Noahs Custom Css'
 #   description: 'Description'

@@ -8,6 +8,7 @@
 		<div class="add-section">
 			<div class="add-section_wrapper">
 				<button class="btn btn-blue">Add section</button>
+				<button class="btn">Past Element</button>
 			</div>
 		</div>
 	</div>

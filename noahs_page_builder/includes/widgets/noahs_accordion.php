@@ -36,11 +36,15 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'type' => 'text',
                   'placeholder' => 'This is a h2',
                   'tab' => 'accordion_content',
+                  'default_value' => 'This is a h2',
+                  'update_selector' => '.accordion-button_[index]'
                ],
                'accordion_text' => [
                   'title' => 'Text',
                   'type' => 'textarea',
                   'tab' => 'accordion_content',
+                  'default_value' => 'This is the third items accordion body. It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.',
+                  'update_selector' => '.accordion-item_[index] .accordion-body'
                ]
       
             ],
@@ -49,24 +53,26 @@ use Drupal\noahs_page_builder\WidgetBase;
       }
 
       public function template( $settings ){
-        $elements = !empty($settings['element']['accordion_items']) ? $settings['element']['accordion_items'] : [];
+        $elements = !empty($settings->element->accordion_items) ? $settings->element->accordion_items : [];
 
          ?>
          <?php ob_start() ?>
-         <div class="accordion accordion-flush" id="accordion_<?php echo $settings['wid']; ?>">
+         <div class="accordion accordion-flush multipart-item" id="accordion_<?php echo $settings->wid; ?>">
 
             <!-- Slides -->
             <?php if (!empty($elements)){ ?>
-            <?php foreach($elements as $index => $element){ ?>
-            <div class="accordion-item">
+            <?php foreach($elements as $index => $element){ 
+               $index = ($index + 1);
+               ?>
+            <div class="accordion-item accordion-item_<?php echo $index; ?>">
                <h2 class="accordion-header" id="flush-heading_<?php echo $index; ?>">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_<?php echo $index; ?>" aria-expanded="false" aria-controls="flush-collapse_<?php echo $index; ?>">
-                     <?php echo $element['accordion_title']; ?>
+                  <button class="accordion-button accordion-button_<?php echo $index; ?> collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_<?php echo $index; ?>" aria-expanded="false" aria-controls="flush-collapse_<?php echo $index; ?>">
+                     <?php echo $element->accordion_title->text; ?>
                   </button>
                </h2>
-               <div id="flush-collapse_<?php echo $index; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading_<?php echo $index; ?>" data-bs-parent="#accordion_<?php echo $settings['wid']; ?>">
+               <div id="flush-collapse_<?php echo $index; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading_<?php echo $index; ?>" data-bs-parent="#accordion_<?php echo $settings->wid; ?>">
                   <div class="accordion-body">
-                     <?php echo $element['accordion_text']; ?>
+                     <?php echo $element->accordion_text; ?>
                   </div>
                </div>
             </div>
@@ -78,19 +84,19 @@ use Drupal\noahs_page_builder\WidgetBase;
                      Accordion Item #1
                      </button>
                   </h2>
-                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion_<?php echo $settings['wid']; ?>">
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordion_<?php echo $settings->wid; ?>">
                      <div class="accordion-body">
                      <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
                      </div>
                   </div>
                </div>
-               <div class="accordion-item">
+               <div class="accordion-item ">
                   <h2 class="accordion-header" id="headingTwo">
                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                      Accordion Item #2
                      </button>
                   </h2>
-                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion_<?php echo $settings['wid']; ?>">
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordion_<?php echo $settings->wid; ?>">
                      <div class="accordion-body">
                      <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
                      </div>
@@ -102,7 +108,7 @@ use Drupal\noahs_page_builder\WidgetBase;
                      Accordion Item #3
                      </button>
                   </h2>
-                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordion_<?php echo $settings['wid']; ?>">
+                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordion_<?php echo $settings->wid; ?>">
                      <div class="accordion-body">
                      <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
                      </div>
@@ -115,9 +121,33 @@ use Drupal\noahs_page_builder\WidgetBase;
          <?php return ob_get_clean() ?>  
          <?php       
       }
-      public function render_content( $settings = null, $content = null) {
-                return $this->wrapper($element, $this->template(json_decode($element->settings, true)));
+      public function default_template( ){
 
+         ?>
+         <?php ob_start() ?>
+
+               <div class="accordion-item">
+                  <h2 class="accordion-header" id="replaceit">
+                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#replaceit" aria-expanded="true" aria-controls="replaceit">
+                     This is a h2
+                     </button>
+                  </h2>
+                  <div id="replaceit" class="accordion-collapse collapse" aria-labelledby="replaceit" data-bs-parent="replaceit">
+                     <div class="accordion-body">
+                     <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                     </div>
+                  </div>
+               </div>
+              
+
+
+
+         <?php return ob_get_clean() ?>  
+         <?php       
+      }
+
+      public function render_content($element) {
+         return $this->wrapper($element, $this->template($element->settings));
       }
    }
 

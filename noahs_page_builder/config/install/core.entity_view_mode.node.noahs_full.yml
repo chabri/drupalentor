@@ -1,0 +1,10 @@
+uuid: cbc4ebc2-ac7e-4bb9-8ea2-aa77144362bf
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.noahs_full
+label: 'Noahs Full'
+targetEntityType: node
+cache: true

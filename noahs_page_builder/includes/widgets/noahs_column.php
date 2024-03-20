@@ -32,7 +32,42 @@ class element_noahs_column extends WidgetBase{
 			'responsive' => true,
 			'placeholder' => 'use as 10%, 100px, 100vw...',
 		];
-
+		$form['innver_column_width'] =[
+			'type'    => 'noahs_width',
+			'title'   => ('Inner Width'),
+			'style_type' => 'style',
+			'style_selector' => '.widget-wrapper', 
+			'style_css' => 'max-width', 
+			'tab' => 'section_content',
+			'responsive' => true,
+			'placeholder' => 'use as 10%, 100px, 100vw...',
+		];
+		$form['section_height'] = [
+			'type'    => 'select',
+			'title'   => t('Column height'),
+			'tab' => 'section_content',
+			'style_type' => 'class',
+			'style_selector' => 'widget', 
+			'options' => [
+				'' => t('default'),
+				'full-height' => t('Full height'),
+				'min-height' => t('Min Height'),
+			]
+		];
+		$form['section_min_height'] = [
+			'type'    => 'text',
+			'title'   => t('Min height'),
+			'tab' => 'section_content',
+			'placeholder'     => t('Min height'),
+			'style_type' => 'style',
+			'style_selector' => 'widget', 
+			'style_css' => 'min-height', 
+			'state' => [
+				'visible' => [
+					'section_height' => ['value' => 'min-height'],
+				  ],
+			]
+		];
 		$form['vertical_align'] = [
 			'type'    => 'select',
 			'title'   => t('Vertical Align'),
@@ -42,15 +77,32 @@ class element_noahs_column extends WidgetBase{
 			'style_css' => 'align-items', 
 			'responsive' => true,
 			'options' => [
+				'' => t('Center'),
 				'flex-start' => t('Top'),
-				'center' => t('Center'),
 				'flex-end' => t('Bottom'),
 			]
 		];
 
+		$form['column_elements_inline'] = [
+			'type'    => 'select',
+			'title'   => t('Elements orientation'),
+			'tab' => 'section_content',
+			'style_type' => 'style',
+			'style_selector' => '.noahs_page_builder-column--content-inner', 
+			'style_css' => 'flex-direction',
+			'responsive' => true,
+			'options' => [
+				'' => 'Por defecto (one under the other)',
+				'column-reverse' => 'Column Reverse',
+				'row' => 'Inline',
+				'row-reverse' => 'Inline Reverse',
+				'revert' => 'Revert',
+				'unset' => 'Unset',
+			]
+		];
 		$form['horizontal_align_structures'] = [
 			'type'    => 'select',
-			'title'   => t('Horizontal Align'),
+			'title'   => t('Distribution'),
 			'tab' => 'section_content',
 			'style_type' => 'style',
 			'style_selector' => 'widget', 
@@ -82,6 +134,16 @@ class element_noahs_column extends WidgetBase{
 			]
 		];
 
+		$form['elements_gap'] =[
+			'type'    => 'text',
+			'title'   => ('Element Space'),
+			'style_type' => 'style',
+			'style_selector' => '.noahs_page_builder-column--content-inner ', 
+			'style_css' => 'gap', 
+			'tab' => 'section_content',
+			'responsive' => true,
+			'placeholder' => 'use as 10%, 100px, 100vw...',
+		];
 		  
 		// Section Styles
 		$form['section_styles'] = [

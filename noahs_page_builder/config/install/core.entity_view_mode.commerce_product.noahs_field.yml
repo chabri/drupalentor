@@ -1,0 +1,10 @@
+uuid: 46332d16-fa5b-4123-a42b-ffa04a16c042
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product.noahs_field
+label: 'Noahs Field'
+targetEntityType: commerce_product
+cache: true

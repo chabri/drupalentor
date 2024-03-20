@@ -19,29 +19,47 @@ use Drupal\noahs_page_builder\WidgetBase;
 
 
    
-            // Section Content
             $form['section_content'] = [
                'type' => 'tab',
                'title' =>  t('Content')
             ];
-      
-            $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'page');
 
-            // Load a node for which you want to get the field values
+            $entityTypeManager = \Drupal::service('entity_type.manager');
 
+            $fieldManager = \Drupal::service('entity_field.manager');
 
-            // Iterate through the definitions
+            $bundles = $entityTypeManager->getStorage('node_type')->loadMultiple();
+
             $options = [];
-            $options[] = 'Select tour fied';
-            foreach ($definitions as $field_name => $field_definition) {
-               $options[$field_name] = (string)$field_definition->getLabel();
+
+            foreach ($bundles as $bundle) {
+            $bundle_id = $bundle->id();
+            $bundle_label = $bundle->label();
+            $fieldDefinitions = $fieldManager->getFieldDefinitions('node', $bundle_id);
+            
+            $bundle_options = [];
+            $options[$bundle_id]['text'] = $bundle_label;
+
+            foreach ($fieldDefinitions as $fieldName => $fieldDefinition) {
+               $fieldType = $fieldDefinition->getType();
+               $fieldLabel =  (string)$fieldDefinition->getLabel();
+               
+         
+               $bundle_options[$fieldName] = $fieldLabel;
+            }
+
+            $options[$bundle_id]['options'] = $bundle_options;
             }
 
             $form['drupal_field'] = [
                'type'    => 'select',
                'title'   => t('Field'),
                'tab' => 'section_content',
+               'select_group'    => true,
                'options' =>  $options,
+               'attributes' => [
+                  'data-select-2' => true,
+               ],
             ];
             $form['wrapp_element'] = [
                'type'    => 'select',
@@ -64,6 +82,41 @@ use Drupal\noahs_page_builder\WidgetBase;
                   'p' => 'Paragraph',
                   'span' => 'Span',
                ],
+            ];
+
+            $form['horizontal_align_structures'] = [
+               'type'    => 'select',
+               'title'   => t('Horizontal Align'),
+               'tab' => 'section_content',
+               'style_type' => 'style',
+               'style_selector' => 'widget', 
+               'style_css' => 'justify-content',
+               'responsive' => true,
+               'options' => [
+                  '' => 'Por defecto',
+                  'flex-start' => 'Start',
+                  'center' => 'Center',
+                  'flex-end' => 'End',
+                  'space-between' => 'Space Betwenn',
+                  'space-around' => 'Space Around',
+                  'space-evenly' => 'Space Evenly'
+               ]
+            ];
+
+            $form['horizontal_align'] = [
+               'type'    => 'select',
+               'title'   => t('Text Align'),
+               'tab' => 'section_content',
+               'style_type' => 'style',
+               'style_selector' => 'widget', 
+               'style_css' => 'text-align',
+               'responsive' => true,
+               'options' => [
+                  '' => 'Por defecto',
+                  'left' => 'Left',
+                  'center' => 'Center',
+                  'right' => 'Right',
+               ]
             ];
             return $form;
 

@@ -39,13 +39,18 @@ use Drupal\block\Entity\Block;
         
             $render_block = '<div>Missing view, block "'.$settings->drupal_block.'"</div>';
             if($plugin_block){
-               $render_block = \Drupal::service('renderer')->render($plugin_block->build());
+               $build = $plugin_block->build();
+               $render_block = \Drupal::service('renderer')->render(
+                  $build
+               );
             }
+         }else{
+            $render_block = '<div>Select your block before :)</div>';
          }
          ?>
          <?php ob_start() ?>
                <div class="widget-content">
-                  <?php  print  $render_block; ?>
+                  <?php  echo  $render_block; ?>
                </div>
 
          <?php return ob_get_clean() ?>  
